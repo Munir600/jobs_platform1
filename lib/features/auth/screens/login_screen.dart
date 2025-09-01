@@ -5,6 +5,8 @@ import '../../../routes/app_routes.dart';
 import 'home_screen.dart';
 import '../controllers/auth_controller.dart';
 import '../../../core/utils/network_utils.dart';
+import 'main_screen.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
@@ -34,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (ok) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const HomeScreen(title: 'تم تسجيل الدخول بنجاح'),
+          pageBuilder: (_, __, ___) => const MainScreen(),
           transitionsBuilder: (_, animation, __, child) {
             return FadeTransition(opacity: animation, child: child);
           },

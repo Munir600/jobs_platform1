@@ -54,21 +54,23 @@ class AuthRepository {
     return result;
   }
 
-  Future<UserModel?> getProfile() async {
+  Future<Map<String, dynamic>?> getProfile() async {
     final token = await StorageService.getToken();
     if (token == null) return null;
 
-    final headers = <String, String>{
-      'Authorization': 'Token $token',
-    };
+    final headers = <String, String>{};
+    if (token.contains('.')) {
+      headers['Authorization'] = 'Bearer $token';
+    } else if (token.contains('=')) {
+      headers['Cookie'] = token;
+    } else {
+      headers['Authorization'] = 'Token $token';
+    }
 
     final resp = await _client.get('/api/accounts/profile/', headers: headers);
 
     if (resp.statusCode == 200) {
-      final body = jsonDecode(resp.body);
-      if (body is Map && body.containsKey('data') && body['data'].containsKey('user')) {
-        return UserModel.fromJson(body['data']['user']);
-      }
+      return jsonDecode(resp.body) as Map<String, dynamic>;
     }
     return null;
   }

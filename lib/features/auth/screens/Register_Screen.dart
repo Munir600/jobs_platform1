@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (ok) {
       final logged = await auth.login(_phone.text.trim(), _password.text);
       if (logged && mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen(title: 'تم تسجيل حساب جديد')));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
       } else {
         if (!mounted) return;
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
@@ -292,17 +292,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 5),
                         // First and Last name
                         Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
                           child: Row(
                             children: [
                               Expanded(

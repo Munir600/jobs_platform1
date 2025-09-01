@@ -1,4 +1,3 @@
-
 class ApiConfig {
   static const baseUrl = 'https://job-portal-rcxk.onrender.com';
   static const register = '/api/accounts/register/';

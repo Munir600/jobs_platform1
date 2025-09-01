@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../../data/models/user_model.dart';
+import '../../job_seeker/provider/profile_model.dart';
 import '../repositories/auth_repository.dart';
 
 class AuthController with ChangeNotifier {
@@ -7,7 +8,7 @@ class AuthController with ChangeNotifier {
 
   UserModel? _user;
   bool _loading = false;
-
+  ProfileModel? profile;
   UserModel? get user => _user;
   bool get loading => _loading;
   bool get isAuthenticated => _user != null;
@@ -18,7 +19,7 @@ class AuthController with ChangeNotifier {
     final res = await _repo.login(phone, password);
     _loading = false;
     if (res['ok'] == true) {
-      _user = await _repo.getProfile();
+      _user = (await _repo.getProfile()) as UserModel?;
       notifyListeners();
       return true;
     }
@@ -43,11 +44,29 @@ class AuthController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadProfile() async {
+  Future<bool> loadProfile() async {
     _loading = true;
     notifyListeners();
-    _user = await _repo.getProfile();
+
+    try {
+      final data = await _repo.getProfile();
+      if (data != null) {
+        final userJson = data['data']['user'];
+        final profileJson = data['data']['profile'];
+
+        _user = UserModel.fromJson(userJson);
+        profile = ProfileModel.fromJson(profileJson);
+
+        _loading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      print("خطأ تحميل الملف الشخصي: $e");
+    }
+
     _loading = false;
     notifyListeners();
+    return false;
   }
 }

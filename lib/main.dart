@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/controllers/auth_controller.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+//import 'features/auth/screens/main_screen.dart';
+//import 'features/job_seeker/screens/job_seeker_screen.dart';
 import 'routes/app_routes.dart';
 void main() {
   runApp(
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: AppRoutes.routes,
       initialRoute: AppRoutes.splash,
-     // home:  SplashScreen(),
+      //  home: const MainScreen(),
     );
   }
 }
