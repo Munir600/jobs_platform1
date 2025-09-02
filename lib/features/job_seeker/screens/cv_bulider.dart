@@ -22,14 +22,12 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
   final TextEditingController summaryController = TextEditingController();
   final TextEditingController skillsController = TextEditingController();
 
-  // Dynamic lists
   List<Experience> experiences = [];
   List<Education> educations = [];
 
   @override
   void initState() {
     super.initState();
-    // إضافة عنصر افتراضي لكل من الخبرة والتعليم
     experiences.add(Experience());
     educations.add(Education());
   }
@@ -37,17 +35,17 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
+        backgroundColor: AppColors.backgroundColor,
         title: const Text("📄 منشئ السيرة الذاتية"),
       ),
-      backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              // -------- المعلومات الشخصية --------
               _sectionTitle("المعلومات الشخصية"),
               _formRow([
                 _formField("الاسم الأول", firstNameController),
@@ -67,13 +65,12 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
               ]),
               _formField("نبذة مختصرة", summaryController, maxLines: 4),
 
-              const SizedBox(height: 16),
-
-              // -------- الخبرة العملية --------
+              const SizedBox(height: 20),
               _sectionTitle("الخبرة العملية"),
               ..._buildExperienceFields(),
-
               ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent),
                 onPressed: () {
                   setState(() {
                     experiences.add(Experience());
@@ -83,13 +80,12 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
                 label: const Text("إضافة خبرة عملية"),
               ),
 
-              const SizedBox(height: 16),
-
-              // -------- التعليم --------
+              const SizedBox(height: 20),
               _sectionTitle("التعليم"),
               ..._buildEducationFields(),
-
               ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent),
                 onPressed: () {
                   setState(() {
                     educations.add(Education());
@@ -99,26 +95,22 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
                 label: const Text("إضافة مؤهل تعليمي"),
               ),
 
-              const SizedBox(height: 16),
-
-              // -------- المهارات --------
+              const SizedBox(height: 20),
               _sectionTitle("المهارات"),
               _formField("المهارات (افصل بينها بفاصلة)", skillsController,
                   maxLines: 2),
 
-              const SizedBox(height: 24),
-
-              // -------- معاينة --------
+              const SizedBox(height: 30),
               _sectionTitle("معاينة السيرة الذاتية"),
               _buildPreview(),
 
               const SizedBox(height: 24),
-
-              // -------- حفظ أو طباعة (مستقبلياً) --------
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.greenAccent[700]),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -130,16 +122,19 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
                   ),
                   const SizedBox(width: 16),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orangeAccent),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text("ميزة الطباعة / PDF ستضاف لاحقاً")),
+                            content:
+                            Text("ميزة الطباعة / PDF ستضاف لاحقاً")),
                       );
                     },
                     child: const Text("تحميل PDF"),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -150,11 +145,11 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
   Widget _sectionTitle(String title) {
     return Container(
       alignment: Alignment.centerRight,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 12),
       child: Text(
         title,
         style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+            fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
       ),
     );
   }
@@ -167,8 +162,15 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        labelStyle: const TextStyle(color: Colors.blueGrey),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Colors.blueGrey)),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Colors.blueAccent)),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -177,7 +179,7 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
         return null;
       },
       onChanged: (_) {
-        setState(() {}); // تحديث المعاينة مباشرة
+        setState(() {});
       },
     );
   }
@@ -201,6 +203,8 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
       Experience exp = entry.value;
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 8),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -210,7 +214,8 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
                   Expanded(
                       child: Text(
                         "خبرة ${idx + 1}",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       )),
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
@@ -242,6 +247,8 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
       Education edu = entry.value;
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 8),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -251,7 +258,8 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
                   Expanded(
                       child: Text(
                         "مؤهل ${idx + 1}",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       )),
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
@@ -278,85 +286,151 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
 
   Widget _buildPreview() {
     return Card(
-      color: Colors.white,
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "${firstNameController.text} ${lastNameController.text}",
-              style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue),
-            ),
-            Text(jobTitleController.text,
-                style: const TextStyle(fontSize: 16, color: Colors.grey)),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 12,
-              children: [
-                if (emailController.text.isNotEmpty)
-                  Text("📧 ${emailController.text}"),
-                if (phoneController.text.isNotEmpty)
-                  Text("📞 ${phoneController.text}"),
-                if (cityController.text.isNotEmpty) Text("🏙️ ${cityController.text}"),
-              ],
-            ),
-            if (summaryController.text.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text("نبذة مختصرة:",
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(summaryController.text),
-            ],
-            if (experiences.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              const Text("الخبرة العملية:",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Column(
-                children: experiences
-                    .map((exp) => ListTile(
-                  title: Text(exp.titleController.text),
-                  subtitle: Text(
-                      "${exp.companyController.text} (${exp.startController.text} - ${exp.endController.text})\n${exp.descController.text}"),
-                ))
-                    .toList(),
-              ),
-            ],
-            if (educations.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              const Text("التعليم:", style: TextStyle(fontWeight: FontWeight.bold)),
-              Column(
-                children: educations
-                    .map((edu) => ListTile(
-                  title: Text(edu.degreeController.text),
-                  subtitle: Text(
-                      "${edu.institutionController.text} (${edu.yearController.text}) - ${edu.gradeController.text}"),
-                ))
-                    .toList(),
-              ),
-            ],
-            if (skillsController.text.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              const Text("المهارات:", style: TextStyle(fontWeight: FontWeight.bold)),
-              Wrap(
-                spacing: 8,
-                children: skillsController.text
-                    .split(',')
-                    .map((skill) => Chip(label: Text(skill.trim())))
-                    .toList(),
-              )
-            ]
-          ],
-        ),
+        color: Colors.white,
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+        padding: const EdgeInsets.all(16),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    Text(
+    "${firstNameController.text} ${lastNameController.text}",
+    style: const TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: Colors.blueAccent),
+    ),
+    Text(jobTitleController.text,
+    style: const TextStyle(fontSize: 16, color: Colors.grey)),
+    const             SizedBox(height: 8),
+      Row(
+        children: [
+          if (emailController.text.isNotEmpty)
+            Text(emailController.text,
+                style: const TextStyle(color: Colors.grey)),
+          const SizedBox(width: 10),
+          if (phoneController.text.isNotEmpty)
+            Text(phoneController.text,
+                style: const TextStyle(color: Colors.grey)),
+          const SizedBox(width: 10),
+          if (cityController.text.isNotEmpty)
+            Text(cityController.text,
+                style: const TextStyle(color: Colors.grey)),
+        ],
       ),
+      const SizedBox(height: 12),
+      if (summaryController.text.isNotEmpty) ...[
+        const Text("نبذة مختصرة",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent)),
+        const SizedBox(height: 4),
+        Text(summaryController.text),
+        const SizedBox(height: 12),
+      ],
+
+      if (experiences.isNotEmpty) ...[
+        const Text("الخبرة العملية",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent)),
+        const SizedBox(height: 4),
+        Column(
+          children: experiences.map((exp) {
+            if (exp.titleController.text.isEmpty &&
+                exp.companyController.text.isEmpty) return Container();
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(exp.titleController.text,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(exp.companyController.text,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blueAccent)),
+                  Text(
+                      "${exp.startController.text} - ${exp.endController.text}",
+                      style: const TextStyle(color: Colors.grey)),
+                  if (exp.descController.text.isNotEmpty)
+                    Text(exp.descController.text),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 12),
+      ],
+
+      if (educations.isNotEmpty) ...[
+        const Text("التعليم",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent)),
+        const SizedBox(height: 4),
+        Column(
+          children: educations.map((edu) {
+            if (edu.degreeController.text.isEmpty &&
+                edu.institutionController.text.isEmpty) return Container();
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(edu.degreeController.text,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(edu.institutionController.text,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blueAccent)),
+                  Text(edu.yearController.text,
+                      style: const TextStyle(color: Colors.grey)),
+                  if (edu.gradeController.text.isNotEmpty)
+                    Text("التقدير: ${edu.gradeController.text}"),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 12),
+      ],
+
+      if (skillsController.text.isNotEmpty) ...[
+        const Text("المهارات",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent)),
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: skillsController.text
+              .split(',')
+              .map((s) => Chip(
+            label: Text(s.trim()),
+            backgroundColor: Colors.blueAccent,
+            labelStyle:
+            const TextStyle(color: Colors.white, fontSize: 14),
+          ))
+              .toList(),
+        ),
+      ],
+    ],
+    ),
+        ),
     );
   }
 }
 
-// ----------- Models -------------
+// ------------------- Models -------------------
 class Experience {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController companyController = TextEditingController();
@@ -371,3 +445,4 @@ class Education {
   final TextEditingController yearController = TextEditingController();
   final TextEditingController gradeController = TextEditingController();
 }
+
