@@ -148,19 +148,19 @@ class _MainScreenState extends State<MainScreen> {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              label: 'Home',
+              label: 'الشاشة الرئيسية',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.search),
-              label: 'Search',
+              label: 'بحث',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.notifications),
-              label: 'Notifications',
+              label: 'الإشعارات',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              label: 'Profile',
+              label: 'الملف الشخصي',
             ),
           ],
         ),
