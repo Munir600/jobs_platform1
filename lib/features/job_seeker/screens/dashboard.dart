@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../config/app_colors.dart';
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -10,6 +12,14 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+
+      body: const Center(
+        child: Text('نتظرة عامة على الوظائف',
+          style: TextStyle(fontSize: 24),
+        ),
+      ),
+    );
   }
 }

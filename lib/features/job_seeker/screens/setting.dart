@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../config/app_colors.dart';
+
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
 
@@ -10,6 +12,14 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+
+      body: const Center(
+        child: Text(' الإعدادات ',
+          style: TextStyle(fontSize: 24),
+        ),
+      ),
+    );
   }
 }

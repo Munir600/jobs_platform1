@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/services/storage_service.dart';
 import '../../../routes/app_routes.dart';
+import '../../job_seeker/screens/cv_bulider.dart';
+import '../../job_seeker/screens/job_seeker_screen.dart';
 import '../controllers/auth_controller.dart';
 import 'home_screen.dart';
 import '../../jobs/screens/search_job.dart';
 import '../../job_seeker/screens/alert_jobs.dart';
-import '../../job_seeker/screens/job_seeker_screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -19,13 +20,21 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-
+  void getUserType() async {
+    String? userType = await StorageService.getUserType();
+    if (userType == null) {
+      userType = 'Unknown';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('User type: $userType')),
+    );
+  }
 
   final List<Widget> _screens = const [
-    HomeScreen(),          // من AppRoutes.home
-    SearchJob(),     // من AppRoutes.searchJob
-    AlertJobsScreen(),     // من JobSeekerRoutes.alertjobs
-    JobSeekerScreen(),       // من JobSeekerRoutes.jobseeker
+    HomeScreen(),
+    SearchJob(),
+    AlertJobsScreen(),
+    CvBuilderScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -114,7 +123,8 @@ class _MainScreenState extends State<MainScreen> {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'تسجيل الخروج',
-            onPressed: _confirmLogout,
+          //  onPressed: getUserType,
+           onPressed: _confirmLogout,
           ),
         ],
       ),

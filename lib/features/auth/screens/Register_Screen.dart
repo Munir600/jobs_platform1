@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import '../../../config/app_colors.dart';
+import '../../../data/services/storage_service.dart';
 import '../controllers/auth_controller.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 import '../../../core/utils/network_utils.dart';
+import 'main_screen.dart';
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
   @override
@@ -38,11 +40,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+
   Future<void> _submit() async {
     final hasInternet = await NetworkUtils.checkInternet(context);
     if (!hasInternet) return;
     if (!_formKey.currentState!.validate()) return;
     final auth = Provider.of<AuthController>(context, listen: false);
+    await StorageService.saveUserType(_userType);
     final payload = {
       'username': _username.text.trim(),
       'email': _email.text.trim(),
@@ -58,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (ok) {
       final logged = await auth.login(_phone.text.trim(), _password.text);
       if (logged && mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainScreen()));
       } else {
         if (!mounted) return;
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));

@@ -44,29 +44,11 @@ class AuthController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> loadProfile() async {
-    _loading = true;
-    notifyListeners();
-
-    try {
-      final data = await _repo.getProfile();
-      if (data != null) {
-        final userJson = data['data']['user'];
-        final profileJson = data['data']['profile'];
-
-        _user = UserModel.fromJson(userJson);
-        profile = ProfileModel.fromJson(profileJson);
-
-        _loading = false;
-        notifyListeners();
-        return true;
-      }
-    } catch (e) {
-      print("خطأ تحميل الملف الشخصي: $e");
+  Future<UserModel?> getProfileModel() async {
+    final data = await _repo.getProfile();
+    if (data != null ) {
+      return UserModel.fromJson(data['data']['user']);
     }
-
-    _loading = false;
-    notifyListeners();
-    return false;
+    return null;
   }
 }

@@ -1,6 +1,112 @@
 import 'package:flutter/material.dart';
 import 'package:jobs_platform1/config/app_colors.dart';
 
+// ----------------------- قالب الصفحات الفرعية -----------------------
+class _ProfileSubPage extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _ProfileSubPage({
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AppBar(
+          title: Text(title),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                Navigator.of(context)
+                    .pushReplacementNamed('profile/home');
+              }
+            },
+          ),
+        ),
+        Expanded(child: child),
+      ],
+    );
+  }
+}
+
+// ----------------------- الشاشات الفرعية -----------------------
+class DashboardScreen2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileSubPage(
+      title: "📊 نظرة عامة",
+      child: Center(child: Text("هذه شاشة نظرة عامة")),
+    );
+  }
+}
+
+class ApplicationsScreen2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileSubPage(
+      title: "📑 طلباتي",
+      child: Center(child: Text("هذه شاشة طلباتي")),
+    );
+  }
+}
+
+class SavedJobsScreen2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileSubPage(
+      title: "🔖 الوظائف المحفوظة",
+      child: Center(child: Text("هذه شاشة الوظائف المحفوظة")),
+    );
+  }
+}
+
+class ProfileDetailsScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileSubPage(
+      title: "👤 الملف الشخصي",
+      child: Center(child: Text("هذه شاشة الملف الشخصي")),
+    );
+  }
+}
+
+class CVBuilderScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileSubPage(
+      title: "📄 السيرة الذاتية",
+      child: Center(child: Text("هذه شاشة السيرة الذاتية")),
+    );
+  }
+}
+
+class AlertJobsScreen2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileSubPage(
+      title: "🔔 تنبيهات الوظائف",
+      child: Center(child: Text("هذه شاشة تنبيهات الوظائف")),
+    );
+  }
+}
+
+class SettingScreen2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _ProfileSubPage(
+      title: "⚙️ الإعدادات",
+      child: Center(child: Text("هذه شاشة الإعدادات")),
+    );
+  }
+}
+
+// ----------------------- JobSeekerScreen -----------------------
 class JobSeekerScreen extends StatefulWidget {
   const JobSeekerScreen({super.key});
 
@@ -13,112 +119,130 @@ class _JobSeekerScreenState extends State<JobSeekerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body:
-      Container(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    CircleAvatar(
-                      radius: 48,
-                      backgroundImage: AssetImage('assets/images/Logo4.png'), // Placeholder image
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'تغيير الصورة',
-                          style: TextStyle(color: Colors.white, fontSize: 12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'محمد أحمد', // Placeholder name
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  'مطور برمجيات',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                const SizedBox(height: 16),
-                // Profile completion
-                Column(
-                  children: [
-                    LinearProgressIndicator(
-                      value: 0.75,
-                      minHeight: 8,
-                      backgroundColor: Colors.grey[300],
-                      color: Colors.blue,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text('75% مكتمل', style: TextStyle(fontSize: 14)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('تحديث الملف الشخصي'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      textStyle: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Navigation menu
-                Column(
-                  children: [
-                    _SidebarNavItem(icon: '📊', label: 'نظرة عامة'),
-                    _SidebarNavItem(icon: '📝', label: 'طلباتي'),
-                    _SidebarNavItem(icon: '💾', label: 'الوظائف المحفوظة'),
-                    _SidebarNavItem(icon: '👤', label: 'الملف الشخصي'),
-                    _SidebarNavItem(icon: '📄', label: 'السيرة الذاتية'),
-                    _SidebarNavItem(icon: '🔔', label: 'تنبيهات الوظائف'),
-                    _SidebarNavItem(icon: '⚙️', label: 'الإعدادات'),
-                  ],
-                ),
-              ],
-            ),
+      body: Navigator(
+        initialRoute: 'profile/home',
+        onGenerateRoute: (settings) {
+          Widget page;
+          switch (settings.name) {
+            case 'profile/home':
+              page = _buildFullProfile(context);
+              break;
+            case 'profile/dashboard':
+              page = DashboardScreen2();
+              break;
+            case 'profile/applications':
+              page = ApplicationsScreen2();
+              break;
+            case 'profile/saved':
+              page = SavedJobsScreen2();
+              break;
+            case 'profile/details':
+              page = ProfileDetailsScreen();
+              break;
+            case 'profile/cv':
+              page = CVBuilderScreen();
+              break;
+            case 'profile/alerts':
+              page = AlertJobsScreen2();
+              break;
+            case 'profile/settings':
+              page = SettingScreen2();
+              break;
+            default:
+              page = _buildFullProfile(context);
+          }
+          return MaterialPageRoute(
+            builder: (_) => page,
+            settings: settings,
+          );
+        },
+      ),
+    );
+  }
+
+  /// شاشة البروفايل الرئيسية
+  Widget _buildFullProfile(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const CircleAvatar(
+            radius: 60,
+            backgroundImage: AssetImage('assets/images/Logo4.png'),
           ),
-        ),
+          const SizedBox(height: 12),
+          const Text(
+            'محمد أحمد',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const Text(
+            'مطور برمجيات',
+            style: TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 24),
+
+          _SidebarNavItem(
+            icon: Icons.dashboard,
+            label: 'نظرة عامة',
+            onTap: () =>
+                Navigator.of(context).pushNamed('profile/dashboard'),
+          ),
+          _SidebarNavItem(
+            icon: Icons.assignment,
+            label: 'طلباتي',
+            onTap: () =>
+                Navigator.of(context).pushNamed('profile/applications'),
+          ),
+          _SidebarNavItem(
+            icon: Icons.bookmark,
+            label: 'الوظائف المحفوظة',
+            onTap: () => Navigator.of(context).pushNamed('profile/saved'),
+          ),
+          _SidebarNavItem(
+            icon: Icons.person,
+            label: 'الملف الشخصي',
+            onTap: () => Navigator.of(context).pushNamed('profile/details'),
+          ),
+          _SidebarNavItem(
+            icon: Icons.description,
+            label: 'السيرة الذاتية',
+            onTap: () => Navigator.of(context).pushNamed('profile/cv'),
+          ),
+          _SidebarNavItem(
+            icon: Icons.notifications,
+            label: 'تنبيهات الوظائف',
+            onTap: () => Navigator.of(context).pushNamed('profile/alerts'),
+          ),
+          _SidebarNavItem(
+            icon: Icons.settings,
+            label: 'الإعدادات',
+            onTap: () => Navigator.of(context).pushNamed('profile/settings'),
+          ),
+        ],
       ),
     );
   }
 }
 
+// ----------------------- عنصر القائمة -----------------------
 class _SidebarNavItem extends StatelessWidget {
-  final String icon;
+  final IconData icon;
   final String label;
-  const _SidebarNavItem({required this.icon, required this.label});
+  final VoidCallback onTap;
+
+  const _SidebarNavItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: ListTile(
-        leading: Text(icon, style: const TextStyle(fontSize: 22)),
-        title: Text(label, style: const TextStyle(fontSize: 16)),
-        onTap: () {}, // No navigation logic for UI only
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        tileColor: Colors.transparent,
-        hoverColor: Colors.blue[50],
-      ),
+    return ListTile(
+      leading: Icon(icon, color: Colors.blue),
+      title: Text(label),
+      onTap: onTap,
     );
   }
 }

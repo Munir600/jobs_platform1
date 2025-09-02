@@ -16,4 +16,15 @@ class StorageService {
   static Future<void> clearAll() async {
     await _storage.deleteAll();
   }
+  
+  // اريد حفظ نوع المستخدم (باحث عن عمل، صاحب عمل، )
+  static const String userTypeKey = 'user_type';
+
+  static Future<void> saveUserType(String userType) async {
+    await _storage.write(key: userTypeKey, value: userType);
+  }
+  static Future<String?> getUserType() async {
+    return await _storage.read(key: userTypeKey);
+  }
+
 }
