@@ -5,7 +5,7 @@ import 'screens/job_seeker_screen.dart';
 import 'screens/saved_jobs.dart';
 import 'screens/cv_bulider.dart';
 import 'screens/dashboard.dart';
-import 'screens/profile.dart';
+import 'screens/edit_profile.dart';
 import 'screens/setting.dart';
 
 class JobSeekerRoutes {

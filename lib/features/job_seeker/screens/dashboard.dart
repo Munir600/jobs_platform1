@@ -16,7 +16,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: AppColors.backgroundColor,
 
       body: const Center(
-        child: Text('نتظرة عامة على الوظائف',
+        child: Text('نظرة عامة على الوظائف',
           style: TextStyle(fontSize: 24),
         ),
       ),

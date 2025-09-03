@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
     HomeScreen(),
     JobsScreen(),
     AlertJobsScreen(),
-    CompaniesScreen(),
+    JobSeekerScreen(),
   ];
 
   void _onItemTapped(int index) {
