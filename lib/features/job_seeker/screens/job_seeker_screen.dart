@@ -23,7 +23,7 @@ class _JobSeekerScreenState extends State<JobSeekerScreen> {
     DashboardScreen(),
     ApplicationsScreen(),
     SavedJobsScreen(),
-    ProfileScreen(),
+    ProfileEditPage(),
     CvBuilderScreen(),
     AlertJobsScreen(),
     SettingScreen(),

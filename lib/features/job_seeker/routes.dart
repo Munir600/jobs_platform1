@@ -26,7 +26,7 @@ class JobSeekerRoutes {
     savedjobs: (_) => const SavedJobsScreen(),
     cvbuilder: (_) => const CvBuilderScreen(),
     dashboard: (_) => const DashboardScreen(),
-    profile: (_) => const ProfileScreen(),
+    profile: (_) => const ProfileEditPage(),
     setting: (_) => const SettingScreen(),
   };
 }
