@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobs_platform1/config/app_colors.dart';
 
 // ---------------------------
 // نموذج بيانات الوظيفة
@@ -141,8 +142,14 @@ class _JobsScreenState extends State<JobsScreen> {
     final filteredJobs = getFilteredJobs();
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: const Text("الوظائف المتاحة"),
+        backgroundColor: AppColors.backgroundColor,
+        title: Center(child: const Text("الوظائف المتاحة"
+        ,style: TextStyle(
+            fontSize: 24,
+          ),
+        )),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_alt),
@@ -152,6 +159,7 @@ class _JobsScreenState extends State<JobsScreen> {
           ),
         ],
       ),
+      // لا يعمل حاليا
       endDrawer: Drawer(
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -266,15 +274,30 @@ class _JobsScreenState extends State<JobsScreen> {
       body: Column(
         children: [
           // مربع البحث
-          Padding(
-            padding: const EdgeInsets.all(12),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
             child: TextField(
               decoration: InputDecoration(
                 hintText: "ابحث عن وظيفة...",
-                prefixIcon: const Icon(Icons.search),
-                border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                prefixIcon: const Icon(Icons.search, color: Colors.blue),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
               ),
+              style: TextStyle(color: AppColors.textColor),
               onChanged: (value) {
                 setState(() {
                   searchQuery = value;
@@ -282,6 +305,7 @@ class _JobsScreenState extends State<JobsScreen> {
               },
             ),
           ),
+
           // عرض الوظائف
           Expanded(
             child: filteredJobs.isEmpty
@@ -334,6 +358,7 @@ class JobCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.backgroundColor,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
@@ -373,7 +398,7 @@ class JobCard extends StatelessWidget {
                 children: job.tags
                     .map((tag) => Chip(
                   label: Text(tag),
-                  backgroundColor: Colors.blue.shade50,
+                  backgroundColor:AppColors.accentColor ,
                 ))
                     .toList(),
               ),
@@ -382,7 +407,9 @@ class JobCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
-                      onPressed: () {}, child: const Text("تقديم الآن")),
+                      onPressed: () {}, child: const Text("تقديم الآن"),
+
+                  ),
                   OutlinedButton(onPressed: () {}, child: const Text("حفظ")),
                   IconButton(
                       onPressed: () {}, icon: const Icon(Icons.share_outlined)),

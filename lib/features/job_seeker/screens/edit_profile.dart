@@ -431,8 +431,19 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           ),
           const SizedBox(height: 24),
           Row(
-    mainAxisAlignment: MainAxisAlignment.end,
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+        ),
+        onPressed: _submit,
+        child: const Text('حفظ التغييرات'),
+      ),
+      const SizedBox(width: 12),
       TextButton(
         onPressed: () {
           showDialog(
@@ -445,7 +456,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 TextButton(
                     onPressed: () =>
                         Navigator.of(ctx).pop(),
-                    child: const Text('إلغاء')),
+                    child: const Text('إلغاء')
+                ),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
@@ -456,24 +468,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     onPressed: () =>
                         Navigator.of(context).maybePop(),
-                    child: const Text('نعم')),
+                    child: const Text('نعم')
+                ),
               ],
             ),
           );
         },
         child: const Text('إلغاء'),
       ),
-      const SizedBox(width: 12),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-        ),
-        onPressed: _submit,
-        child: const Text('حفظ التغييرات'),
-      )
+
+
     ],
           ),
         ],

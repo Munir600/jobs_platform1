@@ -70,7 +70,7 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
               ..._buildExperienceFields(),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent),
+                    backgroundColor: AppColors.primaryColor),
                 onPressed: () {
                   setState(() {
                     experiences.add(Experience());
@@ -85,7 +85,7 @@ class _CvBuilderScreenState extends State<CvBuilderScreen> {
               ..._buildEducationFields(),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent),
+                    backgroundColor: AppColors.primaryColor),
                 onPressed: () {
                   setState(() {
                     educations.add(Education());
