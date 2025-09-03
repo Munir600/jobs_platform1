@@ -42,7 +42,7 @@ class _JobSeekerScreenState extends State<JobSeekerScreen> {
   void _openNavigationSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
