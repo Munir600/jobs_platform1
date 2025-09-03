@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../data/models/user_model.dart';
-import '../features/companies/screen/EmployerScreen.dart';
+import '../features/companies/screen/CompaniesScreen.dart';
 import '../features/job_seeker/screens/job_seeker_screen.dart';
 import '../features/auth/controllers/auth_controller.dart';
 
@@ -26,7 +26,7 @@ class ProfileRouter extends StatelessWidget {
         if (user.userType == 'job_seeker') {
           return const JobSeekerScreen();
         } else if (user.userType == 'employer') {
-          return const EmployerScreen();
+          return  CompaniesScreen();
         } else {
           return Center(child: Text('نوع المستخدم غير معروف'));
         }

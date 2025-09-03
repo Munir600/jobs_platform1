@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/services/storage_service.dart';
 import '../../../routes/app_routes.dart';
+import '../../companies/screen/CompaniesScreen.dart';
 import '../../job_seeker/screens/cv_bulider.dart';
 import '../../job_seeker/screens/job_seeker_screen.dart';
 import '../controllers/auth_controller.dart';
 import 'home_screen.dart';
-import '../../jobs/screens/search_job.dart';
+import '../../jobs/screens/jobs_screen.dart';
 import '../../job_seeker/screens/alert_jobs.dart';
 
 
@@ -30,11 +31,11 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  final List<Widget> _screens = const [
+  final List<Widget> _screens =  [
     HomeScreen(),
-    SearchJob(),
+    JobsScreen(),
     AlertJobsScreen(),
-    CvBuilderScreen(),
+    CompaniesScreen(),
   ];
 
   void _onItemTapped(int index) {

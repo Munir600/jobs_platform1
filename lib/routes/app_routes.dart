@@ -5,7 +5,7 @@ import '../features/auth/screens/Register_Screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/home_screen.dart';
 import '../features/auth/screens/main_screen.dart';
-import '../features/jobs/screens/search_job.dart';
+import '../features/jobs/screens/jobs_screen.dart';
 
 class AppRoutes {
   static const String signup = '/signup';
@@ -21,6 +21,6 @@ class AppRoutes {
     home: (_) => const HomeScreen(),
     splash: (_) => const SplashScreen(),
      mainScreen: (_) => const MainScreen(),
-    searchJob: (_) => const SearchJob(),
+    searchJob: (_) =>  JobsScreen(),
   };
 }
