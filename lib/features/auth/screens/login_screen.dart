@@ -197,6 +197,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (value.length < 3) return null;
                                 return 'رقم الهاتف يجب أن يبدأ بـ 77 أو 78 أو 73 أو 71 أو 70';
                               }
+                              final numericRegExp = RegExp(r'^[0-9]+$');
+                              if (!numericRegExp.hasMatch(value)) {
+                                return 'يسمح فقط بإدخال الأرقام';
+                              }
                               if (value.length > 9 || value.length < 9) {
                                 return 'رقم الهاتف يجب ان يكون 9 أرقام';
                               }

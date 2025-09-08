@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:jobs_platform1/config/app_colors.dart';
-import 'cv_bulider.dart';
-import 'alert_jobs.dart';
-import 'edit_profile.dart';
-import 'saved_jobs.dart';
-import 'applications.dart';
-import 'dashboard.dart';
-import 'setting.dart';
+import '../../job_seeker/screens/cv_bulider.dart';
+import '../../job_seeker/screens/alert_jobs.dart';
+import '../../job_seeker/screens/edit_profile.dart';
+import '../../job_seeker/screens/saved_jobs.dart';
+import '../../job_seeker/screens/applications.dart';
+import '../../job_seeker/screens/dashboard.dart';
+import '../../job_seeker/screens/setting.dart';
 
-class JobSeekerScreen extends StatefulWidget {
-  const JobSeekerScreen({super.key});
+class CompanyProfile extends StatefulWidget {
+  const CompanyProfile({super.key});
 
   @override
-  State<JobSeekerScreen> createState() => _JobSeekerScreenState();
+  State<CompanyProfile> createState() => _CompanyProfileState();
 }
 
-class _JobSeekerScreenState extends State<JobSeekerScreen> {
+class _CompanyProfileState extends State<CompanyProfile> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [

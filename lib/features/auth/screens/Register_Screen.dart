@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/services/storage_service.dart';
 import '../controllers/auth_controller.dart';
-import 'home_screen.dart';
 import 'login_screen.dart';
 import '../../../core/utils/network_utils.dart';
 import 'main_screen.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
   @override
@@ -547,6 +546,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (!prefixRegExp.hasMatch(value)) {
                                 if (value.length < 3) return null;
                                 return 'رقم الهاتف يجب أن يبدأ بـ 77 أو 78 أو 73 أو 71 أو 70';
+                              }
+                              final numericRegExp = RegExp(r'^[0-9]+$');
+                              if (!numericRegExp.hasMatch(value)) {
+                                return 'يسمح فقط بإدخال الأرقام';
                               }
                               if (value.length > 9 || value.length < 9) {
                                 return 'رقم الهاتف يجب ان يكون 9 أرقام';

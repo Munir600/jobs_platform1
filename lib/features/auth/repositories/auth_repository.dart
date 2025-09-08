@@ -27,6 +27,7 @@ class AuthRepository {
         result['body'] = body;
         if (body is Map && body.containsKey('token')) {
           await StorageService.saveToken(body['token'].toString());
+          await StorageService.saveUserType(body['user_type'].toString());
           result['ok'] = true;
           result['message'] = 'token_saved';
           return result;
@@ -75,7 +76,7 @@ class AuthRepository {
   }
 
 
-  // تسجيل الخروج
+
   Future<void> logout() async {
     final token = await StorageService.getToken();
     final headers = <String, String>{};

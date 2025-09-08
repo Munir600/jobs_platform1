@@ -379,6 +379,15 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
             ]),
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppColors.primaryColor,
+          onPressed: () {
+          },
+          tooltip: 'Increment',
+          child: const Icon(
+            Icons.add,
+          ),
+        ),
       ),
     );
   }

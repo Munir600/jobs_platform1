@@ -15,13 +15,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   // Controllers
   final TextEditingController _firstNameCtrl =
-  TextEditingController(text: 'أحمد');
+  TextEditingController(text: 'منير');
   final TextEditingController _lastNameCtrl =
-  TextEditingController(text: 'محمد');
+  TextEditingController(text: 'علي');
   final TextEditingController _emailCtrl =
-  TextEditingController(text: 'ahmed@example.com');
+  TextEditingController(text: 'ahmed@gmail.com');
   final TextEditingController _phoneCtrl =
-  TextEditingController(text: '+967 123 456 789');
+  TextEditingController(text: '771974387');
   final TextEditingController _dobCtrl =
   TextEditingController(text: '1995-05-15');
   final TextEditingController _addressCtrl =
@@ -136,7 +136,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
         const SizedBox(height: 12),
         Text(
-          'أحمد محمد',
+          'منير علي ',
           style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 22,
@@ -234,7 +234,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     return Scaffold(
     backgroundColor: AppColors.backgroundColor,
     appBar: AppBar(
-    title: const Text('تعديل الملف الشخصي'),
+    title: const Text(' الملف الشخصي'),
         centerTitle: true,
         backgroundColor: AppColors.backgroundColor,
         foregroundColor: AppColors.textColor,

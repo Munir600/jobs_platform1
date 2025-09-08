@@ -37,9 +37,8 @@ class JobsScreen extends StatefulWidget {
   @override
   State<JobsScreen> createState() => _JobsScreenState();
 }
-
 class _JobsScreenState extends State<JobsScreen> {
-  // بيانات الوظائف (Mock Data)
+
   final List<Job> jobs = [
     Job(
       id: "101",
@@ -127,7 +126,6 @@ class _JobsScreenState extends State<JobsScreen> {
     }).toList();
   }
 
-  // استخراج الراتب كقيمة رقمية (أخذ أول رقم فقط)
   int _extractSalary(String salary) {
     final regex = RegExp(r'(\d+)');
     final match = regex.firstMatch(salary);

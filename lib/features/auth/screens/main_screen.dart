@@ -5,6 +5,7 @@ import '../../../data/services/storage_service.dart';
 import '../../../routes/app_routes.dart';
 import '../../companies/screen/CompaniesScreen.dart';
 import '../../job_seeker/screens/cv_bulider.dart';
+import '../../job_seeker/screens/edit_profile.dart';
 import '../../job_seeker/screens/job_seeker_screen.dart';
 import '../controllers/auth_controller.dart';
 import 'home_screen.dart';
@@ -25,15 +26,16 @@ class _MainScreenState extends State<MainScreen> {
     String? userType = await StorageService.getUserType();
     if (userType == null) {
       userType = 'Unknown';
-    }
+    }else
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('User type: $userType')),
     );
   }
 
   final List<Widget> _screens =  [
-    HomeScreen(),
     JobsScreen(),
+    CompaniesScreen(),
     AlertJobsScreen(),
     JobSeekerScreen(),
   ];
@@ -109,7 +111,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Center(
           child: Text(
-            'اهـلا بـك في منـصـة التوظـيـف',
+            'منـصـة التوظـيـف',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -124,8 +126,8 @@ class _MainScreenState extends State<MainScreen> {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'تسجيل الخروج',
-          //  onPressed: getUserType,
-           onPressed: _confirmLogout,
+           //onPressed: getUserType,
+          onPressed: _confirmLogout,
           ),
         ],
       ),
@@ -137,6 +139,7 @@ class _MainScreenState extends State<MainScreen> {
             children: _screens,
           ),
           const PatternBackground(),
+          //print usertype in sna
         ],
       ),
       bottomNavigationBar: Container(

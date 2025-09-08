@@ -51,4 +51,12 @@ class AuthController with ChangeNotifier {
     }
     return null;
   }
+
+  Future<UserModel?> getuserType() async {
+    final data = await _repo.getProfile();
+    if (data != null ) {
+      return UserModel.fromJson(data['data']['user']['user_type']);
+    }
+    return null;
+  }
 }
