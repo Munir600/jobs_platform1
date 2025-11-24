@@ -1,0 +1,45 @@
+اكمل باقي كل الملفات حسب الهيكل الكامل للمشروع
+tawzif_platform/
+├── lib/
+│   ├── core/
+│   │   ├── app.dart
+│   │   ├── constants.dart
+│   │   ├── api_service.dart
+│   │   └── routes.dart
+│   ├── models/
+│   │   ├── user_models.dart
+│   │   ├── job_models.dart
+│   │   ├── company_models.dart
+│   │   ├── application_models.dart
+│   │   └── interview_models.dart
+│   ├── controllers/
+│   │   ├── auth_controller.dart
+│   │   ├── job_controller.dart
+│   │   ├── company_controller.dart
+│   │   ├── application_controller.dart
+│   │   └── profile_controller.dart
+│   ├── ui/
+│   │   ├── pages/
+│   │   │   ├── auth/
+│   │   │   │   ├── login_screen.dart
+│   │   │   │   └── register_screen.dart
+│   │   │   ├── jobs/
+│   │   │   │   ├── jobs_screen.dart
+│   │   │   │   ├── job_details_screen.dart
+│   │   │   │   └── create_job_screen.dart
+│   │   │   ├── companies/
+│   │   │   │   ├── companies_screen.dart
+│   │   │   │   └── company_details_screen.dart
+│   │   │   ├── applications/
+│   │   │   │   ├── my_applications_screen.dart
+│   │   │   │   └── application_details_screen.dart
+│   │   │   └── profile/
+│   │   │       ├── profile_screen.dart
+│   │   │       └── edit_profile_screen.dart
+│   │   └── widgets/
+│   │       ├── common/
+│   │       ├── jobs/
+│   │       └── companies/
+│   └── main.dart
+├── pubspec.yaml
+└── Tawzif_API.yaml
