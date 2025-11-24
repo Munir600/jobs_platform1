@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobs_platform1/config/app_colors.dart';
 
+import '../../companies/MyCompaniesScreen.dart';
 import '../../jobs/saved_jobs.dart';
 import '../jobseeker_profile/applications.dart';
 import '../jobseeker_profile/dashboard.dart';
@@ -21,7 +22,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
   final List<Widget> _screens = [
     UserProfileScreen(),
     DashboardScreen(),
-    ApplicationsScreen(),
+    MyCompaniesScreen(),
     SavedJobsScreen(),
     SettingScreen(),
   ];
@@ -29,7 +30,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
   final List<String> _titles = [
     "👤 تعديـل الملف الشخصي",
     "📊 نظرة عامة",
-    "📑 طلباتي",
+    "📑 شركاتي",
     "🔖 الوظائف المحفوظة",
     "⚙️ الإعدادات",
   ];
