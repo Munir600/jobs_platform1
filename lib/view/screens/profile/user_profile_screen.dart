@@ -8,6 +8,7 @@ import 'package:jobs_platform1/core/constants.dart';
 import '../../../config/app_colors.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../data/models/user_models.dart';
+import '../companies/MyCompaniesScreen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -288,14 +289,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>{
         title: Center(child: Text('انشاء شركة')),
         elevation: 1,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add_business),
-            tooltip: 'انشاء شركة',
-            //onPressed: getUserType,
-            onPressed: (){
-
-            },
-          ),
+          if (_userType.text == 'employer')
+            IconButton(
+              icon: const Icon(Icons.business_center),
+              tooltip: 'إدارة شركاتي',
+              onPressed: () {
+                Get.to(() => const MyCompaniesScreen());
+              },
+            ),
         ],
       ),
       body: SingleChildScrollView(

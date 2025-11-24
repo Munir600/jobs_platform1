@@ -131,4 +131,14 @@ class AppEnums {
     'telecommunications': 'الاتصالات',
     'other': 'أخرى',
   };
+
+  // المستويات التعليمية
+  static const Map<String, String> educationLevels = {
+    'high_school': 'ثانوية عامة',
+    'diploma': 'دبلوم',
+    'bachelor': 'بكالوريوس',
+    'master': 'ماجستير',
+    'phd': 'دكتوراه',
+    'any': 'غير محدد',
+  };
 }

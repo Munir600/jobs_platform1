@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_storage/get_storage.dart';
 import 'controllers/auth_controller.dart';
+import 'controllers/company/CompanyController.dart';
+import 'controllers/job/JobController.dart';
 import 'core/api_service.dart';
 import 'routes/app_routes.dart';
 import 'core/bindings/initial_binding.dart';
@@ -12,6 +14,7 @@ Future<void> main() async {
   await GetStorage.init();
   Get.put(ApiService());
   Get.put(AuthController());
+
   runApp(const MyApp());
 }
 

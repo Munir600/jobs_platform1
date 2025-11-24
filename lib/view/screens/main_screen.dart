@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import '../../../config/app_colors.dart';
 import '../../controllers/auth_controller.dart';
 import 'companies/CompanyListScreen.dart';
-import 'companies/companies_screen.dart';
+import 'companies/MyCompaniesScreen.dart';
 import 'jobs/CreateJobScreen.dart';
 import 'jobs/JobListScreen.dart';
 import 'jobs/job_alert_screen.dart';
-import 'jobs/jobs_list_screen.dart';
 import 'profile/employer_profile/employer_profile_screen.dart';
 import 'profile/jobseeker_profile/jobseeker_profile_screen.dart';
 import 'package:get/get.dart';
@@ -30,8 +29,8 @@ class _MainScreenState extends State<MainScreen> {
     final auth = Get.find<AuthController>();
 
     return [
+      JobListScreen(),
       CompanyListScreen(),
-      CompaniesScreen(),
       AlertJobsScreen(),
       auth.isJobSeeker
           ? JobseekerProfileScreen()
