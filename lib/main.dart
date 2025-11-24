@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'controllers/auth_controller.dart';
 import 'core/api_service.dart';
 import 'routes/app_routes.dart';
+import 'core/bindings/initial_binding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,12 +32,13 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       locale: const Locale('ar', 'SA'),
-      title: 'Flutter Demo',
+      title: 'Tawzif Platform',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      routes: AppRoutes.routes,
+      initialBinding: InitialBinding(),
+      getPages: AppRoutes.pages,
       initialRoute: AppRoutes.splash,
     );
   }
