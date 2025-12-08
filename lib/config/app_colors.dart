@@ -5,7 +5,7 @@ class AppColors {
   static const backgroundColor = Color(0xFFE4EAFA);
   static const primaryColor = Color(0xFF03A8F2);
   static const secondaryColor = Color(0xFF2195F1);
-  static const accentColor = Color(0xDF7AC6F6);
+  static const accentColor = Color(0xEFDDE6F8);
 }
 class PatternBackground extends StatelessWidget {
   const PatternBackground({super.key});

@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import '../../../../core/constants.dart';
 import '../../../models/accounts/profile/employer/employer_profile_model.dart';
 
 class ProfileService {
@@ -11,10 +12,9 @@ class ProfileService {
   final GetStorage _storage = GetStorage();
 
   Future<EmployerProfileModel> getProfile() async {
-   // var token1 ='7829c1a0d2e63f0bc8e8e40fae26b8b37a252656';
-    _storage.write('token', 'ac1bd217934b6350e0d6169df83536b54020334c');
-    final token = _storage.read('token') ?? '';
-   // final token = '7829c1a0d2e63f0bc8e8e40fae26b8b37a252656';
+    final token = _storage.read(AppConstants.authTokenKey);
+    print('Token from ProfileService  is : $token');
+
     print("===== DEBUG PROFILE REQUEST =====");
     print("TOKEN SENT: $token");
     print("URL: $baseUrl$profileEndpoint");

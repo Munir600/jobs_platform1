@@ -47,15 +47,15 @@ class Data {
 class Profile {
   final int? id;
   final User? user;
-  final dynamic resume;
-  final dynamic experienceLevel;
-  final dynamic educationLevel;
-  final dynamic skills;
-  final dynamic expectedSalaryMin;
-  final dynamic expectedSalaryMax;
+  final String? resume;
+  final String? experienceLevel;
+  final String? educationLevel;
+  final String? skills;
+  final String? expectedSalaryMin;
+  final String? expectedSalaryMax;
   final bool? availability;
-  final dynamic preferredJobType;
-  final dynamic languages;
+  final String? preferredJobType;
+  final String? languages;
 
   Profile({
    required this.id,

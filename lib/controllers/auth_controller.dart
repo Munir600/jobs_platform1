@@ -1,7 +1,7 @@
 // lib/controllers/auth_controller.dart
-import 'dart:io';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:jobs_platform1/core/utils/error_handler.dart';
 import '../core/api_service.dart';
 import '../core/constants.dart';
 import '../data/models/user_models.dart';
@@ -13,7 +13,6 @@ class AuthController extends GetxController {
   final RxBool isLoggedIn = false.obs;
   final Rx<User?> _currentUser = Rx<User?>(null);
 
-  // Reactive user fields
   final firstName = ''.obs;
   final lastName = ''.obs;
   final email = ''.obs;
@@ -31,18 +30,21 @@ class AuthController extends GetxController {
 
   @override
   void onInit() {
-    _checkAuthStatus();
-    _loadUserFromStorage();
     super.onInit();
+    _loadUserFromStorage();
   }
 
-  void _checkAuthStatus() {
-    final userData = _storage.read('user_data');
-    if (userData != null) {
-      _currentUser.value = User.fromJson(userData);
-      isLoggedIn.value = true;
-    }
+  @override
+  void onReady() {
+    super.onReady();
   }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
+
 
   Future<bool> login(String phone, String password) async {
     try {
@@ -57,19 +59,20 @@ class AuthController extends GetxController {
       print("The USERTYPE  FROM API: ${response["data"]["user"]["user_type"]}");
       _currentUser.value = User.fromJson(response["data"]["user"]
       );
-      _storage.write('user_data', response["data"]["user"]);
-      _storage.write('token', response["data"]["token"]);
+     // _storage.write('user_data', response["data"]["user"]);
       final token = response["data"]["token"];
+      final ms=response["data"]["message"];
+      print('MESSAGES login  FROM API is : $ms');
       _apiService.setAuthToken(token);
       print('TOKEN SET IN API SERVICE: $token');
       isLoggedIn.value = true;
 
       isLoading.value = false;
-      Get.snackbar('نجاح', 'تم تسجيل الدخول بنجاح');
+      AppErrorHandler.showSuccessSnack('$ms');
       return true;
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar('خطأ', e.toString());
+      AppErrorHandler.showErrorSnack('$e');
       return false;
     }
   }
@@ -77,7 +80,7 @@ class AuthController extends GetxController {
   Future<bool> register(UserRegistration registration) async {
     try {
       isLoading.value = true;
-      print('DATA SENT TO API: ${registration.toJson()}');
+   //   print('DATA SENT TO API: ${registration.toJson()}');
       final response = await _apiService.post(
         ApiEndpoints.register,
         registration.toJson(),
@@ -86,14 +89,17 @@ class AuthController extends GetxController {
       _currentUser.value = User.fromJson(response['data']['user']
       );
       _storage.write('user_data', response['data']['user']);
+      final token = response['data']['token'];
+      final ms=response["data"]["message"];
+      _apiService.setAuthToken(token);
       isLoggedIn.value = true;
 
       isLoading.value = false;
-      Get.snackbar('نجاح', 'تم إنشاء الحساب بنجاح');
+      AppErrorHandler.showSuccessSnack('$ms');
       return true;
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar('خطأ', e.toString());
+      AppErrorHandler.showErrorSnack('$e');
       return false;
     }
   }
@@ -101,25 +107,29 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       await _apiService.post(ApiEndpoints.logout, {});
-
+        AppErrorHandler.showSuccessSnack('تم تسجيل الخروج بنجاح');
     } catch (e) {
-      // تجاهل الأخطاء أثناء تسجيل الخروج
+      AppErrorHandler.showErrorSnack('$e');
     } finally {
       _currentUser.value = null;
       isLoggedIn.value = false;
       _storage.remove('user_data');
       _apiService.removeAuthToken();
-      _storage.remove(AppConstants.authTokenKey);
+      //_storage.remove(AppConstants.authTokenKey);
       Get.offAllNamed('/login');
     }
   }
   void _loadUserFromStorage() {
     final stored = _storage.read('user_data');
-    if (stored != null) {
+    final token = _storage.read(AppConstants.authTokenKey);
+
+    if (stored != null && token != null) {
+      isLoggedIn.value = true;
+      _apiService.setAuthToken(token);
+      
       final user = User.fromJson(stored);
       _currentUser.value = user;
 
-      // Fill reactive fields
       firstName.value = user.firstName;
       lastName.value = user.lastName;
       email.value = user.email;
@@ -145,8 +155,6 @@ class AuthController extends GetxController {
       _currentUser.value = updatedUser;
 
       _storage.write('user_data', response['data']['user']);
-
-      // Update reactive fields immediately
       firstName.value = updatedUser.firstName;
       lastName.value = updatedUser.lastName;
       email.value = updatedUser.email;
@@ -160,11 +168,14 @@ class AuthController extends GetxController {
       createdAt.value = updatedUser.createdAt.toIso8601String();
 
       isLoading.value = false;
+      AppErrorHandler.showSuccessSnack('تم تحديث الملف الشخصي بنجاح');
       return true;
 
     } catch (e) {
       isLoading.value = false;
       print("ERROR updateProfile: $e");
+      AppErrorHandler.showErrorSnack('$e');
+
       return false;
     }
   }
@@ -179,11 +190,11 @@ class AuthController extends GetxController {
       );
 
       isLoading.value = false;
-      Get.snackbar('نجاح', 'تم تغيير كلمة المرور بنجاح');
+      AppErrorHandler.showSuccessSnack('تم تغيير كلمة المرور بنجاح');
       return true;
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar('خطأ', e.toString());
+      AppErrorHandler.showErrorSnack(e);
       return false;
     }
   }

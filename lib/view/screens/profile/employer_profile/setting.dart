@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
-
 import '../../../../config/app_colors.dart';
 
-
-class ApplicationsScreen extends StatefulWidget {
-  const ApplicationsScreen({super.key});
+class SettingScreen extends StatefulWidget {
+  const SettingScreen({super.key});
 
   @override
-  State<ApplicationsScreen> createState() => _ApplicationsScreenState();
+  State<SettingScreen> createState() => _SettingScreenState();
 }
 
-class _ApplicationsScreenState extends State<ApplicationsScreen> {
+class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
 
       body: const Center(
-        child: Text(' صفحة الطلبات',
+        child: Text('  for employer الاعدادات ',
           style: TextStyle(fontSize: 24),
         ),
       ),

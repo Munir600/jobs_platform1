@@ -9,12 +9,13 @@ import '../view/screens/companies/CompanyListScreen.dart';
 import '../view/screens/companies/CompanyDetailScreen.dart';
 import '../view/screens/applications/MyApplicationsScreen.dart';
 import '../view/screens/applications/JobApplicationsScreen.dart';
-import '../view/screens/applications/ApplicationDetailScreen.dart';
 import '../view/screens/applications/ApplyJobScreen.dart';
 import '../view/screens/interview/InterviewListScreen.dart';
 import '../view/screens/interview/InterviewDetailScreen.dart';
 import '../view/screens/main_screen.dart';
 import '../view/screens/splash_screen.dart';
+import '../core/middleware/auth_middleware.dart';
+import '../view/screens/profile/jobseeker_profile/JobSeekerProfileBinding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -47,7 +48,12 @@ class AppRoutes {
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: signup, page: () => const RegisterScreen()),
     GetPage(name: home, page: () => const HomeScreen()),
-    GetPage(name: mainScreen, page: () =>  MainScreen()),
+    GetPage(
+      name: mainScreen, 
+      page: () =>  MainScreen(), 
+      middlewares: [AuthMiddleware()],
+      binding: JobSeekerProfileBinding(),
+    ),
     
     // Jobs
     GetPage(name: jobs, page: () => const JobListScreen()),
@@ -55,7 +61,7 @@ class AppRoutes {
       final slug = Get.arguments as String;
       return JobDetailScreen(jobSlug: slug);
     }),
-    GetPage(name: createJob, page: () => const CreateJobScreen()),
+    GetPage(name: createJob, page: () => const CreateJobScreen(), middlewares: [AuthMiddleware()]),
     
     // Companies
     GetPage(name: companies, page: () => const CompanyListScreen()),
@@ -65,28 +71,22 @@ class AppRoutes {
     }),
     
     // Applications
-    GetPage(name: myApplications, page: () => const MyApplicationsScreen()),
-    GetPage(name: jobApplications, page: () => const JobApplicationsScreen()),
-    GetPage(name: applicationDetails, page: () {
-      final args = Get.arguments as Map<String, dynamic>;
-      return ApplicationDetailScreen(
-        application: args['application'],
-        isEmployer: args['isEmployer'] ?? false,
-      );
-    }),
+    GetPage(name: myApplications, page: () => const MyApplicationsScreen(), middlewares: [AuthMiddleware()]),
+    GetPage(name: jobApplications, page: () => const JobApplicationsScreen(), middlewares: [AuthMiddleware()]),
+
     GetPage(name: applyJob, page: () {
       final args = Get.arguments as Map<String, dynamic>;
       return ApplyJobScreen(
         jobId: args['jobId'],
         jobTitle: args['jobTitle'],
       );
-    }),
+    }, middlewares: [AuthMiddleware()]),
     
     // Interviews
-    GetPage(name: interviews, page: () => const InterviewListScreen()),
+    GetPage(name: interviews, page: () => const InterviewListScreen(), middlewares: [AuthMiddleware()]),
     GetPage(name: interviewDetails, page: () {
       final interview = Get.arguments;
       return InterviewDetailScreen(interview: interview);
-    }),
+    }, middlewares: [AuthMiddleware()]),
   ];
 }

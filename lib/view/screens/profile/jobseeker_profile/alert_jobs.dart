@@ -17,7 +17,7 @@ class _AlertJobsScreenState extends State<AlertJobsScreen> {
       backgroundColor: AppColors.backgroundColor,
 
       body: const Center(
-        child: Text(' صفحة تنبيهات الوظائف',
+        child: Text(' for jobseeker صفحة تنبيهات الوظائف',
         style: TextStyle(fontSize: 24),
         ),
       ),

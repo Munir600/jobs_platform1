@@ -1,45 +1,39 @@
 import 'package:flutter/material.dart';
-import '../../../config/app_colors.dart';
+import 'package:get/get.dart';
+import '../../controllers/job/JobController.dart';
+import '../../config/app_colors.dart';
+import 'jobs/JobDetailScreen.dart';
 
-
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends GetView<JobController> {
   const HomeScreen({super.key});
-  @override
-  State<HomeScreen> createState() => _MyHomePageState();
-}
-class _MyHomePageState extends State<HomeScreen> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('لا يوجد وظائف في الوقت الحالي :'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
+      appBar: AppBar(
+        title: const Text('الرئيسية'),
         backgroundColor: AppColors.primaryColor,
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(
-            Icons.add,
-        ),
       ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return ListView.builder(
+           padding: const EdgeInsets.all(16),
+           itemCount: controller.jobs.length,
+           itemBuilder: (context, index) {
+             final job = controller.jobs[index];
+             return Card(
+               child: ListTile(
+                 title: Text(job.title),
+                 subtitle: Text(job.company?.name ?? ''),
+                 onTap: () => Get.to(() => JobDetailScreen(jobSlug: job.slug)),
+               ),
+             );
+           },
+        );
+      }),
     );
   }
 }

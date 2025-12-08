@@ -1,30 +1,29 @@
-
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
+import '../../core/constants.dart';
 
 class StorageService {
-  static const FlutterSecureStorage _storage =  FlutterSecureStorage();
-  static const String tokenKey = 'auth_token';
+  static final GetStorage _storage = GetStorage();
 
   static Future<void> saveToken(String token) async {
-    await _storage.write(key: tokenKey, value: token);
+    await _storage.write(AppConstants.authTokenKey, token);
   }
 
   static Future<String?> getToken() async {
-    return await _storage.read(key: tokenKey);
+    return _storage.read(AppConstants.authTokenKey);
   }
 
   static Future<void> clearAll() async {
-    await _storage.deleteAll();
+    await _storage.erase();
   }
-  
+
   // اريد حفظ نوع المستخدم (باحث عن عمل، صاحب عمل، )
   static const String userTypeKey = 'user_type';
 
   static Future<void> saveUserType(String userType) async {
-    await _storage.write(key: userTypeKey, value: userType);
+    await _storage.write(userTypeKey, userType);
   }
   static Future<String?> getUserType() async {
-    return await _storage.read(key: userTypeKey);
+    return _storage.read(userTypeKey);
   }
 
 }

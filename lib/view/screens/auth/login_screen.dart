@@ -4,6 +4,7 @@ import '../../../config/app_colors.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
 import '../../../core/utils/network_utils.dart';
+import '../../widgets/custom_text_field.dart';
 import '../main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,12 +12,13 @@ class LoginScreen extends StatefulWidget {
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
+
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phone = TextEditingController();
   final _password = TextEditingController();
 
-  bool _obscurePassword = true;
+  final RxBool _obscurePassword = true.obs;
 
   @override
   void dispose() {
@@ -29,13 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
     final hasInternet = await NetworkUtils.checkInternet(context);
     if (!hasInternet) return;
     if (!_formKey.currentState!.validate()) return;
+    
     final auth = Get.find<AuthController>();
     final ok = await auth.login(_phone.text.trim(), _password.text);
-    if (!mounted) return;
+    
     if (ok) {
-      Get.offAll(() =>  MainScreen());
+      Get.offAll(() => MainScreen());
     } else {
-      if (!mounted) return;
       Get.defaultDialog(
         title: 'فشل تسجيل الدخول',
         content: Obx(() => Text(auth.isLoading.value ? 'جاري...' : 'اسم المستخدم أو كلمة المرور غير صحيحة')),
@@ -54,9 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppColors.backgroundColor,
       body: Stack(
         children: [
-          // Geometric pattern background
           const PatternBackground(),
-          // Login form
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
@@ -70,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 15),
-                        // Logo or App icon
                         Center(
                           child: Container(
                             width: 120,
@@ -113,176 +112,65 @@ class _LoginScreenState extends State<LoginScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 15),
-                        // Phone Number Field
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                        CustomTextField(
+                          controller: _phone,
+                          textInputAction: TextInputAction.next,
+                          labelText: 'رقم الهاتف',
+                          prefixIcon: Icon(
+                            Icons.phone_android,
+                            color: AppColors.secondaryColor,
                           ),
-                          child: TextFormField(
-                            controller: _phone,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              labelText: 'رقم الهاتف',
-                              labelStyle: TextStyle(
-                                color: AppColors.textColor.withValues(alpha: 0.7),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.phone_android,
-                                color: AppColors.secondaryColor,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: AppColors.secondaryColor.withValues(alpha: 0.3),
-                                  width: 1,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: AppColors.primaryColor,
-                                  width: 2,
-                                ),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Colors.redAccent,
-                                  width: 1,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 16,
-                              ),
-                            ),
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: 16,
-                            ),
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) return 'ادخل رقم الهاتف';
-                              final prefixRegExp = RegExp(r'^(77|78|73|71|70)');
-                              if (!prefixRegExp.hasMatch(value)) {
-                                if (value.length < 3) return null;
-                                return 'رقم الهاتف يجب أن يبدأ بـ 77 أو 78 أو 73 أو 71 أو 70';
-                              }
-                              final numericRegExp = RegExp(r'^[0-9]+$');
-                              if (!numericRegExp.hasMatch(value)) {
-                                return 'يسمح فقط بإدخال الأرقام';
-                              }
-                              if (value.length > 9 || value.length < 9) {
-                                return 'رقم الهاتف يجب ان يكون 9 أرقام';
-                              }
-                              return null;
-                            },
-                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'ادخل رقم الهاتف';
+                            final prefixRegExp = RegExp(r'^(77|78|73|71|70)');
+                            if (!prefixRegExp.hasMatch(value)) {
+                              if (value.length < 3) return null;
+                              return 'رقم الهاتف يجب أن يبدأ بـ 77 أو 78 أو 73 أو 71 أو 70';
+                            }
+                            final numericRegExp = RegExp(r'^[0-9]+$');
+                            if (!numericRegExp.hasMatch(value)) {
+                              return 'يسمح فقط بإدخال الأرقام';
+                            }
+                            if (value.length > 9 || value.length < 9) {
+                              return 'رقم الهاتف يجب ان يكون 9 أرقام';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 20),
-                        // Password Field
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                        Obx(() => CustomTextField(
+                          controller: _password,
+                          labelText: 'كلمة المرور',
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: AppColors.secondaryColor,
                           ),
-                          child: TextFormField(
-                            controller: _password,
-                            decoration: InputDecoration(
-                              labelText: 'كلمة المرور',
-                              labelStyle: TextStyle(
-                                color: AppColors.textColor.withValues(alpha: 0.7),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.lock_outline,
-                                color: AppColors.secondaryColor,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: AppColors.textColor.withValues(alpha: 0.5),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: AppColors.secondaryColor.withValues(alpha: 0.3),
-                                  width: 1,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: AppColors.primaryColor,
-                                  width: 2,
-                                ),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Colors.redAccent,
-                                  width: 1,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 16,
-                              ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword.value
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppColors.textColor.withValues(alpha: 0.5),
                             ),
-                            obscureText: _obscurePassword,
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: 16,
-                            ),
-                            validator: (v) => (v == null || v.trim().isEmpty)
-                                ? 'ادخل كلمة المرور '
-                                : null,
+                            onPressed: () {
+                              _obscurePassword.toggle();
+                            },
                           ),
-                        ),
-                        // Forgot password
+                          obscureText: _obscurePassword.value,
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'ادخل كلمة المرور '
+                              : null,
+                        )),
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              // Add forgot password functionality here
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('الرجاء التواصل مع خدمة العملاء'),
-                                ),
+                              Get.snackbar(
+                                'تنبيه',
+                                'الرجاء التواصل مع خدمة العملاء',
+                                backgroundColor: Colors.white,
+                                colorText: AppColors.textColor,
                               );
                             },
                             style: TextButton.styleFrom(
@@ -291,7 +179,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: const Text('نسيت كلمة المرور'),
                           ),
                         ),
-                        // Login button
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
@@ -307,20 +194,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: auth.isLoading.value ? null : _submit,
                           child: auth.isLoading.value
                               ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : const Text(
-                            "تسجيل الدخول",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
+                                  "تسجيل الدخول",
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
                         ),
                         const SizedBox(height: 20),
-                        // Register link
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                           decoration: BoxDecoration(
@@ -345,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.pushReplacementNamed(context, AppRoutes.signup);
+                                  Get.toNamed(AppRoutes.signup);
                                 },
                                 style: TextButton.styleFrom(
                                   foregroundColor: AppColors.primaryColor,

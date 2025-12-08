@@ -3,6 +3,7 @@ class AppConstants {
   static const String appName = 'tawzif_platform';
   static const String baseUrl = 'https://job-portal-rcxk.onrender.com';
 
+
   // users_type
   static const String userTypeJobSeeker = 'job_seeker';
   static const String userTypeEmployer = 'employer';
@@ -49,15 +50,15 @@ class ApiEndpoints {
   static const String createCompany = '/api/companies/create/';
   static const String followCompany = '/api/companies/{company_id}/follow/';
 
-  static const String companyDetail = '/companies/'; // + {slug}
-  static const String updateCompany = '/companies/{slug}/update/';
-  static const String deleteCompany = '/companies/{slug}/delete/';
-  static const String followedCompanies = '/companies/followed/';
-  static const String companyJobs = '/companies/{company_id}/jobs/';
-  static const String companyReviews = '/companies/{company_id}/reviews/';
-  static const String createCompanyReview = '/companies/{company_id}/reviews/create/';
-  static const String topCompanies = '/companies/top/';
-  static const String companyStatistics = '/companies/statistics/';
+  static const String companyDetail = '/api/companies/'; // + {slug}
+  static const String updateCompany = '/api/companies/{slug}/update/';
+  static const String deleteCompany = '/api/companies/{slug}/delete/';
+  static const String followedCompanies = '/api/companies/followed/';
+  static const String companyJobs = '/api/companies/{company_id}/jobs/';
+  static const String companyReviews = '/api/companies/{company_id}/reviews/';
+  static const String createCompanyReview = '/api/companies/{company_id}/reviews/create/';
+  static const String topCompanies = '/api/companies/top/';
+  static const String companyStatistics = '/api/companies/statistics/';
 
 //  Applications
   static const String applications = '/api/applications/';
