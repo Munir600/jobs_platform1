@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../config/app_colors.dart';
 import '../../../../controllers/job/JobController.dart';
+import '../../../../controllers/company/CompanyController.dart';
+import '../../../../core/constants.dart';
 import '../../jobs/CreateJobScreen.dart';
 import '../../jobs/JobDetailScreen.dart';
 
@@ -13,29 +15,51 @@ class EmployerJobManagementScreen extends GetView<JobController> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          height: 55,
-          child: ElevatedButton.icon(
-            onPressed: () => Get.to(() => const CreateJobScreen()),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text(
-              'نشر وظيفة جديدة',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
+      appBar: AppBar(
+        title: const Text('إدارة الوظائف', style: TextStyle(color: AppColors.textColor)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: AppColors.textColor),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () => _showFilterBottomSheet(context),
           ),
-        ),
+        ],
       ),
-      body: Obx(() {
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () => Get.to(() => const CreateJobScreen()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              ),
+              icon: const Icon(Icons.add, color: Colors.white, size: 24),
+              label: const Text(
+                'نشر وظيفة جديدة',
+                style: TextStyle(color: Colors.white, fontSize: 18,fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      )
+
+      ,
+        body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
         }
 
+        final displayJobs = controller.filteredMyJobs;
+        
         if (controller.myJobs.isEmpty) {
           return Center(
             child: Column(
@@ -54,15 +78,34 @@ class EmployerJobManagementScreen extends GetView<JobController> {
             ),
           );
         }
+        
+        if (displayJobs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.filter_list_off, size: 64, color: Colors.grey),
+                const SizedBox(height: 16),
+                const Text('لا توجد وظائف لهذه الشركة', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                const SizedBox(height: 16),
+                TextButton.icon(
+                  onPressed: () => controller.clearCompanyFilter(),
+                  icon: const Icon(Icons.clear),
+                  label: const Text('مسح الفلتر'),
+                ),
+              ],
+            ),
+          );
+        }
         return RefreshIndicator(
             onRefresh: controller.loadMyJobs,
             color: AppColors.primaryColor,
         child:  ListView.builder(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
-          itemCount: controller.myJobs.length,
+          itemCount: displayJobs.length,
           itemBuilder: (context, index) {
-            final job = controller.myJobs[index];
+            final job = displayJobs[index];
             return Card(
               color: AppColors.accentColor,
               margin: const EdgeInsets.only(bottom: 16),
@@ -104,8 +147,10 @@ class EmployerJobManagementScreen extends GetView<JobController> {
                         ],
                       ),
                       const SizedBox(height: 8),
+                      Text('الشركة : ${job.company?.name ?? 'غير معروفة'}'),
                       Text('تاريخ النشر: ${job.createdAt?.split('T')[0] ?? '-'}'),
                       Text('عدد المتقدمين: ${job.applicationsCount ?? 0}'),
+
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -155,6 +200,85 @@ class EmployerJobManagementScreen extends GetView<JobController> {
         ),
         );
       }),
+    );
+  }
+  void _showFilterBottomSheet(BuildContext context) {
+    final companyController = Get.find<CompanyController>();
+    
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: AppColors.accentColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SingleChildScrollView(
+          child: Obx(() {
+            final companies = companyController.myCompanies;
+            
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'تصفية الوظائف حسب الشركة',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textColor),
+                ),
+                const SizedBox(height: 16),
+                if (companies.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      'لا توجد شركات متاحة',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  )
+                else
+                  DropdownButtonFormField<int>(
+                    value: controller.selectedCompanyId.value,
+                    items: [
+                      const DropdownMenuItem<int>(
+                        value: null,
+                        child: Text('جميع الشركات'),
+                      ),
+                      ...companies.map((company) {
+                        return DropdownMenuItem<int>(
+                          value: company.id,
+                          child: Text(company.name ?? 'شركة غير معروفة'),
+                        );
+                      }).toList(),
+                    ],
+                    onChanged: (val) {
+                      controller.setCompanyFilter(val);
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'اختر الشركة',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.clearCompanyFilter();
+                      Get.back();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[200],
+                      foregroundColor: AppColors.textColor,
+                    ),
+                    child: const Text('مسح التصفيات'),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
+      ),
     );
   }
 }

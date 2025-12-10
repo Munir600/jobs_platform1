@@ -16,7 +16,7 @@ class JobListScreen extends GetView<JobController> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         title: const Text('الوظائف', style: TextStyle(color: AppColors.textColor)),
-        backgroundColor: Colors.transparent,
+        backgroundColor:  AppColors.backgroundColor,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),
@@ -81,18 +81,6 @@ class JobListScreen extends GetView<JobController> {
         ],
       ),
 
-    );
-  }
-
-
-
-  Widget _buildInfoChip(IconData icon, String label) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: Colors.grey),
-        const SizedBox(width: 4),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
     );
   }
 

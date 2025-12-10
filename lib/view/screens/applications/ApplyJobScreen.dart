@@ -29,8 +29,8 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
   @override
   void initState() {
     super.initState();
-    jobId = widget.jobId ?? Get.arguments?['jobId'] ?? 0;
-    jobTitle = widget.jobTitle ?? Get.arguments?['jobTitle'] ?? '';
+    jobId = widget.jobId ?? 0;
+    jobTitle = widget.jobTitle ?? '';
   }
 
   @override

@@ -48,12 +48,7 @@ class AppRoutes {
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: signup, page: () => const RegisterScreen()),
     GetPage(name: home, page: () => const HomeScreen()),
-    GetPage(
-      name: mainScreen, 
-      page: () =>  MainScreen(), 
-      middlewares: [AuthMiddleware()],
-      binding: JobSeekerProfileBinding(),
-    ),
+    GetPage(name: mainScreen,page: () => MainScreen()),
     
     // Jobs
     GetPage(name: jobs, page: () => const JobListScreen()),

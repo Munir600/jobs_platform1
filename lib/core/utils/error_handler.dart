@@ -43,7 +43,7 @@ class AppErrorHandler {
         }
       }
     } catch (_) {
-      // Ignore parsing errors
+      return "حدث خطأ غير متوقع. حاول مرة أخرى.";
     }
 
     return "حدث خطأ غير متوقع. حاول مرة أخرى.";

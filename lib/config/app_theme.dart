@@ -4,7 +4,7 @@ import 'app_colors.dart';
 class AppTheme {
   static final light = ThemeData(
     useMaterial3: true,
-    fontFamily: 'Cairo', // Assuming Cairo or similar font based on locale
+    fontFamily: 'Cairo',
     scaffoldBackgroundColor: AppColors.backgroundColor,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primaryColor,
@@ -63,7 +63,6 @@ class AppTheme {
   );
 
   static final dark = ThemeData.dark().copyWith(
-    // Placeholder for dark theme if needed
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor, brightness: Brightness.dark),
   );
 }

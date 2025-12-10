@@ -62,7 +62,7 @@ class AuthController extends GetxController {
      // _storage.write('user_data', response["data"]["user"]);
       final token = response["data"]["token"];
       final ms=response["data"]["message"];
-      print('MESSAGES login  FROM API is : $ms');
+     // print('MESSAGES login  FROM API is : $ms');
       _apiService.setAuthToken(token);
       print('TOKEN SET IN API SERVICE: $token');
       isLoggedIn.value = true;

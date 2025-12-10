@@ -14,10 +14,8 @@ class InterviewListScreen extends GetView<InterviewController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-
       body: Stack(
         children: [
-
           Obx(() {
             if (controller.isLoading.value) {
               return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
@@ -49,7 +47,6 @@ class InterviewListScreen extends GetView<InterviewController> {
   Widget _buildInterviewCard(Interview interview) {
     final date = DateTime.parse(interview.scheduledDate ?? DateTime.now().toString());
     final formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(date);
-
     return Card(
       color: AppColors.accentColor,
       margin: const EdgeInsets.only(bottom: 16),

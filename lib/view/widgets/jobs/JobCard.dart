@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import '../../../config/app_colors.dart';
 import '../../../core/constants.dart';
 import '../../../data/models/job/JobList.dart';
+import '../../../controllers/account/AccountController.dart';
+import '../../../routes/app_routes.dart';
+import '../../screens/applications/ApplyJobScreen.dart';
 import '../../screens/jobs/JobDetailScreen.dart';
 
 class JobCard extends StatelessWidget {
@@ -33,18 +36,17 @@ class JobCard extends StatelessWidget {
       timeAgo = 'منذ ${difference.inMinutes} ${difference.inMinutes == 1 ? 'دقيقة' : 'دقائق'}';
     }
 
-    // Extract salary info
     String salaryText = '';
     if (job.salaryMin != null || job.salaryMax != null) {
       if (job.salaryMin != null && job.salaryMax != null) {
-        salaryText = '💰 ${job.salaryMin}-${job.salaryMax} ريال/شهر';
+        salaryText = ' ${job.salaryMin}-${job.salaryMax} ريال/شهر';
       } else if (job.salaryMin != null) {
-        salaryText = '💰 من ${job.salaryMin} ريال/شهر';
+        salaryText = ' من ${job.salaryMin} ريال/شهر';
       } else {
-        salaryText = '💰 حتى ${job.salaryMax} ريال/شهر';
+        salaryText = ' حتى ${job.salaryMax} ريال/شهر';
       }
     } else if (job.isSalaryNegotiable == true) {
-      salaryText = '💰 قابل للتفاوض';
+      salaryText = ' قابل للتفاوض';
     }
 
     return Card(
@@ -54,7 +56,7 @@ class JobCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          Get.to(() => JobDetailScreen(jobSlug: job.slug));
+          Get.toNamed(AppRoutes.jobDetails, arguments: job.slug);
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -62,7 +64,6 @@ class JobCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title with urgent badge
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -76,37 +77,34 @@ class JobCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (job.isUrgent == true)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      _buildBadge(
+                        job.isActive == true ? 'نشط' : 'غير نشط',
+                        job.isActive == true ? Colors.green : Colors.red,
                       ),
-                      child: const Text(
-                        'عاجل',
-                        style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                      if (job.isFeatured == true)
+                        _buildBadge('مميز', Colors.orange),
+                      if (job.isUrgent == true)
+                        _buildBadge('عاجل', Colors.redAccent),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 6),
-              
-              // Company name
               Text(
                 job.company?.name ?? 'اسم الشركة',
                 style: const TextStyle(color: Colors.grey, fontSize: 14),
               ),
               const SizedBox(height: 8),
-              
-              // Location, Salary, Type, Date in a wrap
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
                 children: [
+                  Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
                   Text(
-                    '📍 ${job.city != null ? AppEnums.cities[job.city] ?? job.city! : 'غير محدد'}',
+                    ' ${job.city != null ? AppEnums.cities[job.city] ?? job.city! : 'غير محدد'}',
                     style: const TextStyle(fontSize: 13),
                   ),
                   if (salaryText.isNotEmpty)
@@ -129,8 +127,6 @@ class JobCard extends StatelessWidget {
                   style: const TextStyle(color: Colors.black54),
                 ),
               const SizedBox(height: 8),
-              
-              // Skills/Requirements as tags
               if (job.requirements != null && job.requirements!.isNotEmpty)
                 Wrap(
                   spacing: 6,
@@ -139,34 +135,57 @@ class JobCard extends StatelessWidget {
                 ),
               const SizedBox(height: 12),
               
-              // Action buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: onApply ?? () {
-                      Get.to(() => JobDetailScreen(jobSlug: job.slug));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: Colors.white,
+              // Action buttons - only show for job seekers
+              Obx(() {
+                final accountController = Get.find<AccountController>();
+                final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
+                
+                if (isEmployer) {
+                  // For employers, just show share button
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        onPressed: onShare ?? () {
+                          Get.snackbar('مشاركة', 'سيتم إضافة وظيفة المشاركة قريباً');
+                        },
+                        icon: const Icon(Icons.share_outlined),
+                      ),
+                    ],
+                  );
+                }
+                
+                // For job seekers, show all buttons
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: onApply ?? () {
+                        if (job.id != null) {
+                          Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('تقديم الآن'),
                     ),
-                    child: const Text('تقديم الآن'),
-                  ),
-                  OutlinedButton(
-                    onPressed: onBookmark,
-                    child: Text(
-                      job.isBookmarked == true ? 'محفوظة' : 'حفظ',
+                    OutlinedButton(
+                      onPressed: onBookmark,
+                      child: Text(
+                        job.isBookmarked == true ? 'محفوظة' : 'حفظ',
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: onShare ?? () {
-                      Get.snackbar('مشاركة', 'سيتم إضافة وظيفة المشاركة قريباً');
-                    },
-                    icon: const Icon(Icons.share_outlined),
-                  ),
-                ],
-              ),
+                    IconButton(
+                      onPressed: onShare ?? () {
+                        Get.snackbar('مشاركة', 'سيتم إضافة وظيفة المشاركة قريباً');
+                      },
+                      icon: const Icon(Icons.share_outlined),
+                    ),
+                  ],
+                );
+              }),
             ],
           ),
         ),
@@ -190,5 +209,19 @@ class JobCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     )).toList();
+  }
+  Widget _buildBadge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.5)),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+      ),
+    );
   }
 }

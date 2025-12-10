@@ -1,5 +1,5 @@
 class JobAlert {
-  final int? id;
+  final int id;
   final String title;
   final String? keywords;
   final String? city;
@@ -13,7 +13,7 @@ class JobAlert {
   final int? category;
 
   JobAlert({
-    this.id,
+    required this.id,
     required this.title,
     this.keywords,
     this.city,

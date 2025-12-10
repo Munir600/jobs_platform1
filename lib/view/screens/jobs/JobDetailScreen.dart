@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:jobs_platform1/data/models/job/JobAlert.dart';
+import 'package:jobs_platform1/routes/app_routes.dart';
 import '../../../controllers/job/JobController.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/models/job/JobCreate.dart';
@@ -12,10 +14,10 @@ import 'CreateJobScreen.dart';
 import 'JobApplicationsScreen.dart';
 
 class JobDetailScreen extends StatefulWidget {
-  final String? jobSlug; // Optional, can be via arguments
+  final String jobSlug;
   final bool isEmployer;
 
-  const JobDetailScreen({super.key, this.jobSlug, this.isEmployer = false});
+  const JobDetailScreen({super.key,required this.jobSlug, this.isEmployer = false});
 
   @override
   State<JobDetailScreen> createState() => _JobDetailScreenState();
@@ -28,8 +30,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // Resolve slug from constructor or arguments
-    slug = widget.jobSlug ?? Get.arguments?['slug'] ?? Get.arguments as String? ?? '';
+    slug = widget.jobSlug;
     
     if (slug.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -99,9 +100,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       Text(job.description!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
                       const SizedBox(height: 24),
                     ],
-                    if (job.requirements != null && job.requirements!.isNotEmpty) ...[
+                    if (job.requirements.isNotEmpty) ...[
                       _buildSectionTitle('المتطلبات'),
-                      Text(job.requirements!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
+                      Text(job.requirements, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
                       const SizedBox(height: 24),
                     ],
                     if (job.responsibilities != null && job.responsibilities!.isNotEmpty) ...[
@@ -123,7 +124,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (job.id != null) {
-                              Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
+                              //Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
+                              Get.toNamed(AppRoutes.applyJob, arguments: {
+                                'jobId': job.id,
+                                'jobTitle': job.title,
+                              });
+
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -280,14 +286,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem('المشاهدات', '${job.viewsCount ?? 0}', Icons.visibility),
-          InkWell(
-            onTap: () {
-               if (job.id != null) {
-                Get.to(() => JobApplicationsScreen(jobId: job.id!, jobTitle: job.title ?? ''));
-              }
-            },
-            child: _buildStatItem('المتقدمين', '${job.applicationsCount ?? 0}', Icons.people, isLink: true),
-          ),
+          _buildStatItem('المتقدمين', '${job.applicationsCount ?? 0}', Icons.people),
         ],
       ),
     );
@@ -343,7 +342,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       ],
     );
   }
-  
+
   void _toggleJobStatus(JobDetail job, bool isActive) {
      if (job.slug.isEmpty) return;
 
@@ -354,7 +353,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       responsibilities: job.responsibilities,
       benefits: job.benefits,
       skills: job.skills,
-      company: job.company?.id ?? 0, 
+      company: job.company?.id ?? 0,
       category: job.category?.id,
       jobType: job.jobType,
       experienceLevel: job.experienceLevel,

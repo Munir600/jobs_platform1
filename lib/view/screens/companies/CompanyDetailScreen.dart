@@ -4,6 +4,8 @@ import '../../../controllers/company/CompanyController.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/models/company/Company.dart';
 import '../../../core/constants.dart';
+import '../../../core/utils/contact_utils.dart';
+
 
 class CompanyDetailScreen extends GetView<CompanyController> {
   final Company company;
@@ -16,7 +18,7 @@ class CompanyDetailScreen extends GetView<CompanyController> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if(company.id != null) {
         controller.loadCompanyReviews(company.id!);
-        controller.loadCompanyJobs(company.id!);
+        //controller.loadCompanyJobs(company.id!);
       }
     });
 
@@ -59,12 +61,12 @@ class CompanyDetailScreen extends GetView<CompanyController> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 150,
       pinned: true,
       backgroundColor: AppColors.primaryColor,
       flexibleSpace: FlexibleSpaceBar(
         background: company.coverImage != null
-            ? Image.network(company.coverImage!, fit: BoxFit.cover,
+            ? Image.network(company.coverImage!, fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return Container(
               color: AppColors.primaryColor,
@@ -102,11 +104,11 @@ class CompanyDetailScreen extends GetView<CompanyController> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(30),
             border: Border.all(color: Colors.grey[300]!),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(11), // Slightly less than container to avoid overlap with border
+            borderRadius: BorderRadius.circular(30),
             child: company.logo != null
                 ? Image.network(
                     company.logo!.startsWith('http') ? company.logo! : AppConstants.baseUrl + company.logo!,
@@ -192,11 +194,11 @@ class CompanyDetailScreen extends GetView<CompanyController> {
     return Column(
       children: [
         if (company.website != null)
-          _buildContactItem(Icons.language, 'الموقع الإلكتروني', company.website!),
+          _buildContactItem1(Icons.language, 'الموقع الإلكتروني', company.website!),
         if (company.email != null)
-          _buildContactItem(Icons.email, 'البريد الإلكتروني', company.email!),
+          _buildContactItem1(Icons.email, 'البريد الإلكتروني', company.email!),
         if (company.phone != null)
-          _buildContactItem(Icons.phone, 'رقم الهاتف', company.phone!),
+          _buildContactItem1(Icons.phone, 'رقم الهاتف', company.phone!),
         if (company.city != null || company.address != null)
           _buildContactItem(Icons.location_on, 'العنوان', '${AppEnums.cities[company.city] ?? company.city ?? ''} ${company.address != null ? ' - ${company.address}' : ''}'),
       ],
@@ -231,4 +233,40 @@ class CompanyDetailScreen extends GetView<CompanyController> {
       ),
     );
   }
+  // for url
+  Widget _buildContactItem1(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => ContactUtils.handleContactAction(value),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.accentColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Icon(icon, size: 20, color: AppColors.primaryColor),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  Text(value, style: const TextStyle(fontSize: 14, color: AppColors.textColor)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
+
 }

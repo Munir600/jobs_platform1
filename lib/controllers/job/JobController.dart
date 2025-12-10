@@ -23,6 +23,14 @@ class JobController extends GetxController {
   final Rx<JobDetail?> currentJob = Rx<JobDetail?>(null);
   final RxBool isJobDetailLoading = false.obs;
   
+  // Filtered jobs by company
+  List<JobList> get filteredMyJobs {
+    if (selectedCompanyId.value == null) {
+      return myJobs;
+    }
+    return myJobs.where((job) => job.company?.id == selectedCompanyId.value).toList();
+  }
+  
   void clearCurrentJob() {
     currentJob.value = null;
   }
@@ -36,6 +44,7 @@ class JobController extends GetxController {
   final RxString selectedCategory = ''.obs;
   final RxBool isRemote = false.obs;
   final RxBool isUrgent = false.obs;
+  final RxnInt selectedCompanyId = RxnInt();
 
   @override
   void onInit() {
@@ -62,6 +71,7 @@ class JobController extends GetxController {
     selectedCategory.close();
     isRemote.close();
     isUrgent.close();
+    selectedCompanyId.close();
     super.onClose();
   }
 
@@ -190,11 +200,9 @@ class JobController extends GetxController {
       await _jobService.updateJob(slug, job);
       loadMyJobs();
       loadJobs();
-      
       FocusManager.instance.primaryFocus?.unfocus();
       Get.back(result: true);
       AppErrorHandler.showSuccessSnack('تم تحديث الوظيفة بنجاح');
-      
       return true;
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
@@ -320,5 +328,13 @@ class JobController extends GetxController {
     isRemote.value = false;
     isUrgent.value = false;
     loadJobs();
+  }
+  
+  void setCompanyFilter(int? companyId) {
+    selectedCompanyId.value = companyId;
+  }
+  
+  void clearCompanyFilter() {
+    selectedCompanyId.value = null;
   }
 }

@@ -13,14 +13,8 @@ class MainScreen extends StatelessWidget {
 
   final AuthController authController = Get.find<AuthController>();
   final RxInt _selectedIndex = 0.obs;
-
   @override
   Widget build(BuildContext context) {
-    // Note: Creating screens list inside build is fine for Stateless as long as they are const or lightweight. 
-    // However, recreating them on every build isn't ideal if they hold state. 
-    // IndexedStack preserves state of children. Using 'const' constructors where possible is key.
-    // Since screens are mostly GetView/Stateless, this is efficient.
-    
     final List<Widget> screens = [
       JobListScreen(),
       CompanyListScreen(),

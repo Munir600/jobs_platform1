@@ -11,7 +11,6 @@ class JobDetail {
   final String title;
   final String slug;
   final String description;
-
   final String requirements;
   final String? responsibilities;
   final String? benefits;

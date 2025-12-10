@@ -29,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final RxString _userType = 'job_seeker'.obs;
   final RxBool _obscurePassword = true.obs;
   final RxBool _obscureConfirmPassword = true.obs;
+  final RxBool _acceptedTerms = false.obs;
 
   @override
   void dispose() {
@@ -42,10 +43,155 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  void _showPrivacyPolicy() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          constraints: const BoxConstraints(maxHeight: 600),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'سياسة الخصوصية',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: AppColors.textColor),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+              const Divider(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    ' تحذير هام - منصة التوظيف تجريبية \n\n'
+                    'هذه المنصة لا تزال في مرحلة تجريبية. يرجى قراءة التحذيرات التالية بعناية:\n\n'
+                    ' عدم التحقق من الهوية:\n'
+                    '• لا نقوم بالتحقق من هوية الباحثين عن عمل أو أرقام هواتفهم أو عناوين بريدهم الإلكتروني.\n'
+                    '• لا نقوم بمراجعة أو التحقق من صحة السير الذاتية المقدمة.\n'
+                    '• لا نضمن دقة أو صحة المعلومات المقدمة من قبل الباحثين عن عمل.\n\n'
+                    ' عدم التحقق من الشركات:\n'
+                    '• لا نقوم بالتحقق من صحة أو شرعية الشركات التي تنشئ حسابات على المنصة.\n'
+                    '• لا نتحقق من السجلات التجارية أو التراخيص أو أي وثائق رسمية للشركات.\n'
+                    '• قد تكون بعض الشركات أو الوظائف المعروضة غير حقيقية أو احتيالية.\n\n'
+                    ' مسؤولية المستخدم:\n'
+                    '• على أصحاب العمل إجراء التحقق الخاص بهم من هوية ومؤهلات المتقدمين.\n'
+                    '• على الباحثين عن عمل التحقق بأنفسهم من شرعية الشركات قبل التقديم أو مشاركة معلومات شخصية.\n'
+                    '• ننصح بشدة بعدم مشاركة معلومات مالية أو حساسة مع أي طرف دون التحقق المستقل.\n\n'
+                    'سياسة الخصوصية:\n\n'
+                    '1. جمع المعلومات:\nنقوم بجمع المعلومات التي تقدمها لنا عند التسجيل في المنصة، بما في ذلك الاسم والبريد الإلكتروني ورقم الهاتف. لا نتحقق من صحة هذه المعلومات.\n\n'
+                    '2. استخدام المعلومات:\nنستخدم المعلومات المجمعة لتوفير خدمة الربط بين أصحاب العمل والباحثين عن عمل. لا نضمن جودة أو موثوقية هذه الخدمة.\n\n'
+                    '3. حماية المعلومات:\nنتخذ تدابير أمنية أساسية لحماية معلوماتك، لكن كمنصة تجريبية، لا يمكننا ضمان الحماية الكاملة من الاختراقات.\n\n'
+                    '4. مشاركة المعلومات:\nعند التقديم لوظيفة، يتم مشاركة معلوماتك مع الطرف المعلن عن الوظيفة. نحن لا نتحقق من هوية أو نوايا هذا الطرف.\n\n'
+                    '5. إخلاء المسؤولية:\nلا نتحمل أي مسؤولية عن:\n'
+                    '• صحة المعلومات المقدمة من المستخدمين\n'
+                    '• شرعية الشركات أو الوظائف المعروضة\n'
+                    '• أي أضرار أو خسائر ناتجة عن استخدام المنصة\n'
+                    '• أي احتيال أو سوء استخدام من قبل المستخدمين\n\n'
+                    '6. حقوقك:\nيمكنك طلب الوصول إلى معلوماتك الشخصية أو تصحيحها أو حذفها في أي وقت.\n\n'
+                    '7. التحديثات:\nقد نقوم بتحديث سياسة الخصوصية هذه في أي وقت دون إشعار مسبق.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.textColor,
+                      height: 1.6,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showTermsAndConditions() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          constraints: const BoxConstraints(maxHeight: 600),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'الشروط والأحكام',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: AppColors.textColor),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+              const Divider(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    'مرحباً بك في منصة التوظيف. باستخدامك لهذه المنصة، فإنك توافق على الالتزام بالشروط والأحكام التالية:\n\n'
+                    '1. القبول:\nباستخدام هذه المنصة، فإنك تقر بأنك قد قرأت وفهمت ووافقت على هذه الشروط والأحكام.\n\n'
+                    '2. الأهلية:\nيجب أن يكون عمرك 18 عاماً على الأقل لاستخدام هذه المنصة. بتسجيلك، فإنك تؤكد أنك تستوفي هذا المتطلب.\n\n'
+                    '3. الحساب:\nأنت مسؤول عن الحفاظ على سرية حسابك وكلمة المرور الخاصة بك. تتحمل المسؤولية الكاملة عن جميع الأنشطة التي تحدث في حسابك.\n\n'
+                    '4. السلوك المقبول:\nتوافق على عدم استخدام المنصة لأي غرض غير قانوني أو محظور بموجب هذه الشروط.\n\n'
+                    '5. المحتوى:\nأنت مسؤول عن المحتوى الذي تنشره على المنصة. يجب أن يكون المحتوى دقيقاً وغير مضلل ولا ينتهك حقوق الآخرين.\n\n'
+                    '6. الإنهاء:\nنحتفظ بالحق في إنهاء أو تعليق حسابك في أي وقت دون إشعار مسبق إذا انتهكت هذه الشروط.\n\n'
+                    '7. إخلاء المسؤولية:\nالمنصة مقدمة "كما هي" دون أي ضمانات. لا نتحمل المسؤولية عن أي أضرار ناتجة عن استخدام المنصة.\n\n'
+                    '8. التعديلات:\nنحتفظ بالحق في تعديل هذه الشروط والأحكام في أي وقت. استمرارك في استخدام المنصة يعني قبولك للشروط المعدلة.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.textColor,
+                      height: 1.6,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _submit() async {
     final hasInternet = await NetworkUtils.checkInternet(context);
     if (!hasInternet) return;
     if (!_formKey.currentState!.validate()) return;
+    
+    if (!_acceptedTerms.value) {
+      Get.snackbar(
+        'تنبيه',
+        'يجب الموافقة على سياسة الخصوصية والشروط والأحكام',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+    
     final auth = Get.find<AuthController>();
     final registration = UserRegistration(
       username: _username.text.trim(),
@@ -67,12 +213,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Get.off(() => const LoginScreen());
       }
     } else {
-      Get.defaultDialog(
-        title: 'فشل التسجيل',
-        middleText: 'تحقق من البيانات',
-        textConfirm: 'حسناً',
-        onConfirm: () => Get.back(),
-      );
+      // Get.defaultDialog(
+      //   title: 'فشل التسجيل',
+      //   middleText: 'تحقق من البيانات',
+      //   textConfirm: 'حسناً',
+      //   onConfirm: () => Get.back(),
+      // );
     }
   }
 
@@ -94,7 +240,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Obx(() => AbsorbPointer(
                     absorbing: auth.isLoading.value,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Center(
                           child: Container(
@@ -370,7 +516,61 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
+                        Obx(() => Row(
+                          children: [
+                            Checkbox(
+                              value: _acceptedTerms.value,
+                              onChanged: (value) => _acceptedTerms.value = value ?? false,
+                              activeColor: AppColors.primaryColor,
+                            ),
+                            Expanded(
+                              child: Wrap(
+                                children: [
+                                  Text(
+                                    'أوافق على ',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textColor,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: _showPrivacyPolicy,
+                                    child: Text(
+                                      'سياسة الخصوصية',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.primaryColor,
+                                        decoration: TextDecoration.underline,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    ' و ',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textColor,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: _showTermsAndConditions,
+                                    child: Text(
+                                      'الشروط والأحكام',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.primaryColor,
+                                        decoration: TextDecoration.underline,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )),
+                        const SizedBox(height: 16),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
@@ -380,23 +580,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 2,
-                            shadowColor: AppColors.primaryColor.withValues(alpha: 0.3),
-                            disabledBackgroundColor: AppColors.primaryColor.withValues(alpha: 0.3),
+                            shadowColor: AppColors.primaryColor.withValues(alpha: 0.5),
+                            disabledBackgroundColor: AppColors.primaryColor.withValues(alpha: 0.5),
                           ),
-                          onPressed: auth.isLoading.value ? null : _submit,
+                          onPressed: (auth.isLoading.value || !_acceptedTerms.value) ? null : _submit,
                           child: auth.isLoading.value
                               ? const SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                               : const Text(
-                                  'إنشاء حساب',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
+                            "إنشاء حساب ",
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Container(

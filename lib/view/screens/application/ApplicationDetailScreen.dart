@@ -5,6 +5,7 @@ import '../../../../controllers/application/ApplicationController.dart';
 import '../../../../data/models/application/JobApplication.dart';
 import '../../../../data/models/Interview/InterviewCreate.dart';
 import '../../../controllers/ResumeController.dart';
+import '../../../../core/utils/contact_utils.dart';
 
 class ApplicationDetailScreen extends StatefulWidget {
   final JobApplication application;
@@ -254,15 +255,19 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
   }
 
   Widget _buildInfoChip(IconData icon, String label, String value) {
-    return Column(
-      children: [
-        Icon(icon, color: AppColors.primaryColor),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-      ],
+    return InkWell(
+      onTap: () => ContactUtils.handleContactAction(value),
+      child: Column(
+        children: [
+          Icon(icon, color: AppColors.primaryColor),
+          const SizedBox(height: 4),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+        ],
+      ),
     );
   }
+
 
   void _showActionDialog(String status) {
     Get.defaultDialog(

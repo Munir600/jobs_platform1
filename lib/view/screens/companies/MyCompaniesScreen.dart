@@ -13,8 +13,6 @@ class MyCompaniesScreen extends GetView<CompanyController> {
 
   @override
   Widget build(BuildContext context) {
-    // Trigger fetch if empty (or could rely on onReady, but this ensures data is fresh on visit)
-    // Using a microtask to avoid build-phase state updates if the controller decides to emit immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getMyCompanies();
     });
@@ -31,20 +29,22 @@ class MyCompaniesScreen extends GetView<CompanyController> {
 
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          height: 55,
-          child: ElevatedButton.icon(
-            onPressed: () => Get.to(() => const CreateCompanyScreen()),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () => Get.to(() => const CreateCompanyScreen()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: const Icon(Icons.add, color: Colors.white, size: 24),
+              label: const Text(
+                'إضافة شركة جديدة',
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text(
-              'إضافة شركة جديدة',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
+          ],
         ),
       ),
 

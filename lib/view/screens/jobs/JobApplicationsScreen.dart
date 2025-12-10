@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_colors.dart';
 import '../../../controllers/application/ApplicationController.dart';
+import '../../../routes/app_routes.dart';
 import '../application/ApplicationDetailScreen.dart';
 
 class JobApplicationsScreen extends StatefulWidget {
@@ -52,7 +53,8 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
                 subtitle: Text('تاريخ التقديم: ${app.appliedAt?.split('T')[0] ?? '-'}'),
                 trailing: _buildStatusBadge(app.status ?? 'pending'),
                 onTap: () {
-                  Get.to(() => ApplicationDetailScreen(application: app));
+                 Get.to(() => ApplicationDetailScreen(application: app));
+              //    Get.toNamed(AppRoutes.applicationDetails, arguments: app);
                 },
               ),
             );
