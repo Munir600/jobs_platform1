@@ -16,7 +16,7 @@ class JobListScreen extends GetView<JobController> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         title: const Text('الوظائف', style: TextStyle(color: AppColors.textColor)),
-        backgroundColor:  AppColors.backgroundColor,
+        backgroundColor:  AppColors.accentColor,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),

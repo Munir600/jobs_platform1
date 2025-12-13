@@ -81,7 +81,7 @@ class MessagesScreen extends GetView<ApplicationController> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                    backgroundColor: AppColors.primaryColor.withAlpha(100),
                     child: Icon(isEmployer ? Icons.person : Icons.business, color: AppColors.primaryColor),
                   ),
                   title: Text(

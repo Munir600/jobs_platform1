@@ -166,7 +166,7 @@ class JobService {
       {},
       headers: headers,
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to bookmark/unbookmark job');
     }
   }

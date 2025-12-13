@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/companies/CompanyCard.dart';
 import 'package:get/get.dart';
 import 'package:jobs_platform1/core/utils/error_handler.dart';
 import '../../../controllers/company/CompanyController.dart';
@@ -78,103 +79,15 @@ class MyCompaniesScreen extends GetView<CompanyController> {
           itemCount: companies.length,
           itemBuilder: (context, index) {
             final company = companies[index];
-            return _buildCompanyCard(company);
+            return CompanyCard(
+              company: company,
+              showControls: true,
+              onEdit: () => Get.to(() => CreateCompanyScreen(company: company)),
+              onDelete: () => _confirmDelete(company),
+            );
           },
         );
       }),
-    );
-  }
-
-  Widget _buildCompanyCard(Company company) {
-    return Card(
-      color: AppColors.accentColor,
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => Get.to(() => CompanyDetailScreen(company: company)),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: company.logo != null
-                          ? Image.network(
-                              company.logo!.startsWith('http') ? company.logo! : AppConstants.baseUrl + company.logo!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.business, color: Colors.grey, size: 30);
-                              },
-                            )
-                          : const Icon(Icons.business, color: Colors.grey, size: 30),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          company.name ?? 'اسم الشركة',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textColor,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          company.industry != null
-                              ? AppEnums.industries[company.industry] ??
-                              company.industry!
-                              : 'قطاع غير محدد',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textColor.withOpacity(0.6),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const Divider(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: () {
-                      Get.to(() => CreateCompanyScreen(company: company));
-                    },
-                    icon: const Icon(Icons.edit,
-                        size: 18, color: AppColors.primaryColor),
-                    label: const Text('تعديل',
-                        style: TextStyle(color: AppColors.primaryColor)),
-                  ),
-                  const SizedBox(width: 8),
-                  TextButton.icon(
-                    onPressed: () => _confirmDelete(company),
-                    icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                    label: const Text('حذف',
-                        style: TextStyle(color: Colors.red)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

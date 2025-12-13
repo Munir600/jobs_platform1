@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:jobs_platform1/data/models/job/JobAlert.dart';
 import 'package:jobs_platform1/routes/app_routes.dart';
 import '../../../controllers/job/JobController.dart';
+import '../../../controllers/account/AccountController.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/models/job/JobCreate.dart';
 import '../../../data/models/job/JobDetail.dart';
 import '../../../data/models/job/JobList.dart';
 import '../../../core/constants.dart';
-import '../applications/ApplyJobScreen.dart';
 import 'CreateJobScreen.dart';
-import 'JobApplicationsScreen.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final String jobSlug;
@@ -25,6 +23,7 @@ class JobDetailScreen extends StatefulWidget {
 
 class _JobDetailScreenState extends State<JobDetailScreen> {
   final controller = Get.find<JobController>();
+  final accountController = Get.find<AccountController>();
   late String slug;
 
   @override
@@ -95,7 +94,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     const SizedBox(height: 12),
                     _buildDetailsGrid(job),
                     const SizedBox(height: 24),
-                    if (job.description != null && job.description!.isNotEmpty) ...[
+                    if (job.description != null && job.description.isNotEmpty) ...[
                       _buildSectionTitle('نبذة عن الوظيفة'),
                       Text(job.description!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
                       const SizedBox(height: 24),
@@ -117,29 +116,32 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     ],
                     const SizedBox(height: 16),
                     if (widget.isEmployer)
-                       _buildEmployerActions(job)
-                    else
-                      SizedBox(
+                       _buildEmployerActions(job),
+                    SizedBox(height: widget.isEmployer ? 16 : 0),
+                    Obx(() {
+                      final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
+                      return SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: isEmployer ? null : () {
                             if (job.id != null) {
-                              //Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
                               Get.toNamed(AppRoutes.applyJob, arguments: {
                                 'jobId': job.id,
                                 'jobTitle': job.title,
                               });
-
                             }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            disabledBackgroundColor: Colors.grey[350],
+                            disabledForegroundColor: Colors.black38,
                           ),
                           child: const Text('التقديم الآن', style: TextStyle(color: Colors.white, fontSize: 18)),
                         ),
-                      ),
+                      );
+                    }),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -171,7 +173,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       actions: [
         if (!widget.isEmployer)
           Obx(() {
-            final isBookmarked = controller.bookmarks.any((b) => b.job?.id == job.id) || (job.isBookmarked ?? false);
+            final isBookmarked = controller.bookmarks.any((b) => b.job?.id == job.id);
             return IconButton(
               icon: Icon(
                 isBookmarked ? Icons.bookmark : Icons.bookmark_border,

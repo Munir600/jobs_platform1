@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_colors.dart';
+import '../../../controllers/job/JobController.dart';
 import '../../../core/constants.dart';
 import '../../../data/models/job/JobList.dart';
 import '../../../controllers/account/AccountController.dart';
@@ -104,13 +105,13 @@ class JobCard extends StatelessWidget {
                 children: [
                   Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
                   Text(
-                    ' ${job.city != null ? AppEnums.cities[job.city] ?? job.city! : 'غير محدد'}',
+                    ' ${job.city != null ? AppEnums.cities[job.city] ?? job.city : 'غير محدد'}',
                     style: const TextStyle(fontSize: 13),
                   ),
                   if (salaryText.isNotEmpty)
                     Text(salaryText, style: const TextStyle(fontSize: 13)),
                   Text(
-                    job.jobType != null ? AppEnums.jobTypes[job.jobType] ?? job.jobType! : 'غير محدد',
+                    job.jobType != null ? AppEnums.jobTypes[job.jobType] ?? job.jobType : 'غير محدد',
                     style: const TextStyle(fontSize: 13),
                   ),
                   Text(timeAgo, style: const TextStyle(fontSize: 13)),
@@ -135,47 +136,38 @@ class JobCard extends StatelessWidget {
                 ),
               const SizedBox(height: 12),
               
-              // Action buttons - only show for job seekers
+              // Action buttons - disabled for employers
               Obx(() {
                 final accountController = Get.find<AccountController>();
                 final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
-                
-                if (isEmployer) {
-                  // For employers, just show share button
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        onPressed: onShare ?? () {
-                          Get.snackbar('مشاركة', 'سيتم إضافة وظيفة المشاركة قريباً');
-                        },
-                        icon: const Icon(Icons.share_outlined),
-                      ),
-                    ],
-                  );
-                }
-                
-                // For job seekers, show all buttons
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: onApply ?? () {
+                      onPressed: isEmployer ? null : (onApply ?? () {
                         if (job.id != null) {
                           Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
                         }
-                      },
+                      }),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor,
                         foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey[350],
+                        disabledForegroundColor: Colors.black38,
                       ),
                       child: const Text('تقديم الآن'),
                     ),
                     OutlinedButton(
-                      onPressed: onBookmark,
-                      child: Text(
-                        job.isBookmarked == true ? 'محفوظة' : 'حفظ',
+                      onPressed: isEmployer ? null : onBookmark,
+                      style: OutlinedButton.styleFrom(
+                        disabledBackgroundColor: Colors.grey[350],
+                        disabledForegroundColor: Colors.black38,
                       ),
+                      child: Obx(() {
+                        final controller = Get.find<JobController>();
+                        final isBookmarked = controller.bookmarks.any((b) => b.job?.id == job.id);
+                        return Text(isBookmarked ? 'محفوظة' : 'حفظ');
+                      }),
                     ),
                     IconButton(
                       onPressed: onShare ?? () {
@@ -217,6 +209,14 @@ class JobCard extends StatelessWidget {
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+
+        ],
       ),
       child: Text(
         text,

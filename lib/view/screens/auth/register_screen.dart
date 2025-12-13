@@ -24,8 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _phone = TextEditingController();
   final _password = TextEditingController();
   final _confirm = TextEditingController();
-  
-  // Reactive local state
+
   final RxString _userType = 'job_seeker'.obs;
   final RxBool _obscurePassword = true.obs;
   final RxBool _obscureConfirmPassword = true.obs;
@@ -76,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Text(
-                    ' تحذير هام - منصة التوظيف تجريبية \n\n'
+                    ' تحذير هام - منصة توظيف تجريبية \n\n'
                     'هذه المنصة لا تزال في مرحلة تجريبية. يرجى قراءة التحذيرات التالية بعناية:\n\n'
                     ' عدم التحقق من الهوية:\n'
                     '• لا نقوم بالتحقق من هوية الباحثين عن عمل أو أرقام هواتفهم أو عناوين بريدهم الإلكتروني.\n'
@@ -151,7 +150,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Text(
-                    'مرحباً بك في منصة التوظيف. باستخدامك لهذه المنصة، فإنك توافق على الالتزام بالشروط والأحكام التالية:\n\n'
+                    'مرحباً بك في منصة توظيف. باستخدامك لهذه المنصة، فإنك توافق على الالتزام بالشروط والأحكام التالية:\n\n'
                     '1. القبول:\nباستخدام هذه المنصة، فإنك تقر بأنك قد قرأت وفهمت ووافقت على هذه الشروط والأحكام.\n\n'
                     '2. الأهلية:\nيجب أن يكون عمرك 18 عاماً على الأقل لاستخدام هذه المنصة. بتسجيلك، فإنك تؤكد أنك تستوفي هذا المتطلب.\n\n'
                     '3. الحساب:\nأنت مسؤول عن الحفاظ على سرية حسابك وكلمة المرور الخاصة بك. تتحمل المسؤولية الكاملة عن جميع الأنشطة التي تحدث في حسابك.\n\n'

@@ -286,9 +286,21 @@ class JobController extends GetxController {
 
   Future<void> bookmarkJob(int jobId) async {
     try {
+      // Check current bookmark status BEFORE toggling
+      final isCurrentlyBookmarked = bookmarks.any((b) => b.job?.id == jobId);
+      
+      // Toggle bookmark
       await _jobService.bookmarkJob(jobId);
+      
+      // Reload bookmarks to get updated state
       await loadBookmarks();
-      AppErrorHandler.showSuccessSnack('تم حفظ الوظيفة بنجاح');
+      
+      // Show appropriate message based on PREVIOUS state
+      if (isCurrentlyBookmarked) {
+        AppErrorHandler.showSuccessSnack('تم إلغاء حفظ الوظيفة');
+      } else {
+        AppErrorHandler.showSuccessSnack('تم حفظ الوظيفة بنجاح');
+      }
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     }
