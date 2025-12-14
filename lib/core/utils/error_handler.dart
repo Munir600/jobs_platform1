@@ -15,7 +15,6 @@ class AppErrorHandler {
       return "فشل تحميل الصورة. الصورة غير موجودة.";
     }
 
-    // Try to parse JSON from error string (for server validation errors)
     try {
       final String errorStr = error.toString();
       final int startIndex = errorStr.indexOf('{');

@@ -17,7 +17,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _username = TextEditingController();
+  //final _username = TextEditingController();
   final _email = TextEditingController();
   final _first = TextEditingController();
   final _last = TextEditingController();
@@ -32,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _username.dispose();
+   // _username.dispose();
     _email.dispose();
     _first.dispose();
     _last.dispose();
@@ -192,8 +192,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     
     final auth = Get.find<AuthController>();
+    final username = ('${_first.text.trim()}${_last.text.trim()}').trim();
     final registration = UserRegistration(
-      username: _username.text.trim(),
+      username: username.isNotEmpty ? username : 'user_${DateTime.now().millisecondsSinceEpoch}',
       email: _email.text.trim(),
       firstName: _first.text.trim(),
       lastName: _last.text.trim(),
@@ -355,22 +356,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24),
-                        CustomTextField(
-                          controller: _username,
-                          labelText: 'اسم المستخدم',
-                          prefixIcon: Icon(
-                            Icons.person_outline,
-                            color: AppColors.secondaryColor,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال اسم المستخدم';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
+                       const SizedBox(height: 24),
+                        // CustomTextField(
+                        //   controller: _username,
+                        //   labelText: 'اسم المستخدم',
+                        //   prefixIcon: Icon(
+                        //     Icons.person_outline,
+                        //     color: AppColors.secondaryColor,
+                        //   ),
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'الرجاء إدخال اسم المستخدم';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
+                   //     const SizedBox(height: 10),
                         Row(
                           children: [
                             Expanded(

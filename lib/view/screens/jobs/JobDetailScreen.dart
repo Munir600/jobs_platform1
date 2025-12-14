@@ -9,6 +9,7 @@ import '../../../data/models/job/JobCreate.dart';
 import '../../../data/models/job/JobDetail.dart';
 import '../../../data/models/job/JobList.dart';
 import '../../../core/constants.dart';
+import '../companies/CompanyDetailScreen.dart';
 import 'CreateJobScreen.dart';
 
 class JobDetailScreen extends StatefulWidget {
@@ -120,10 +121,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     SizedBox(height: widget.isEmployer ? 16 : 0),
                     Obx(() {
                       final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
+                      final isDeadlinePassed = job.applicationDeadline != null && DateTime.tryParse(job.applicationDeadline!)!.isBefore(DateTime.now());
+
                       return SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: isEmployer ? null : () {
+                          onPressed: (isEmployer || isDeadlinePassed) ? null : () {
                             if (job.id != null) {
                               Get.toNamed(AppRoutes.applyJob, arguments: {
                                 'jobId': job.id,
@@ -138,7 +141,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                             disabledBackgroundColor: Colors.grey[350],
                             disabledForegroundColor: Colors.black38,
                           ),
-                          child: const Text('التقديم الآن', style: TextStyle(color: Colors.white, fontSize: 18)),
+                          child: Text(isDeadlinePassed ? 'انتهى التقديم' : 'التقديم الآن', style: const TextStyle(color: Colors.white, fontSize: 18)),
                         ),
                       );
                     }),
@@ -207,7 +210,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           onTap: () {
 
              if (job.company?.slug != null) {
-            //   Get.to(() => CompanyDetailScreen(company: company));
+             // Get.to(() => CompanyDetailScreen(company: company));
              }
 
           },

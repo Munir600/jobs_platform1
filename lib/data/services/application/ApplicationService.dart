@@ -30,7 +30,7 @@ class ApplicationService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobApplicationList.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load applications');
@@ -47,7 +47,7 @@ class ApplicationService {
       path += 'job_id=$jobId&';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobApplicationList.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load job applications');
@@ -57,7 +57,7 @@ class ApplicationService {
   Future<JobApplication> getApplication(int id) async {
     final headers = await _getHeaders();
     final response = await _apiClient.get('/api/applications/$id/', headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return JobApplication.fromJson(jsonDecode(response.body)); 
     } else {
       throw Exception('Failed to load application');
@@ -71,10 +71,11 @@ class ApplicationService {
       application.toJson(),
       headers: headers,
     );
-    if (response.statusCode == 201) {
+    print('Create Application Response: ${response.body}');
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return JobApplicationCreate.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to create application');
+      throw Exception(response.body); // Throw the actual server response
     }
   }
   
@@ -85,7 +86,7 @@ class ApplicationService {
       {},
       headers: headers,
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 || response.statusCode == 201) {
       throw Exception('Failed to withdraw application');
     }
   }
@@ -97,7 +98,7 @@ class ApplicationService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedApplicationMessageList.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load messages');
@@ -115,7 +116,7 @@ class ApplicationService {
       },
       headers: headers,
     );
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       return ApplicationMessage.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to send message');
@@ -129,7 +130,7 @@ class ApplicationService {
       {},
       headers: headers,
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 || response.statusCode == 201) {
       throw Exception('Failed to mark application as viewed');
     }
   }
@@ -141,7 +142,7 @@ class ApplicationService {
       data.toJson(),
       headers: headers,
     );
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
        return JobApplication.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to update application');
@@ -158,7 +159,7 @@ class ApplicationService {
     }
     try {
       final response = await _apiClient.get(path, headers: headers);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return PaginatedInterviewList.fromJson(jsonDecode(response.body));
       } else {
         throw Exception('Failed to load interviews');
@@ -172,7 +173,7 @@ class ApplicationService {
     final headers = await _getHeaders();
     try {
       final response = await _apiClient.get('/api/applications/interviews/$id/', headers: headers);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return Interview.fromJson(jsonDecode(response.body));
       } else {
         throw Exception('Failed to load interview');
@@ -208,7 +209,7 @@ class ApplicationService {
         data,
         headers: headers,
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return Interview.fromJson(jsonDecode(response.body));
       } else {
         throw Exception('Failed to update interview');
@@ -232,7 +233,7 @@ class ApplicationService {
   Future<ApplicationStatistics> getApplicationStatistics() async {
     final headers = await _getHeaders();
     final response = await _apiClient.get('/api/applications/statistics/', headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return ApplicationStatistics.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load application statistics');

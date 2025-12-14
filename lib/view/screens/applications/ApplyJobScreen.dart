@@ -1,91 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../controllers/application/ApplicationController.dart';
+import '../../../controllers/application/ApplyJobController.dart';
 import '../../../config/app_colors.dart';
-import '../../../data/models/application/JobApplicationCreate.dart';
 
 class ApplyJobScreen extends StatefulWidget {
-  final int? jobId;
+  final int jobId;
   final String? jobTitle;
 
-  const ApplyJobScreen({super.key, this.jobId, this.jobTitle});
+  const ApplyJobScreen({super.key, required this.jobId, this.jobTitle});
 
   @override
   State<ApplyJobScreen> createState() => _ApplyJobScreenState();
 }
 
 class _ApplyJobScreenState extends State<ApplyJobScreen> {
-  final ApplicationController controller = Get.find<ApplicationController>();
+  late final ApplyJobController controller;
   
-  final TextEditingController coverLetterController = TextEditingController();
-  final TextEditingController portfolioController = TextEditingController();
-  final TextEditingController salaryController = TextEditingController();
-  final TextEditingController availabilityController = TextEditingController();
-  final TextEditingController notesController = TextEditingController();
-  
-  late int jobId;
-  late String jobTitle;
-
   @override
   void initState() {
     super.initState();
-    jobId = widget.jobId ?? 0;
-    jobTitle = widget.jobTitle ?? '';
+    controller = Get.put(ApplyJobController() ,permanent: true);
   }
 
   @override
   void dispose() {
-    coverLetterController.dispose();
-    portfolioController.dispose();
-    salaryController.dispose();
-    availabilityController.dispose();
-    notesController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final int validJobId = widget.jobId ?? 0;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: Text('التقديم على: $jobTitle', style: const TextStyle(color: AppColors.textColor)),
-        backgroundColor: Colors.transparent,
+        title: Text('التقديم على: ${widget.jobTitle ?? ""}', style: const TextStyle(color: AppColors.textColor)),
+        backgroundColor: AppColors.primaryColor,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),
       ),
       body: Stack(
         children: [
-          const PatternBackground(),
           SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionTitle('خطاب التغطية'),
+                _buildSectionTitle('خطاب التقديم'),
                 TextField(
-                  controller: coverLetterController,
+                  controller: controller.coverLetterController,
                   maxLines: 5,
-                  decoration: _inputDecoration('اكتب خطاب التغطية هنا...'),
+                  decoration: _inputDecoration('اكتب خطاب التقديم هنا...'),
                 ),
                 const SizedBox(height: 16),
                 _buildSectionTitle('رابط المعرض / الأعمال (اختياري)'),
                 TextField(
-                  controller: portfolioController,
+                  controller: controller.portfolioController,
                   decoration: _inputDecoration('https://...'),
                 ),
                 const SizedBox(height: 16),
                 _buildSectionTitle('الراتب المتوقع (اختياري)'),
                 TextField(
-                  controller: salaryController,
+                  controller: controller.salaryController,
                   keyboardType: TextInputType.number,
                   decoration: _inputDecoration('مثال: 1000'),
                 ),
                 const SizedBox(height: 16),
                 _buildSectionTitle('تاريخ التوفر (اختياري)'),
                 TextField(
-                  controller: availabilityController,
+                  controller: controller.availabilityController,
                   decoration: _inputDecoration('YYYY-MM-DD'),
+                  readOnly: true,
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
                       context: context,
@@ -94,14 +80,14 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
                       lastDate: DateTime(2100),
                     );
                     if (pickedDate != null) {
-                      availabilityController.text = pickedDate.toString().split(' ')[0];
+                      controller.availabilityController.text = pickedDate.toString().split(' ')[0];
                     }
                   },
                 ),
                 const SizedBox(height: 16),
                 _buildSectionTitle('ملاحظات إضافية (اختياري)'),
                 TextField(
-                  controller: notesController,
+                  controller: controller.notesController,
                   maxLines: 3,
                   decoration: _inputDecoration('أي ملاحظات أخرى...'),
                 ),
@@ -109,28 +95,20 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: Obx(() => ElevatedButton(
-                    onPressed: controller.isLoading.value ? null : () async {
-                      final application = JobApplicationCreate(
-                        job: jobId,
-                        coverLetter: coverLetterController.text,
-                        portfolioUrl: portfolioController.text.isNotEmpty ? portfolioController.text : null,
-                        expectedSalary: int.tryParse(salaryController.text),
-                        availabilityDate: availabilityController.text.isNotEmpty ? availabilityController.text : null,
-                        notes: notesController.text.isNotEmpty ? notesController.text : null,
-                      );
-                      
-                      final success = await controller.createApplication(application);
-                      if (success) {
-                        Get.back(); // Close screen on success
-                      }
-                    },
+                    onPressed: controller.isLoading.value 
+                        ? null 
+                        : () => controller.submitApplication(validJobId),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: controller.isLoading.value 
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
                         : const Text('إرسال الطلب', style: TextStyle(color: Colors.white, fontSize: 18)),
                   )),
                 ),

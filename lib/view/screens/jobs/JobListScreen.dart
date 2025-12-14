@@ -122,15 +122,7 @@ class JobListScreen extends GetView<JobController> {
                 AppEnums.experienceLevels,
                 (val) => controller.setFilters(experienceLevel: val),
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Obx(() => Checkbox(
-                    value: controller.isRemote.value,
-                    onChanged: (val) => controller.setFilters(remote: val),
-                  )),
-                ],
-              ),
+
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,

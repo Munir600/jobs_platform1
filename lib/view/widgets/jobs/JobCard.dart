@@ -89,14 +89,35 @@ class JobCard extends StatelessWidget {
                         _buildBadge('مميز', Colors.orange),
                       if (job.isUrgent == true)
                         _buildBadge('عاجل', Colors.redAccent),
+                      if ( job.applicationsCount! > 0)
+                        _buildBadge('${job.applicationsCount} متقدم', Colors.green),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 6),
-              Text(
-                job.company?.name ?? 'اسم الشركة',
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      job.company?.name ?? 'اسم الشركة',
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                     // Icon(Icons.visibility_outlined, size: 14, color: Colors.grey[600]),
+
+                      if ( job.viewsCount! > 0)
+                        Text('${job.viewsCount} مشاهدة',
+                            style: const TextStyle(fontSize: 13,color: Colors.blue),
+                        ),
+
+                    ],
+                  )
+                ],
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -118,7 +139,7 @@ class JobCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              
+
               // Description preview
               if (job.description != null && job.description!.isNotEmpty)
                 Text(
@@ -135,16 +156,20 @@ class JobCard extends StatelessWidget {
                   children: _buildSkillTags(job.requirements!),
                 ),
               const SizedBox(height: 12),
-              
+
               // Action buttons - disabled for employers
               Obx(() {
                 final accountController = Get.find<AccountController>();
                 final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
+                final isDeadlinePassed = job.applicationDeadline != null && DateTime.tryParse(job.applicationDeadline!)!.isBefore(DateTime.now());
+
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: isEmployer ? null : (onApply ?? () {
+                      onPressed: (isEmployer || isDeadlinePassed)
+                          ? null
+                          : (onApply ?? () {
                         if (job.id != null) {
                           Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
                         }
@@ -155,10 +180,10 @@ class JobCard extends StatelessWidget {
                         disabledBackgroundColor: Colors.grey[350],
                         disabledForegroundColor: Colors.black38,
                       ),
-                      child: const Text('تقديم الآن'),
+                      child: Text(isDeadlinePassed ? 'انتهى التقديم' : 'تقديم الآن'),
                     ),
                     OutlinedButton(
-                      onPressed: isEmployer ? null : onBookmark,
+                      onPressed: (isEmployer || isDeadlinePassed) ? null : onBookmark,
                       style: OutlinedButton.styleFrom(
                         disabledBackgroundColor: Colors.grey[350],
                         disabledForegroundColor: Colors.black38,
