@@ -11,9 +11,6 @@ class JobSeekerProfileScreen extends GetView<JobSeekerProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    // Inject the controller if not already present (Binding is cleaner but this works for direct nav)
-    // Inject the controller if not already present (Binding is cleaner but this works for direct nav)
-    // Get.put(JobSeekerProfileController());
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,

@@ -17,6 +17,12 @@ class CompanyDetailScreen extends GetView<CompanyController> {
     // Load related data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if(company.id != null) {
+        // Ensure the company is in the cache (if it came from a list that populated it, fine, otherwise load it/put it)
+        // If it's not in cache, put the detailed one we have (or incomplete one)
+        if (!controller.companyDetailsCache.containsKey(company.id)) {
+           controller.companyDetailsCache[company.id!] = company;
+        }
+        
         controller.loadCompanyReviews(company.id!);
         //controller.loadCompanyJobs(company.id!);
       }
@@ -24,49 +30,57 @@ class CompanyDetailScreen extends GetView<CompanyController> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCompanyInfo(),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('نبذة عن الشركة'),
-                  Text(
-                    company.description ?? 'لا يوجد وصف متاح',
-                    style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('تفاصيل الشركة'),
-                  const SizedBox(height: 12),
-                  _buildDetailsGrid(),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('معلومات التواصل'),
-                  const SizedBox(height: 12),
-                  _buildContactInfo(),
-                  const SizedBox(height: 20),
-                Text('جميع الحقوق محفوظة © ${DateTime.now().year}', style: TextStyle(fontSize: 12, color: Colors.grey[600]), textAlign: TextAlign.center),
-                ],
+      body: Obx(() {
+        // Use the company from cache if available, otherwise fallback to the one passed in constructor
+        final currentCompany = (company.id != null && controller.companyDetailsCache.containsKey(company.id))
+            ? controller.companyDetailsCache[company.id]!
+            : company;
+
+        return CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(currentCompany),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildCompanyInfo(currentCompany),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle('نبذة عن الشركة'),
+                    Text(
+                      currentCompany.description ?? 'لا يوجد وصف متاح',
+                      style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle('تفاصيل الشركة'),
+                    const SizedBox(height: 12),
+                    _buildDetailsGrid(currentCompany),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle('معلومات التواصل'),
+                    const SizedBox(height: 12),
+                    _buildContactInfo(currentCompany),
+                    const SizedBox(height: 20),
+                    Text('جميع الحقوق محفوظة © ${DateTime.now().year}',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]), textAlign: TextAlign.center),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(Company currentCompany) {
     return SliverAppBar(
       expandedHeight: 150,
       pinned: true,
       backgroundColor: AppColors.primaryColor,
       flexibleSpace: FlexibleSpaceBar(
-        background: company.coverImage != null
-            ? Image.network(company.coverImage!, fit: BoxFit.contain,
+        background: currentCompany.coverImage != null
+            ? Image.network(currentCompany.coverImage!, fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return Container(
               color: AppColors.primaryColor,
@@ -90,14 +104,17 @@ class CompanyDetailScreen extends GetView<CompanyController> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.favorite_border, color: Colors.white),
-          onPressed: () => controller.followCompany(company.id!),
+          icon: Icon(
+            (currentCompany.isFollowing ?? false) ? Icons.favorite : Icons.favorite_border,
+            color: (currentCompany.isFollowing ?? false) ? Colors.red : Colors.white,
+          ),
+          onPressed: () => controller.followCompany(currentCompany.id!),
         ),
       ],
     );
   }
 
-  Widget _buildCompanyInfo() {
+  Widget _buildCompanyInfo(Company currentCompany) {
     return Row(
       children: [
         Container(
@@ -109,9 +126,9 @@ class CompanyDetailScreen extends GetView<CompanyController> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: company.logo != null
+            child: currentCompany.logo != null
                 ? Image.network(
-                    company.logo!.startsWith('http') ? company.logo! : AppConstants.baseUrl + company.logo!,
+                    currentCompany.logo!.startsWith('http') ? currentCompany.logo! : AppConstants.baseUrl + currentCompany.logo!,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(Icons.business, size: 40, color: Colors.grey);
@@ -126,12 +143,12 @@ class CompanyDetailScreen extends GetView<CompanyController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                company.name ?? 'اسم الشركة',
+                currentCompany.name ?? 'اسم الشركة',
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textColor),
               ),
               const SizedBox(height: 4),
               Text(
-                company.industry != null ? AppEnums.industries[company.industry] ?? company.industry! : 'قطاع غير محدد',
+                currentCompany.industry != null ? AppEnums.industries[currentCompany.industry] ?? currentCompany.industry! : 'قطاع غير محدد',
                 style: TextStyle(fontSize: 16, color: AppColors.textColor.withOpacity(0.7)),
               ),
             ],
@@ -148,16 +165,17 @@ class CompanyDetailScreen extends GetView<CompanyController> {
     );
   }
 
-  Widget _buildDetailsGrid() {
+  Widget _buildDetailsGrid(Company currentCompany) {
     return LayoutBuilder(builder: (context, constraints) {
       return Wrap(
         spacing: 16,
         runSpacing: 16,
         children: [
-          _buildDetailItem(Icons.calendar_today, 'سنة التأسيس', company.foundedYear?.toString() ?? 'غير معروف'),
-          _buildDetailItem(Icons.people, 'عدد الموظفين', company.employeesCount?.toString() ?? 'غير معروف'),
-          _buildDetailItem(Icons.business_center, 'حجم الشركة', AppEnums.companySizes[company.size] ?? company.size ?? 'غير محدد'),
-          _buildDetailItem(Icons.location_city, 'الدولة', company.country ?? 'غير محدد'),
+          _buildDetailItem(Icons.calendar_today, 'سنة التأسيس', currentCompany.foundedYear?.toString() ?? 'غير معروف'),
+          _buildDetailItem(Icons.people, 'عدد الموظفين', currentCompany.employeesCount?.toString() ?? 'غير معروف'),
+          _buildDetailItem(Icons.business_center, 'حجم الشركة', AppEnums.companySizes[currentCompany.size] ?? currentCompany.size ?? 'غير محدد'),
+          _buildDetailItem(Icons.location_city, 'الدولة', currentCompany.country ?? 'غير محدد'),
+          _buildDetailItem(Icons.people, 'عدد المتابعين', currentCompany.followersCount?.toString() ?? '0'),
         ],
       );
     });
@@ -190,17 +208,17 @@ class CompanyDetailScreen extends GetView<CompanyController> {
     );
   }
 
-  Widget _buildContactInfo() {
+  Widget _buildContactInfo(Company currentCompany) {
     return Column(
       children: [
-        if (company.website != null)
-          _buildContactItem1(Icons.language, 'الموقع الإلكتروني', company.website!),
-        if (company.email != null)
-          _buildContactItem1(Icons.email, 'البريد الإلكتروني', company.email!),
-        if (company.phone != null)
-          _buildContactItem1(Icons.phone, 'رقم الهاتف', company.phone!),
-        if (company.city != null || company.address != null)
-          _buildContactItem(Icons.location_on, 'العنوان', '${AppEnums.cities[company.city] ?? company.city ?? ''} ${company.address != null ? ' - ${company.address}' : ''}'),
+        if (currentCompany.website != null)
+          _buildContactItem1(Icons.language, 'الموقع الإلكتروني', currentCompany.website!),
+        if (currentCompany.email != null)
+          _buildContactItem1(Icons.email, 'البريد الإلكتروني', currentCompany.email!),
+        if (currentCompany.phone != null)
+          _buildContactItem1(Icons.phone, 'رقم الهاتف', currentCompany.phone!),
+        if (currentCompany.city != null || currentCompany.address != null)
+          _buildContactItem(Icons.location_on, 'العنوان', '${AppEnums.cities[currentCompany.city] ?? currentCompany.city ?? ''} ${currentCompany.address != null ? ' - ${currentCompany.address}' : ''}'),
       ],
     );
   }
@@ -265,8 +283,4 @@ class CompanyDetailScreen extends GetView<CompanyController> {
       ),
     );
   }
-
-
-
-
 }

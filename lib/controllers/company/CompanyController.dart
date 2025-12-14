@@ -21,6 +21,9 @@ class CompanyController extends GetxController {
   final RxList<CompanyReview> companyReviews = <CompanyReview>[].obs;
   final RxList<JobList> companyJobs = <JobList>[].obs;
   final RxBool isLoading = false.obs;
+  
+  // Reactive Company Cache for Detail Screens
+  final RxMap<int, Company> companyDetailsCache = <int, Company>{}.obs;
 
   // Filter Observables
   final RxString searchQuery = ''.obs;
@@ -67,6 +70,13 @@ class CompanyController extends GetxController {
       if (response.results != null) {
         companies.assignAll(response.results!);
         _storage.write('companies_list', response.results!.map((e) => e.toJson()).toList());
+        
+        // Update cache with fresh data
+        for (var company in response.results!) {
+          if (company.id != null) {
+            companyDetailsCache[company.id!] = company;
+          }
+        }
       }
      }
      catch (e)
@@ -90,6 +100,12 @@ class CompanyController extends GetxController {
       final company = await _companyService.getCompany(slug);
       if (company != null) {
         _storage.write('company_detail_$slug', company.toJson());
+        
+        // Update cache
+        if (company.id != null) {
+          companyDetailsCache[company.id!] = company;
+        }
+        
         return company;
       }
       return null;
@@ -132,9 +148,63 @@ class CompanyController extends GetxController {
 
   Future<void> followCompany(int companyId) async {
     try {
-      await _companyService.followCompany(companyId);
-      Get.snackbar('Success', 'Follow status updated');
-      AppErrorHandler.showSuccessSnack('تم متابعة الشركة بنجاح');
+      final response = await _companyService.followCompany(companyId);
+      final message = response['message'];
+      final isFollowing = response['isFollowing'];
+      
+      // Update local reactive cache manually
+      if (companyDetailsCache.containsKey(companyId)) {
+        final currentCompany = companyDetailsCache[companyId]!;
+        
+        // Calculate new follower count
+        int newFollowersCount = currentCompany.followersCount ?? 0;
+        if (isFollowing == true) {
+          // If we just followed, increment
+          // But only if we weren't already following to avoid double count if something weird happens 
+          // (though checking !currentCompany.isFollowing would be safer)
+           newFollowersCount = (currentCompany.followersCount ?? 0) + 1;
+        } else {
+           // If we just unfollowed, decrement
+           newFollowersCount = (currentCompany.followersCount ?? 0) - 1;
+           if (newFollowersCount < 0) newFollowersCount = 0;
+        }
+
+        // Create new company object with updated fields
+        // Since Company fields are final, we have to create a new instance via copyWith-like logic 
+        // or just constructing it again. Ideally we should have copyWith.
+        // I will re-construct it using existing data + new data.
+        
+        final updatedCompany = Company(
+          id: currentCompany.id,
+          name: currentCompany.name,
+          slug: currentCompany.slug,
+          description: currentCompany.description,
+          logo: currentCompany.logo,
+          coverImage: currentCompany.coverImage,
+          website: currentCompany.website,
+          email: currentCompany.email,
+          phone: currentCompany.phone,
+          size: currentCompany.size,
+          address: currentCompany.address,
+          city: currentCompany.city,
+          country: currentCompany.country,
+          industry: currentCompany.industry,
+          foundedYear: currentCompany.foundedYear,
+          employeesCount: currentCompany.employeesCount,
+          isVerified: currentCompany.isVerified,
+          isFeatured: currentCompany.isFeatured,
+          totalJobs: currentCompany.totalJobs,
+          activeJobs: currentCompany.activeJobs,
+          isFollowing: isFollowing, // New Status
+          followersCount: newFollowersCount, // New Count
+          averageRating: currentCompany.averageRating,
+          createdAt: currentCompany.createdAt,
+        );
+        
+        companyDetailsCache[companyId] = updatedCompany;
+      }
+      
+      AppErrorHandler.showSuccessSnack(message);
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     }

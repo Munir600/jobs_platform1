@@ -15,7 +15,6 @@ import '../view/screens/interview/InterviewDetailScreen.dart';
 import '../view/screens/main_screen.dart';
 import '../view/screens/splash_screen.dart';
 import '../core/middleware/auth_middleware.dart';
-import '../view/screens/profile/jobseeker_profile/JobSeekerProfileBinding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';

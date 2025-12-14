@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../core/constants.dart';
 import '../../../core/utils/error_handler.dart';
+import '../../models/company/CompanyFollower.dart';
 import '../../models/job/PaginatedJobListList.dart';
 import '../api_client.dart';
 import '../../models/company/Company.dart';
@@ -93,15 +94,23 @@ class CompanyService {
     }
   }
 
-  Future<void> followCompany(int companyId) async {
+  Future<Map<String, dynamic>> followCompany(int companyId) async {
     final headers = await _getHeaders();
     final response = await _apiClient.post(
       '/api/companies/$companyId/follow/',
       {},
       headers: headers,
     );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to follow/unfollow company');
+    print('Follow Company Response: ${response.statusCode} ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      return {
+        'message': data['message'] ?? 'تمت العملية بنجاح',
+        'isFollowing': response.statusCode == 201,
+      };
+    } else {
+      throw Exception(response.body);
     }
   }
 
@@ -240,12 +249,6 @@ class CompanyService {
           data[key] = value;
         }
       });
-
-      // We use direct http.put here because ApiClient might not handle the specific endpoint format if not using ApiEndpoints constant
-      // But actually ApiClient takes 'path'. 
-      // Let's use ApiClient but we need to construct the path with slug.
-      // ApiEndpoints.updateCompany has /api/ prefix now.
-      
       final path = ApiEndpoints.updateCompany.replaceAll('{slug}', slug);
       final response = await _apiClient.put(
         path,
