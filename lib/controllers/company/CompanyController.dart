@@ -21,6 +21,7 @@ class CompanyController extends GetxController {
   final RxList<CompanyReview> companyReviews = <CompanyReview>[].obs;
   final RxList<JobList> companyJobs = <JobList>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool isListLoading = false.obs;
   
   // Reactive Company Cache for Detail Screens
   final RxMap<int, Company> companyDetailsCache = <int, Company>{}.obs;
@@ -58,7 +59,7 @@ class CompanyController extends GetxController {
 
   Future<void> loadCompanies() async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _companyService.getCompanies(
         search: searchQuery.value.isNotEmpty ? searchQuery.value : null,
         city: selectedCity.value.isNotEmpty ? selectedCity.value : null,
@@ -85,7 +86,7 @@ class CompanyController extends GetxController {
        // print('Company error from  Response isss: $e');
 
      } finally {
-       isLoading.value = false;
+       isListLoading.value = false;
      }
   }
 
@@ -202,6 +203,12 @@ class CompanyController extends GetxController {
         );
         
         companyDetailsCache[companyId] = updatedCompany;
+        
+        // Also update the companies list for Obx in ListScreen
+        final listIndex = companies.indexWhere((c) => c.id == companyId);
+        if (listIndex != -1) {
+          companies[listIndex] = updatedCompany;
+        }
       }
       
       AppErrorHandler.showSuccessSnack(message);

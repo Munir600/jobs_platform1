@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../core/utils/network_utils.dart';
+import '../../core/utils/error_handler.dart';
 import '../../core/constants.dart';
 import '../../data/models/accounts/JobSeekerProfile.dart';
 import '../ResumeController.dart';
@@ -114,6 +115,7 @@ class JobSeekerProfileController extends GetxController {
       final success = await _accountController.updateJobSeekerProfile(data, resume: resumeFile.value);
       if (success) {
         Get.back();
+        AppErrorHandler.showSuccessSnack('تم تحديث الملف الشخصي بنجاح');
       }
     }
   }

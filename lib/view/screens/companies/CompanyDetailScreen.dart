@@ -14,11 +14,9 @@ class CompanyDetailScreen extends GetView<CompanyController> {
 
   @override
   Widget build(BuildContext context) {
-    // Load related data
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if(company.id != null) {
-        // Ensure the company is in the cache (if it came from a list that populated it, fine, otherwise load it/put it)
-        // If it's not in cache, put the detailed one we have (or incomplete one)
         if (!controller.companyDetailsCache.containsKey(company.id)) {
            controller.companyDetailsCache[company.id!] = company;
         }
@@ -31,7 +29,6 @@ class CompanyDetailScreen extends GetView<CompanyController> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Obx(() {
-        // Use the company from cache if available, otherwise fallback to the one passed in constructor
         final currentCompany = (company.id != null && controller.companyDetailsCache.containsKey(company.id))
             ? controller.companyDetailsCache[company.id]!
             : company;
