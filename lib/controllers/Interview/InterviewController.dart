@@ -11,6 +11,7 @@ class InterviewController extends GetxController {
 
   final RxList<Interview> interviews = <Interview>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool isListLoading = false.obs;
 
   @override
   void onInit() {
@@ -42,7 +43,7 @@ class InterviewController extends GetxController {
 
   Future<void> loadInterviews() async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _interviewService.getInterviews();
       if (response.results != null) {
         interviews.assignAll(response.results!);
@@ -51,7 +52,7 @@ class InterviewController extends GetxController {
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 

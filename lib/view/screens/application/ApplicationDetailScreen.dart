@@ -17,7 +17,7 @@ class ApplicationDetailScreen extends StatefulWidget {
 }
 
 class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
-  final resumeController = Get.put(ResumeController());
+  final resumeController = Get.put(ResumeController(),permanent: true);
 
   final ApplicationController controller = Get.find<ApplicationController>();
   final TextEditingController messageController = TextEditingController();

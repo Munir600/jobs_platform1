@@ -11,7 +11,7 @@ import 'AccountController.dart';
 
 class JobSeekerProfileController extends GetxController {
   final AccountController _accountController = Get.find<AccountController>();
-  final ResumeController _resumeController = Get.put(ResumeController());
+  final ResumeController _resumeController = Get.put(ResumeController(), permanent: true);
 
   // Form Controllers
   late TextEditingController skillsCtrl;

@@ -17,7 +17,7 @@ class InterviewListScreen extends GetView<InterviewController> {
       body: Stack(
         children: [
           Obx(() {
-            if (controller.isLoading.value) {
+            if (controller.isListLoading.value) {
               return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
             }
 
@@ -30,13 +30,17 @@ class InterviewListScreen extends GetView<InterviewController> {
               );
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: controller.interviews.length,
-              itemBuilder: (context, index) {
-                final interview = controller.interviews[index];
-                return _buildInterviewCard(interview);
-              },
+            return RefreshIndicator(
+              onRefresh: controller.loadInterviews,
+              color: AppColors.primaryColor,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: controller.interviews.length,
+                itemBuilder: (context, index) {
+                  final interview = controller.interviews[index];
+                  return _buildInterviewCard(interview);
+                },
+              ),
             );
           }),
         ],
