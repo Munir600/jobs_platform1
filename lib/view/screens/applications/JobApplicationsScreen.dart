@@ -39,7 +39,7 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
         children: [
           const PatternBackground(),
           Obx(() {
-            if (controller.isLoading.value) {
+            if (controller.isListLoading.value) {
               return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
             }
 
@@ -52,13 +52,17 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
               );
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: controller.jobApplications.length,
-              itemBuilder: (context, index) {
-                final application = controller.jobApplications[index];
-                return _buildApplicationCard(application);
-              },
+            return RefreshIndicator(
+              onRefresh: controller.loadJobApplications,
+              color: AppColors.primaryColor,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: controller.jobApplications.length,
+                itemBuilder: (context, index) {
+                  final application = controller.jobApplications[index];
+                  return _buildApplicationCard(application);
+                },
+              ),
             );
           }),
         ],

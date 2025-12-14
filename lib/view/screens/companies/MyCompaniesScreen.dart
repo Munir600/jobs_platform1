@@ -50,7 +50,7 @@ class MyCompaniesScreen extends GetView<CompanyController> {
       ),
 
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isListLoading.value) {
           return const Center(
             child: CircularProgressIndicator(color: AppColors.primaryColor),
           );
@@ -74,18 +74,22 @@ class MyCompaniesScreen extends GetView<CompanyController> {
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
-          itemCount: companies.length,
-          itemBuilder: (context, index) {
-            final company = companies[index];
-            return CompanyCard(
-              company: company,
-              showControls: true,
-              onEdit: () => Get.to(() => CreateCompanyScreen(company: company)),
-              onDelete: () => _confirmDelete(company),
-            );
-          },
+        return RefreshIndicator(
+          onRefresh: () async => await controller.getMyCompanies(),
+          color: AppColors.primaryColor,
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
+            itemCount: companies.length,
+            itemBuilder: (context, index) {
+              final company = companies[index];
+              return CompanyCard(
+                company: company,
+                showControls: true,
+                onEdit: () => Get.to(() => CreateCompanyScreen(company: company)),
+                onDelete: () => _confirmDelete(company),
+              );
+            },
+          ),
         );
       }),
     );

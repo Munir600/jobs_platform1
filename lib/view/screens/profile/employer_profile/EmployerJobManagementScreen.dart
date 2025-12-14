@@ -54,7 +54,7 @@ class EmployerJobManagementScreen extends GetView<JobController> {
 
       ,
         body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isListLoading.value) {
           return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
         }
 

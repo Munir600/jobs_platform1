@@ -124,7 +124,7 @@ class CompanyController extends GetxController {
 
   Future<List<Company>> getMyCompanies({bool showLoading = true}) async {
     try {
-      if (showLoading) isLoading.value = true;
+      if (showLoading) isListLoading.value = true;
 
       final response = await _companyService.getMyCompanies();
       if (response.results != null) {
@@ -142,7 +142,7 @@ class CompanyController extends GetxController {
       AppErrorHandler.showErrorSnack(e);
       return [];
     } finally {
-      if (showLoading) isLoading.value = false;
+      if (showLoading) isListLoading.value = false;
     }
   }
 
@@ -160,20 +160,11 @@ class CompanyController extends GetxController {
         // Calculate new follower count
         int newFollowersCount = currentCompany.followersCount ?? 0;
         if (isFollowing == true) {
-          // If we just followed, increment
-          // But only if we weren't already following to avoid double count if something weird happens 
-          // (though checking !currentCompany.isFollowing would be safer)
            newFollowersCount = (currentCompany.followersCount ?? 0) + 1;
         } else {
-           // If we just unfollowed, decrement
            newFollowersCount = (currentCompany.followersCount ?? 0) - 1;
            if (newFollowersCount < 0) newFollowersCount = 0;
         }
-
-        // Create new company object with updated fields
-        // Since Company fields are final, we have to create a new instance via copyWith-like logic 
-        // or just constructing it again. Ideally we should have copyWith.
-        // I will re-construct it using existing data + new data.
         
         final updatedCompany = Company(
           id: currentCompany.id,
@@ -204,7 +195,7 @@ class CompanyController extends GetxController {
         
         companyDetailsCache[companyId] = updatedCompany;
         
-        // Also update the companies list for Obx in ListScreen
+        // update the companies list for Obx in ListScreen
         final listIndex = companies.indexWhere((c) => c.id == companyId);
         if (listIndex != -1) {
           companies[listIndex] = updatedCompany;

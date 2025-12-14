@@ -26,6 +26,7 @@ class ApplicationController extends GetxController {
   final Rx<ApplicationStatistics?> statistics = Rx<ApplicationStatistics?>(null);
 
   final RxBool isLoading = false.obs;
+  final RxBool isListLoading = false.obs;
   final RxBool isMessageLoading = false.obs;
 
   @override
@@ -67,7 +68,7 @@ class ApplicationController extends GetxController {
 
   Future<void> loadMyApplications() async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _applicationService.getMyApplications();
       if (response.results != null) {
         myApplications.assignAll(response.results!);
@@ -76,13 +77,13 @@ class ApplicationController extends GetxController {
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 
   Future<void> loadJobApplications({int? jobId}) async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       if (jobId != null) {
          final cachedJobApps = _storage.read('job_applications_$jobId');
          if(cachedJobApps != null && cachedJobApps is List) {
@@ -100,13 +101,13 @@ class ApplicationController extends GetxController {
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 
   Future<void> loadInterviews() async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _applicationService.getInterviews();
       if (response.results != null) {
         interviews.assignAll(response.results!);
@@ -115,7 +116,7 @@ class ApplicationController extends GetxController {
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 

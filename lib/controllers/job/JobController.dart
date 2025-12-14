@@ -20,6 +20,7 @@ class JobController extends GetxController {
   final RxList<JobAlert> alerts = <JobAlert>[].obs;
   final RxList<JobBookmark> bookmarks = <JobBookmark>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool isListLoading = false.obs;
   final Rx<JobDetail?> currentJob = Rx<JobDetail?>(null);
   final RxBool isJobDetailLoading = false.obs;
   
@@ -101,7 +102,7 @@ class JobController extends GetxController {
 
   Future<void> loadJobs() async {
      try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _jobService.getJobs(
         search: searchQuery.value.isNotEmpty ? searchQuery.value : null,
         city: selectedCity.value.isNotEmpty ? selectedCity.value : null,
@@ -119,13 +120,13 @@ class JobController extends GetxController {
     } catch (e) {
        AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 
   Future<void> loadMyJobs() async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _jobService.getMyJobs();
       if (response.results != null) {
         myJobs.assignAll(response.results!);
@@ -134,7 +135,7 @@ class JobController extends GetxController {
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 
@@ -246,7 +247,7 @@ class JobController extends GetxController {
 
   Future<void> loadAlerts() async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _jobService.getJobAlerts();
       if (response.results != null) {
         alerts.assignAll(response.results!);
@@ -254,7 +255,7 @@ class JobController extends GetxController {
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 
@@ -272,7 +273,7 @@ class JobController extends GetxController {
 
   Future<void> loadBookmarks() async {
     try {
-      isLoading.value = true;
+      isListLoading.value = true;
       final response = await _jobService.getJobBookmarks();
       if (response.results != null) {
         bookmarks.assignAll(response.results!);
@@ -280,7 +281,7 @@ class JobController extends GetxController {
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
     } finally {
-      isLoading.value = false;
+      isListLoading.value = false;
     }
   }
 

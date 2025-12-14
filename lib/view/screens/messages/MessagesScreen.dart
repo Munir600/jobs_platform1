@@ -47,7 +47,7 @@ class MessagesScreen extends GetView<ApplicationController> {
         ],
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isListLoading.value) {
           return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
         }
 

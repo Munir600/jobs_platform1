@@ -11,7 +11,7 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.myApplications.isEmpty && !controller.isLoading.value) {
+    if (controller.myApplications.isEmpty && !controller.isListLoading.value) {
        Future.microtask(() => controller.loadMyApplications());
     }
     return Scaffold(
@@ -19,7 +19,7 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
       body: Stack(
         children: [
           Obx(() {
-            if (controller.isLoading.value && controller.myApplications.isEmpty) {
+            if (controller.isListLoading.value && controller.myApplications.isEmpty) {
               return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
             }
 

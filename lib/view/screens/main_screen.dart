@@ -29,7 +29,7 @@ class MainScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Center(
           child: Text(
-            'منـصـة التوظـيـف',
+            'منـصـة توظـيـف',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,

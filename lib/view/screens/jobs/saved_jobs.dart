@@ -9,7 +9,7 @@ class SavedJobsScreen extends GetView<JobController> {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.bookmarks.isEmpty && !controller.isLoading.value) {
+    if (controller.bookmarks.isEmpty && !controller.isListLoading.value) {
        Future.microtask(() => controller.loadBookmarks());
     }
 
@@ -23,7 +23,7 @@ class SavedJobsScreen extends GetView<JobController> {
         iconTheme: const IconThemeData(color: AppColors.textColor),
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.bookmarks.isEmpty) {
+        if (controller.isListLoading.value && controller.bookmarks.isEmpty) {
            return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
         }
 

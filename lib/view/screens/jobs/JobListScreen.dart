@@ -48,7 +48,7 @@ class JobListScreen extends GetView<JobController> {
           ),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value) {
+              if (controller.isListLoading.value) {
                 return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
               }
 

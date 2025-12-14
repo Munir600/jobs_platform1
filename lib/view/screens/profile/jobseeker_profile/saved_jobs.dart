@@ -84,7 +84,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> with SingleTickerProv
         ],
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.bookmarks.isEmpty) {
+        if (controller.isListLoading.value && controller.bookmarks.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

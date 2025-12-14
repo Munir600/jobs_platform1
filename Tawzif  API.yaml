@@ -203,6 +203,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
+  /api/accounts/resend-verification-code/:
+    post:
+      operationId: accounts_resend_verification_code_create
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationCode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationCode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationCode'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: تم إعادة إرسال كود التحقق
   /api/accounts/users/:
     get:
       operationId: accounts_users_list
@@ -258,6 +282,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
+  /api/accounts/verify-phone/:
+    post:
+      operationId: accounts_verify_phone_create
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneVerification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PhoneVerification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PhoneVerification'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: تم التحقق من الهاتف بنجاح
   /api/applications/{application_id}/mark-viewed/:
     post:
       operationId: applications_mark_viewed_create
@@ -757,6 +805,12 @@ paths:
         description: رقم الصفحة ضمن النتائج المقسمة.
         schema:
           type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
       - name: search
         required: false
         in: query
@@ -1090,6 +1144,12 @@ paths:
         required: false
         in: query
         description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
         schema:
           type: integer
       - name: search
@@ -1797,6 +1857,7 @@ components:
           format: uri
           nullable: true
           title: الموقع الإلكتروني
+          description: يمكن إدخال www.example.com دون http(s)
           maxLength: 200
         email:
           type: string
@@ -1910,6 +1971,7 @@ components:
           format: uri
           nullable: true
           title: الموقع الإلكتروني
+          description: يمكن إدخال www.example.com دون http(s)
           maxLength: 200
         email:
           type: string
@@ -2649,6 +2711,9 @@ components:
         is_urgent:
           type: boolean
           title: عاجل
+        is_active:
+          type: boolean
+          title: نشط
       required:
       - city
       - company
@@ -3281,6 +3346,7 @@ components:
           format: uri
           nullable: true
           title: الموقع الإلكتروني
+          description: يمكن إدخال www.example.com دون http(s)
           maxLength: 200
         email:
           type: string
@@ -3566,6 +3632,21 @@ components:
         is_urgent:
           type: boolean
           title: عاجل
+        is_active:
+          type: boolean
+          title: نشط
+    PhoneVerification:
+      type: object
+      properties:
+        phone:
+          type: string
+        verification_code:
+          type: string
+          maxLength: 6
+          minLength: 6
+      required:
+      - phone
+      - verification_code
     RatingEnum:
       enum:
       - 1
@@ -3580,6 +3661,13 @@ components:
         * `3` - 3 نجوم
         * `4` - 4 نجوم
         * `5` - 5 نجوم
+    ResendVerificationCode:
+      type: object
+      properties:
+        phone:
+          type: string
+      required:
+      - phone
     SizeEnum:
       enum:
       - startup
