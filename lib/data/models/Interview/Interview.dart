@@ -1,7 +1,7 @@
 import '../application/JobApplication.dart';
 
 class Interview {
-  final int? id;
+  final int id;
   final JobApplication? application;
   final String? interviewType;
   final String? interviewTypeDisplay;
@@ -20,7 +20,7 @@ class Interview {
   final String? updatedAt;
 
   Interview({
-    this.id,
+   required this.id,
     this.application,
     this.interviewType,
     this.interviewTypeDisplay,

@@ -1,5 +1,5 @@
 class InterviewCreate {
-  final int application;
+  final int? application;
   final String interviewType;
   final String scheduledDate;
   final int? durationMinutes;
@@ -10,7 +10,7 @@ class InterviewCreate {
   final String? notes;
 
   InterviewCreate({
-    required this.application,
+     this.application,
     required this.interviewType,
     required this.scheduledDate,
     this.durationMinutes,

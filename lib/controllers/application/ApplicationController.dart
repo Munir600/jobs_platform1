@@ -32,7 +32,8 @@ class ApplicationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadCachedData();
+    //loadCachedData();
+    loadMyApplications();
   }
 
   void loadCachedData() {
@@ -120,7 +121,7 @@ class ApplicationController extends GetxController {
     }
   }
 
-  Future<void> updateApplicationStatus(int id, String status,
+  Future<void> updateApplicationStatus(int? id, String status,
       {String? notes, int? rating}) async {
     try {
       isLoading.value = true;
@@ -130,16 +131,18 @@ class ApplicationController extends GetxController {
         rating: rating,
       );
 
-      await _applicationService.updateApplication(id, updateData);
+      await _applicationService.updateApplication(id!, updateData);
 
       final index = jobApplications.indexWhere((app) => app.id == id);
       if (index != -1) {
         await loadJobApplications();
       }
+      Get.back();
       AppErrorHandler.showSuccessSnack('تم تحديث حالة الطلب بنجاح إلى $status');
 
     } catch (e) {
       AppErrorHandler.showErrorSnack(e);
+      print('Error updating application status is : $e');
     } finally {
       isLoading.value = false;
     }
@@ -177,20 +180,20 @@ class ApplicationController extends GetxController {
     }
   }
 
-  Future<void> createInterview(InterviewCreate interview) async {
-    try {
-      isLoading.value = true;
-      await _applicationService.createInterview(interview);
-      await loadInterviews();
-      AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
-
-    } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
-
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  // Future<void> createInterview(InterviewCreate interview) async {
+  //   try {
+  //     isLoading.value = true;
+  //     await _applicationService.createInterview(interview);
+  //     await loadInterviews();
+  //     AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
+  //
+  //   } catch (e) {
+  //     AppErrorHandler.showErrorSnack(e);
+  //
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<bool> createApplication(JobApplicationCreate application) async {
     try {
@@ -212,10 +215,12 @@ class ApplicationController extends GetxController {
       isLoading.value = true;
       await _applicationService.updateApplication(id, update);
       await loadJobApplications();
-      AppErrorHandler.showSuccessSnack('تم تحديث الطلب بنجاح');
+     await loadMyApplications();
+      //AppErrorHandler.showSuccessSnack('تم تحديث الطلب بنجاح');
       return true;
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+      print('Error updating application: $e');
+     // AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {
       isLoading.value = false;

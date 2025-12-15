@@ -5,66 +5,52 @@ import '../../../../controllers/application/ApplicationController.dart';
 import '../../../../data/models/application/JobApplication.dart';
 import '../../../../data/models/Interview/InterviewCreate.dart';
 import '../../../controllers/ResumeController.dart';
+import '../../../../controllers/Interview/InterviewController.dart';
 import '../../../../core/utils/contact_utils.dart';
 
-class ApplicationDetailScreen extends StatefulWidget {
+class ApplicationDetailScreen extends GetView<ApplicationController> {
   final JobApplication application;
 
   const ApplicationDetailScreen({super.key, required this.application});
 
   @override
-  State<ApplicationDetailScreen> createState() => _ApplicationDetailScreenState();
-}
-
-class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
-  final resumeController = Get.put(ResumeController(),permanent: true);
-
-  final ApplicationController controller = Get.find<ApplicationController>();
-  final TextEditingController messageController = TextEditingController();
-  final TextEditingController notesController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.application.id != null) {
-      controller.loadMessages(widget.application.id!);
-    }
-  }
-
-  @override
-  void dispose() {
-    messageController.dispose();
-    notesController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (application.id != null) {
+       Future.microtask(() => controller.loadMessages(application.id));
+    }
+    
+    final resumeController = Get.put(ResumeController(), permanent: true);
+    final InterviewController interviewController = Get.find<InterviewController>();
+    final TextEditingController messageController = TextEditingController();
+    final TextEditingController notesController = TextEditingController();
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: Center(child: Text( 'تفاصيل الطلب', style: const TextStyle(color: AppColors.textColor))),
+        title: Center(child: Text('تفاصيل الطلب', style: const TextStyle(color: AppColors.textColor))),
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textColor),
       ),
       body: Obx(() {
         JobApplication? foundApp;
+        // Search in myApplications first
         for (var app in controller.myApplications) {
-          if (app.id == widget.application.id) {
+          if (app.id == application.id) {
             foundApp = app;
             break;
           }
         }
+
         if (foundApp == null) {
            for (var app in controller.jobApplications) {
-             if (app.id == widget.application.id) {
+             if (app.id == application.id) {
                foundApp = app;
                break;
              }
            }
         }
-        final latestApp = foundApp ?? widget.application;
+        final latestApp = foundApp ?? application;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -143,9 +129,6 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Actions
-              // Actions - Only for Employer
-              // Note: Obx is already parent, so we don't need another Obx here, but nested Obx is fine or we can just use normal logic
               Builder(builder: (context) {
                 final isEmployer = controller.currentUser.value?.isEmployer ?? false;
                 if (!isEmployer) return const SizedBox.shrink();
@@ -157,7 +140,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () => _showActionDialog('accepted'),
+                              onPressed: () => _showActionDialog(context, 'accepted', notesController),
                               style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                               child: const Text('قبول'),
                             ),
@@ -165,7 +148,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                           const SizedBox(width: 16),
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () => _showActionDialog('rejected'),
+                              onPressed: () => _showActionDialog(context, 'rejected', notesController),
                               style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
                               child: const Text('رفض'),
                             ),
@@ -176,7 +159,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: () => _showScheduleInterviewDialog(),
+                          onPressed: () => _showScheduleInterviewDialog(context, interviewController, latestApp),
                           icon: const Icon(Icons.calendar_today),
                           label: const Text('جدولة مقابلة'),
                           style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor, foregroundColor: Colors.white),
@@ -269,7 +252,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
   }
 
 
-  void _showActionDialog(String status) {
+  void _showActionDialog(BuildContext context, String status, TextEditingController notesController) {
     Get.defaultDialog(
       title: status == 'accepted' ? 'قبول الطلب' : 'رفض الطلب',
       content: Column(
@@ -289,20 +272,20 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
       confirmTextColor: Colors.white,
       buttonColor: status == 'accepted' ? Colors.green : Colors.red,
       onConfirm: () {
-        if (widget.application.id != null) {
+        if (application.id != null) {
           controller.updateApplicationStatus(
-            widget.application.id!,
+            application.id,
             status,
             notes: notesController.text,
           );
           Get.back();
-          Get.back(); // Return to list
+          Get.back();
         }
       },
     );
   }
 
-  void _showScheduleInterviewDialog() {
+  void _showScheduleInterviewDialog(BuildContext context, InterviewController interviewController, JobApplication currentApp) {
     final dateController = TextEditingController();
     final timeController = TextEditingController();
     final durationController = TextEditingController();
@@ -311,8 +294,8 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
     final interviewerNameController = TextEditingController();
     final interviewerEmailController = TextEditingController();
     final notesController = TextEditingController();
-    
-    String interviewType = 'video'; 
+
+    String interviewType = 'video';
     DateTime? selectedDate;
     TimeOfDay? selectedTime;
 
@@ -430,27 +413,34 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                 decoration: const InputDecoration(labelText: 'ملاحظات', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  if (widget.application.id != null && selectedDate != null && selectedTime != null) {
-                    // Close the bottom sheet first to avoid GetX conflicts with Snackbars
-                    Navigator.of(context).pop();
+              Obx(() => interviewController.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                onPressed: () async {
+                  if (currentApp.id != null && selectedDate != null && selectedTime != null) {
+                    final link = linkController.text.trim();
+                    if (link.isNotEmpty && !link.startsWith('http://') && !link.startsWith('https://')) {
+                       Get.snackbar('خطأ', 'الرجاء إدخال رابط صالح (http/https)', backgroundColor: Colors.red, colorText: Colors.white);
+                       return;
+                    }
 
-                    // Construct ISO 8601 date string
-                    final dateTime = '${dateController.text}T${timeController.text}:00Z'; 
-                    
+                    final dateTime = '${dateController.text}T${timeController.text}:00Z';
                     final interview = InterviewCreate(
-                      application: widget.application.id!,
+                      application: currentApp.id,
                       interviewType: interviewType,
                       scheduledDate: dateTime,
                       durationMinutes: int.tryParse(durationController.text),
                       location: locationController.text.isNotEmpty ? locationController.text : null,
-                      meetingLink: linkController.text.isNotEmpty ? linkController.text : null,
+                      meetingLink: link.isNotEmpty ? link : null,
                       interviewerName: interviewerNameController.text.isNotEmpty ? interviewerNameController.text : null,
                       interviewerEmail: interviewerEmailController.text.isNotEmpty ? interviewerEmailController.text : null,
                       notes: notesController.text.isNotEmpty ? notesController.text : null,
                     );
-                    controller.createInterview(interview);
+
+                    final success = await interviewController.createInterview(interview);
+                    if (success) {
+                      Get.back(); // Close bottom sheet
+                    }
                   } else {
                     Get.snackbar('خطأ', 'يرجى اختيار التاريخ والوقت');
                   }
@@ -461,7 +451,7 @@ class _ApplicationDetailScreenState extends State<ApplicationDetailScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text('جدولة المقابلة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
+              )),
               const SizedBox(height: 16),
             ],
           ),

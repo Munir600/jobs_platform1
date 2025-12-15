@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
+import 'package:jobs_platform1/core/utils/error_handler.dart';
 
 import '../../../core/constants.dart';
 import '../api_client.dart';
@@ -25,11 +26,11 @@ class InterviewService {
     }
     try {
       final response = await _apiClient.get(path, headers: headers);
-      print('the response for load interviewsss is: $response');
-      if (response.statusCode == 200) {
+      print('the response for load interviewsss is: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return PaginatedInterviewList.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception('Failed to load interviews');
+        throw Exception(response.body);
       }
     } catch (e) {
       throw Exception('Error loading interviews: $e');
@@ -40,18 +41,17 @@ class InterviewService {
     final headers = await _getHeaders();
     try {
       final response = await _apiClient.get('/api/applications/interviews/$id/', headers: headers);
-      print('the response for load interview one by id  is: $response');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return Interview.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception('Failed to load interview');
+        throw Exception(response.body);
       }
     } catch (e) {
       throw Exception('Error loading interview: $e');
     }
   }
 
-  Future<Interview> createInterview(InterviewCreate interview) async {
+  Future<bool> createInterview(InterviewCreate interview) async {
     final headers = await _getHeaders();
     try {
       final response = await _apiClient.post(
@@ -59,16 +59,17 @@ class InterviewService {
         interview.toJson(),
         headers: headers,
       );
-      if (response.statusCode == 200) {
-        print('the response for create interview is: $response');
-        return Interview.fromJson(jsonDecode(response.body));
+      print('the response statusCode for create interview is: ${response.statusCode}');
+      if (response.statusCode == 201 || response.statusCode == 200) {
+         print('the response for create interview is: ${response.body}');
+        AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
+         return true;
       } else {
-        throw Exception('Failed to create interview');
+        throw Exception(response.body);
       }
     } catch (e) {
       throw Exception('Error creating interview: $e');
     }
-
   }
 
   Future<Interview> updateInterview(int id, InterviewCreate interview) async {
@@ -79,10 +80,11 @@ class InterviewService {
         interview.toJson(),
         headers: headers,
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+         print('the response for update interview is: ${response.body}');
         return Interview.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception('Failed to update interview');
+        throw Exception(response.body);
       }
     } catch (e) {
       throw Exception('Error updating interview: $e');

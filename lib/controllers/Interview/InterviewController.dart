@@ -90,11 +90,11 @@ class InterviewController extends GetxController {
       isLoading.value = true;
       await _interviewService.createInterview(interview);
       await loadInterviews();
-      Get.snackbar('Success', 'Interview scheduled successfully');
+      Get.back();
       AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
-
       return true;
     } catch (e) {
+      print('Error creating interview: $e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {
@@ -107,7 +107,6 @@ class InterviewController extends GetxController {
       isLoading.value = true;
       await _interviewService.updateInterview(id, interview);
       await loadInterviews();
-      Get.snackbar('Success', 'Interview updated successfully');
       AppErrorHandler.showSuccessSnack('تم تحديث المقابلة بنجاح');
 
       return true;

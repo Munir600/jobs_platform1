@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:get/get.dart';
+
+import '../../../core/utils/error_handler.dart';
 import '../api_client.dart';
 import '../storage_service.dart';
 import '../../models/application/JobApplication.dart';
@@ -33,7 +36,7 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobApplicationList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load applications');
+      throw Exception(response.body);
     }
   }
 
@@ -50,7 +53,7 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobApplicationList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load job applications');
+      throw Exception(response.body);
     }
   }
 
@@ -60,7 +63,7 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return JobApplication.fromJson(jsonDecode(response.body)); 
     } else {
-      throw Exception('Failed to load application');
+      throw Exception(response.body);
     }
   }
   
@@ -75,7 +78,7 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return JobApplicationCreate.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception(response.body); // Throw the actual server response
+      throw Exception(response.body);
     }
   }
   
@@ -87,7 +90,7 @@ class ApplicationService {
       headers: headers,
     );
     if (response.statusCode != 200 || response.statusCode == 201) {
-      throw Exception('Failed to withdraw application');
+      throw Exception(response.body);
     }
   }
 
@@ -101,7 +104,7 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedApplicationMessageList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load messages');
+      throw Exception(response.body);
     }
   }
 
@@ -119,7 +122,7 @@ class ApplicationService {
     if (response.statusCode == 201 || response.statusCode == 200) {
       return ApplicationMessage.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to send message');
+      throw Exception(response.body);
     }
   }
 
@@ -131,21 +134,27 @@ class ApplicationService {
       headers: headers,
     );
     if (response.statusCode != 200 || response.statusCode == 201) {
-      throw Exception('Failed to mark application as viewed');
+      throw Exception(response.body);
     }
   }
   
-  Future<JobApplication> updateApplication(int id, JobApplicationUpdate data) async {
+  Future<void> updateApplication(int? id, JobApplicationUpdate data) async {
     final headers = await _getHeaders();
     final response = await _apiClient.put(
       '/api/applications/$id/update/',
       data.toJson(),
       headers: headers,
     );
+    final data1 = jsonDecode(response.body);
+    print('Update Application statusCode : ${response.statusCode}');
+    print('Update Application Response for status : ${data1['status']}');
+    print('Update Application Response: $data1');
     if (response.statusCode == 200 || response.statusCode == 201) {
-       return JobApplication.fromJson(jsonDecode(response.body));
+     // AppErrorHandler.showSuccessSnack(' تم تحديث حالة الطلب بنجاح الى ${data1['status']}');
+    //  Get.back();
+      // return JobApplication.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to update application');
+      throw Exception(response.body);
     }
   }
 
@@ -183,23 +192,23 @@ class ApplicationService {
     }
   }
 
-  Future<Interview> createInterview(InterviewCreate interview) async {
-    final headers = await _getHeaders();
-    try {
-      final response = await _apiClient.post(
-        '/api/applications/interviews/create/',
-        interview.toJson(),
-        headers: headers,
-      );
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        return Interview.fromJson(jsonDecode(response.body));
-      } else {
-        throw Exception('Failed to create interview');
-      }
-    } catch (e) {
-      throw Exception('Error creating interview: $e');
-    }
-  }
+  // Future<Interview> createInterview(InterviewCreate interview) async {
+  //   final headers = await _getHeaders();
+  //   try {
+  //     final response = await _apiClient.post(
+  //       '/api/applications/interviews/create/',
+  //       interview.toJson(),
+  //       headers: headers,
+  //     );
+  //     if (response.statusCode == 201 || response.statusCode == 200) {
+  //       return Interview.fromJson(jsonDecode(response.body));
+  //     } else {
+  //       throw Exception(response.body);
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error creating interview: $e');
+  //   }
+  // }
 
   Future<Interview> updateInterview(int id, Map<String, dynamic> data) async {
     final headers = await _getHeaders();

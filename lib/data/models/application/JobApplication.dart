@@ -2,7 +2,7 @@ import '../accounts/profile/jobseeker/job_seeker_profile_model.dart';
 import '../job/JobList.dart';
 
 class JobApplication {
-  final int? id;
+  final int id;
   final JobList? job;
   final User? applicant;
   final String? coverLetter;
@@ -21,7 +21,7 @@ class JobApplication {
   final String? updatedAt;
 
   JobApplication({
-    this.id,
+   required this.id,
     this.job,
     this.applicant,
     this.coverLetter,
