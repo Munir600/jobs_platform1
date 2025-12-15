@@ -17,8 +17,20 @@ class AppErrorHandler {
 
     try {
       final String errorStr = error.toString();
-      final int startIndex = errorStr.indexOf('{');
-      final int endIndex = errorStr.lastIndexOf('}');
+      
+      // Try to find JSON array or object
+      int startIndex = errorStr.indexOf('{');
+      int endIndex = errorStr.lastIndexOf('}');
+      
+      // If no object found, try finding array
+      if (startIndex == -1) {
+        startIndex = errorStr.indexOf('[');
+        endIndex = errorStr.lastIndexOf(']');
+      } else {
+        // If object found, check if array is outer (e.g. wrapped error) but unlikely given the format
+        // stick to object preference if found first? 
+        // actually let's just find the first valid json start
+      }
 
       if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
         final String jsonStr = errorStr.substring(startIndex, endIndex + 1);
@@ -39,6 +51,8 @@ class AppErrorHandler {
           if (errorMessages.isNotEmpty) {
             return errorMessages.join('\n');
           }
+        } else if (decoded is List) {
+           return decoded.join('\n');
         }
       }
     } catch (_) {

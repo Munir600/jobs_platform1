@@ -65,8 +65,16 @@ class AuthController extends GetxController {
      // print('MESSAGES login  FROM API is : $ms');
       _apiService.setAuthToken(token);
       print('TOKEN SET IN API SERVICE: $token');
+      
+      final bool verified = response["data"]["user"]["is_verified"] ?? false;
+      if (!verified) {
+        isLoading.value = false;
+        Get.toNamed('/verify-phone', arguments: phone);
+        AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
+        return false;
+      }
+      
       isLoggedIn.value = true;
-
       isLoading.value = false;
       AppErrorHandler.showSuccessSnack('$ms');
       return true;
@@ -80,25 +88,33 @@ class AuthController extends GetxController {
   Future<bool> register(UserRegistration registration) async {
     try {
       isLoading.value = true;
-   //   print('DATA SENT TO API: ${registration.toJson()}');
+      print('DATA SENT TO API: ${registration.toJson()}');
       final response = await _apiService.post(
         ApiEndpoints.register,
         registration.toJson(),
       );
       print('RESPONSE FROM API: $response');
-      _currentUser.value = User.fromJson(response['data']['user']
-      );
-      _storage.write('user_data', response['data']['user']);
       final token = response['data']['token'];
-      final ms=response["data"]["message"];
       _apiService.setAuthToken(token);
-      isLoggedIn.value = true;
+     // isLoggedIn.value = true; // wait for verification
+      
+      try {
+        if (response['data']['user'] != null) {
+          _currentUser.value = User.fromJson(response['data']['user']);
+          _storage.write('user_data', response['data']['user']);
+        }
+      } catch (e) {
+        print('Error parsing user data: $e');
+        AppErrorHandler.showErrorSnack('خطأ في معالجة بيانات المستخدم: $e');
+      }
 
       isLoading.value = false;
-      AppErrorHandler.showSuccessSnack('$ms');
+      Get.toNamed('/verify-phone', arguments: registration.phone);
+      AppErrorHandler.showSuccessSnack('تم انشاء الحساب بنجاح، يرجى تفعيل رقم الهاتف');
       return true;
     } catch (e) {
       isLoading.value = false;
+      print('ERROR register: $e');
       AppErrorHandler.showErrorSnack('$e');
       return false;
     }
@@ -191,6 +207,61 @@ class AuthController extends GetxController {
 
       isLoading.value = false;
       AppErrorHandler.showSuccessSnack('تم تغيير كلمة المرور بنجاح');
+      return true;
+    } catch (e) {
+      isLoading.value = false;
+      AppErrorHandler.showErrorSnack(e);
+      return false;
+    }
+  }
+
+  Future<bool> verifyPhone(String phone, String code) async {
+    try {
+      isLoading.value = true;
+      final response = await _apiService.post(
+        ApiEndpoints.verifyPhone,
+        {
+          "phone": phone,
+          "verification_code": code
+        },
+      );
+      print('VERIFY PHONE RESPONSE: $response');
+      final token = response['data']['token'];
+      if(token != null) {
+          _apiService.setAuthToken(token);
+          
+         // update user data
+          final user = User.fromJson(response['data']['user']);
+          _currentUser.value = user;
+          _storage.write('user_data', response['data']['user']);
+          isLoggedIn.value = true;
+      }
+
+      isLoading.value = false;
+      AppErrorHandler.showSuccessSnack('تم تفعيل الحساب بنجاح');
+      Get.offAllNamed('/mainScreen');
+      return true;
+    } catch (e) {
+      isLoading.value = false;
+      print('ERROR verifyPhone: $e');
+      AppErrorHandler.showErrorSnack(e);
+      return false;
+    }
+  }
+
+  Future<bool> resendVerificationCode(String phone) async {
+    try {
+      isLoading.value = true;
+      final response = await _apiService.post(
+        ApiEndpoints.resendVerificationCode,
+        {
+          "phone": phone
+        },
+      );
+
+      isLoading.value = false;
+      final message = response['data']['message'] ?? 'تم إعادة إرسال كود التحقق';
+      AppErrorHandler.showSuccessSnack(message);
       return true;
     } catch (e) {
       isLoading.value = false;

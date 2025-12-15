@@ -22,6 +22,8 @@ class ApiEndpoints {
   static const String logout = '/api/accounts/logout/';
   static const String profile = '/api/accounts/profile/';
   static const String users = '/api/accounts/users/';
+  static const String verifyPhone = '/api/accounts/verify-phone/';
+  static const String resendVerificationCode = '/api/accounts/resend-verification-code/';
 
   static const String changePassword = '/api/accounts/change-password/';
   static const String updateProfile = '/api/accounts/profile/update/';

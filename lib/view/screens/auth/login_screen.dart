@@ -37,16 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
     
     if (ok) {
       Get.offAll(() => MainScreen());
-    } else {
-      Get.defaultDialog(
-        title: 'فشل تسجيل الدخول',
-        content: Obx(() => Text(auth.isLoading.value ? 'جاري...' : 'اسم المستخدم أو كلمة المرور غير صحيحة')),
-        confirm: TextButton(
-          onPressed: () => Get.back(),
-          child: const Text('حسناً'),
-        ),
-      );
+    if (ok) {
+      Get.offAll(() => MainScreen());
     }
+  }
   }
 
   @override

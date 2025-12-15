@@ -206,19 +206,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final ok = await auth.register(registration);
     if (ok) {
-      final logged = await auth.login(_phone.text.trim(), _password.text);
-      if (logged) {
-        Get.offAll(() => MainScreen());
-      } else {
-        Get.off(() => const LoginScreen());
-      }
+      // Navigation is handled in AuthController (redirect to verify phone)
     } else {
-      // Get.defaultDialog(
-      //   title: 'فشل التسجيل',
-      //   middleText: 'تحقق من البيانات',
-      //   textConfirm: 'حسناً',
-      //   onConfirm: () => Get.back(),
-      // );
+     // Error handling is in AuthController
     }
   }
 

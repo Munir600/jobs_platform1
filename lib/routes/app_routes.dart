@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../view/screens/auth/login_screen.dart';
 import '../view/screens/auth/register_screen.dart';
+import '../view/screens/auth/verify_phone_screen.dart';
 import '../view/screens/home_screen.dart';
 import '../view/screens/jobs/JobListScreen.dart';
 import '../view/screens/jobs/JobDetailScreen.dart';
@@ -22,6 +23,7 @@ class AppRoutes {
   static const String signup = '/signup';
   static const String home = '/home';
   static const String mainScreen = '/mainScreen';
+  static const String verifyPhone = '/verify-phone';
   
   // Jobs
   static const String jobs = '/jobs';
@@ -46,6 +48,7 @@ class AppRoutes {
     GetPage(name: splash, page: () => const SplashScreen()),
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: signup, page: () => const RegisterScreen()),
+    GetPage(name: verifyPhone, page: () => const VerifyPhoneScreen()),
     GetPage(name: home, page: () => const HomeScreen()),
     GetPage(name: mainScreen,page: () => MainScreen()),
     

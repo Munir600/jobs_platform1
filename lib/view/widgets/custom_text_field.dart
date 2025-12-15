@@ -14,12 +14,14 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final int? maxLines;
+  final String? hintText;
   final int? minLines;
 
   const CustomTextField({
     super.key,
     this.controller,
     required this.labelText,
+    this.hintText,
     this.prefixIcon,
     this.suffixIcon,
     this.validator,
@@ -64,6 +66,7 @@ class CustomTextField extends StatelessWidget {
         ),
         decoration: InputDecoration(
           labelText: labelText,
+          hintText: hintText,
           labelStyle: TextStyle(
             color: AppColors.textColor.withValues(alpha: 0.7),
           ),
