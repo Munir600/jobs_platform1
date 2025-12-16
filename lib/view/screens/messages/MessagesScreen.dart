@@ -1,108 +1,108 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../../config/app_colors.dart';
-import '../../../controllers/account/AccountController.dart';
-import '../../../controllers/application/ApplicationController.dart';
-import '../../../core/utils/network_utils.dart';
-import '../application/ApplicationDetailScreen.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class MessagesScreen extends GetView<ApplicationController> {
-  const MessagesScreen({super.key});
+class ElfsightChatPage extends StatefulWidget {
+  @override
+  _ElfsightChatPageState createState() => _ElfsightChatPageState();
+}
+
+class _ElfsightChatPageState extends State<ElfsightChatPage> {
+  late final WebViewController _controller;
+  bool _isChatOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final params = PlatformWebViewControllerCreationParams();
+    _controller = WebViewController.fromPlatformCreationParams(params)
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000)) // Transparent background for the webview itself
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) {
+            debugPrint('Page finished loading: $url');
+          },
+          onWebResourceError: (WebResourceError error) {
+            debugPrint('Web resource error: ${error.description}');
+          },
+        ),
+      )
+      ..loadHtmlString("""
+      <!DOCTYPE html>
+      <html lang="ar">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chat</title>
+        <style>
+          body, html { margin: 0; padding: 0; height: 100%; width: 100%; background-color: transparent; }
+        </style>
+      </head>
+      <body>
+        <div id="loading" style="text-align: center; padding-top: 20px; font-family: sans-serif;">Loading Chat...</div>
+        <script src="https://elfsightcdn.com/platform.js" async></script>
+        <div class="elfsight-app-7f87f4ec-8f5b-493f-95d4-736548373b3a"></div>
+      </body>
+      </html>
+      """, baseUrl: "https://elfsight.com/");
+  }
+
+  void _toggleChat() {
+    setState(() {
+      _isChatOpen = !_isChatOpen;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AccountController accountController = Get.find<AccountController>();
-    
-    // Trigger load if empty
-    final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
-    Future.microtask(() {
-       if (isEmployer) {
-         if (controller.jobApplications.isEmpty && !controller.isLoading.value) controller.loadJobApplications();
-       } else {
-         if (controller.myApplications.isEmpty && !controller.isLoading.value) controller.loadMyApplications();
-       }
-    });
-
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        title: const Text('الرسائل', style: TextStyle(color: AppColors.textColor)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: AppColors.textColor),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () async {
-              final hasInternet = await NetworkUtils.checkInternet(context);
-              if (!hasInternet) return;
-               if (isEmployer) {
-                 controller.loadJobApplications();
-               } else {
-                 controller.loadMyApplications();
-               }
-            }
+      backgroundColor: Colors.transparent, 
+      body: Stack(
+        children: [
+          Positioned.fill(
+             child: GestureDetector(
+               onTap: () {
+                 if (_isChatOpen) _toggleChat();
+               },
+               child: Container(
+                 color: Colors.black.withOpacity(0.1),
+               ),
+             ),
+          ),
+          if (_isChatOpen)
+            Positioned(
+              bottom: 80,
+              right: 20,
+              left: 20,
+              top: 100,
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(16),
+                clipBehavior: Clip.antiAlias,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: WebViewWidget(controller: _controller),
+                ),
+              ),
+            ),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton(
+              onPressed: _toggleChat,
+              backgroundColor: Colors.blueAccent,
+              child: Icon(
+                _isChatOpen ? Icons.close : Icons.chat_bubble_outline,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
-      body: Obx(() {
-        if (controller.isListLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
-        }
-
-        final applications = isEmployer ? controller.jobApplications : controller.myApplications;
-
-        if (applications.isEmpty) {
-          return const Center(
-            child: Text(
-              'لا توجد محادثات حالياً',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-          );
-        }
-        return RefreshIndicator(
-          onRefresh: () async {
-            if (isEmployer) {
-              await controller.loadJobApplications();
-            } else {
-              await controller.loadMyApplications();
-            }
-          },
-          color: AppColors.primaryColor,
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: applications.length,
-            itemBuilder: (context, index) {
-              final app = applications[index];
-              return Card(
-                color: AppColors.accentColor,
-                margin: const EdgeInsets.only(bottom: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: AppColors.primaryColor.withAlpha(100),
-                    child: Icon(isEmployer ? Icons.person : Icons.business, color: AppColors.primaryColor),
-                  ),
-                  title: Text(
-                    isEmployer ? (app.applicantName ?? 'متقدم') : (app.job?.title ?? 'وظيفة'),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    isEmployer ? (app.jobTitle ?? '-') : 'اضغط لعرض المحادثة',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
-                  onTap: () {
-                    Get.to(() => ApplicationDetailScreen(application: app));
-                  },
-                ),
-              );
-            },
-          ),
-        );
-      }),
     );
   }
 }

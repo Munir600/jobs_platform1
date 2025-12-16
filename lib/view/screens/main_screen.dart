@@ -18,7 +18,7 @@ class MainScreen extends StatelessWidget {
     final List<Widget> screens = [
       JobListScreen(),
       CompanyListScreen(),
-      MessagesScreen(),
+      ElfsightChatPage(),
       authController.isJobSeeker
           ? JobseekerProfileScreen()
           : CompanyProfile(),
