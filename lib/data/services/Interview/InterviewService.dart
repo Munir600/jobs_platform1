@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
-import 'package:jobs_platform1/core/utils/error_handler.dart';
 
 import '../../../core/constants.dart';
 import '../api_client.dart';
@@ -26,7 +25,7 @@ class InterviewService {
     }
     try {
       final response = await _apiClient.get(path, headers: headers);
-      print('the response for load interviewsss is: ${response.body}');
+      //print('the response for load interviewsss is: ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PaginatedInterviewList.fromJson(jsonDecode(response.body));
       } else {
@@ -41,6 +40,7 @@ class InterviewService {
     final headers = await _getHeaders();
     try {
       final response = await _apiClient.get('/api/applications/interviews/$id/', headers: headers);
+      print('the response for load interview one by id  is: $response');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return Interview.fromJson(jsonDecode(response.body));
       } else {
@@ -59,10 +59,8 @@ class InterviewService {
         interview.toJson(),
         headers: headers,
       );
-      print('the response statusCode for create interview is: ${response.statusCode}');
-      if (response.statusCode == 201 || response.statusCode == 200) {
-         print('the response for create interview is: ${response.body}');
-        AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
+      print('the response for create interview is: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
          return true;
       } else {
         throw Exception(response.body);

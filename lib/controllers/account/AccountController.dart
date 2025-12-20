@@ -71,7 +71,7 @@ class AccountController extends GetxController {
 
     } catch (e) {
       print('Error fetching profile: $e');
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isLoading.value = false;
     }

@@ -50,7 +50,7 @@ class InterviewController extends GetxController {
         _storage.write('interviews_list', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -73,7 +73,7 @@ class InterviewController extends GetxController {
       }
       return result;
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
        // Return cached if available
       final cachedInterview = _storage.read('interview_detail_$id');
       if (cachedInterview != null) {

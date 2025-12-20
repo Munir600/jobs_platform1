@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_colors.dart';
 import '../../controllers/auth_controller.dart';
+import '../../controllers/ChatController.dart';
+import '../../core/utils/network_utils.dart';
 import 'companies/CompanyListScreen.dart';
 import 'jobs/JobListScreen.dart';
-import 'messages/MessagesScreen.dart';
+import 'messages/ai_chat.dart';
 import 'profile/employer_profile/employer_profile_screen.dart';
 import 'profile/jobseeker_profile/jobseeker_profile_screen.dart';
 
@@ -13,17 +15,28 @@ class MainScreen extends StatelessWidget {
 
   final AuthController authController = Get.find<AuthController>();
   final RxInt _selectedIndex = 0.obs;
+  ChatController get chatController => Get.find();
+
+  Widget _buildScreen(int index) {
+    switch (index) {
+      case 0:
+        return JobListScreen();
+      case 1:
+        return CompanyListScreen();
+      case 2:
+        chatController;
+        return AiChat();
+      case 3:
+        return authController.isJobSeeker
+            ? JobseekerProfileScreen()
+            : CompanyProfile();
+      default:
+        return JobListScreen();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      JobListScreen(),
-      CompanyListScreen(),
-      ElfsightChatPage(),
-      authController.isJobSeeker
-          ? JobseekerProfileScreen()
-          : CompanyProfile(),
-    ];
-
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -42,16 +55,27 @@ class MainScreen extends StatelessWidget {
         elevation: 2,
         actions: [
           IconButton(
+            icon: const Icon(Icons.auto_awesome_outlined),
+            tooltip: 'وكيل التوظيف الذكي ',
+            onPressed:() async {
+              final hasInternet = await NetworkUtils.checkInternet(context);
+              if (!hasInternet) {
+               return;
+              }else{
+                Get.to(AiChat());
+              }
+            }
+          ),
+
+          IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'تسجيل الخروج',
             onPressed: () => _confirmLogout(),
           ),
+
         ],
       ),
-      body: Obx(() => IndexedStack(
-            index: _selectedIndex.value,
-            children: screens,
-          )),
+      body: Obx(() => _buildScreen(_selectedIndex.value)),
       bottomNavigationBar: Obx(() => Container(
         decoration: BoxDecoration(
           color: AppColors.accentColor,
@@ -99,7 +123,7 @@ class MainScreen extends StatelessWidget {
         content: const Text('هل أنت متأكد أنك تريد تسجيل الخروج؟'),
         actions: [
           TextButton(
-            onPressed: () => Get.back(result: false),
+            onPressed: () => Get.back(result: false), // Fix translation/text
             child: const Text('إلغاء'),
           ),
           ElevatedButton.icon(

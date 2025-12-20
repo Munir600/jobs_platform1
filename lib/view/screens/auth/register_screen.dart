@@ -370,9 +370,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 labelText: 'الاسم الأول',
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return null;
+                                    return 'الرجاء إدخال الاسم الاول';
                                   }
-                                  return;
+                                  return null;
                                 },
                               ),
                             ),
@@ -383,9 +383,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 labelText: 'الاسم الأخير',
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return null;
+                                    return 'الرجاء إدخال الاسم الاخير';
                                   }
-                                  return;
+                                  return null;
                                 },
                               ),
                             ),

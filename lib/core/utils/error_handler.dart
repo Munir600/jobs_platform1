@@ -9,15 +9,21 @@ class AppErrorHandler {
       return "لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.";
     } else if (error is HttpException) {
       return "تعذر الوصول للخادم. حاول لاحقًا.";
+      // Try to find JSON array or object
     } else if (error is FormatException) {
       return "بيانات غير صالحة.";
     } else if (error is NetworkImageLoadException) {
       return "فشل تحميل الصورة. الصورة غير موجودة.";
+
     }
+    // else if (error is hostLookup) {
+    //   return "فشل تحميل الصورة. الصورة غير موجودة.";
+    //
+    // }
 
     try {
       final String errorStr = error.toString();
-      
+
       // Try to find JSON array or object
       int startIndex = errorStr.indexOf('{');
       int endIndex = errorStr.lastIndexOf('}');

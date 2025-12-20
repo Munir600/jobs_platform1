@@ -82,8 +82,8 @@ class CompanyController extends GetxController {
      }
      catch (e)
      {
-       AppErrorHandler.showErrorSnack(e);
-       // print('Company error from  Response isss: $e');
+      // AppErrorHandler.showErrorSnack(e);
+        print('Company error from  Response isss: $e');
 
      } finally {
        isListLoading.value = false;
@@ -111,7 +111,8 @@ class CompanyController extends GetxController {
       }
       return null;
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
+
       final cachedCompany = _storage.read('company_detail_$slug');
       if (cachedCompany != null) {
         return Company.fromJson(cachedCompany);
@@ -139,7 +140,7 @@ class CompanyController extends GetxController {
 
     } catch (e) {
       print('CompanyController: Error fetching companies: $e');
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
       return [];
     } finally {
       if (showLoading) isListLoading.value = false;
@@ -216,7 +217,7 @@ class CompanyController extends GetxController {
         companyReviews.assignAll(response.results!);
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isLoading.value = false;
     }
@@ -230,7 +231,7 @@ class CompanyController extends GetxController {
         companyJobs.assignAll(response.results!);
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isLoading.value = false;
     }

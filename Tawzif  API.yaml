@@ -1094,6 +1094,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/CompanyCreate'
           description: ''
+  /api/companies/employer-dashboard-stats/:
+    get:
+      operationId: companies_employer_dashboard_stats_retrieve
+      description: إحصائيات لوحة تحكم صاحب العمل
+      tags:
+      - companies
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/companies/followed/:
     get:
       operationId: companies_followed_list
@@ -1727,6 +1739,53 @@ paths:
         required: false
         in: query
         description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - jobs
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobListList'
+          description: ''
+  /api/jobs/recommended/:
+    get:
+      operationId: jobs_recommended_list
+      description: |-
+        قائمة وظائف مقترحة مخصصة للمستخدم
+        تعرض الوظائف:
+        1. للشركات التي يتابعها المستخدم (الأولوية القصوى)
+        2. المشابهة للوظائف التي بحث عنها (من خلال التنبيهات)
+        3. المشابهة للوظائف التي تقدم لها سابقاً (نفس الفئة)
+        مع استبعاد الوظائف التي تقدم لها بالفعل
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
         schema:
           type: integer
       - name: search

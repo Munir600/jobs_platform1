@@ -133,7 +133,7 @@ class JobController extends GetxController {
         _storage.write('my_jobs_list', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -146,7 +146,7 @@ class JobController extends GetxController {
       final job = await _jobService.getJob(slug);
       return job;
     } catch (e) {
-     AppErrorHandler.showErrorSnack(e);
+    // AppErrorHandler.showErrorSnack(e);
       return null;
     } finally {
       if (showLoading) isLoading.value = false;
@@ -169,7 +169,7 @@ class JobController extends GetxController {
         _storage.write('job_detail_$slug', job.toJson());
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isJobDetailLoading.value = false;
     }
@@ -241,7 +241,7 @@ class JobController extends GetxController {
         _storage.write('job_categories', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     }
   }
 
@@ -253,7 +253,7 @@ class JobController extends GetxController {
         alerts.assignAll(response.results!);
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -279,7 +279,7 @@ class JobController extends GetxController {
         bookmarks.assignAll(response.results!);
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }

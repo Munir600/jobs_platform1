@@ -76,7 +76,7 @@ class ApplicationController extends GetxController {
         _storage.write('my_applications', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -100,7 +100,7 @@ class ApplicationController extends GetxController {
         }
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+    //  AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -115,7 +115,7 @@ class ApplicationController extends GetxController {
         _storage.write('my_interviews', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -164,7 +164,7 @@ class ApplicationController extends GetxController {
         _storage.write('application_messages_$applicationId', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+    //  AppErrorHandler.showErrorSnack(e);
     } finally {
       isMessageLoading.value = false;
     }
@@ -176,7 +176,7 @@ class ApplicationController extends GetxController {
       await _applicationService.createApplicationMessage(applicationId, message);
       await loadMessages(applicationId); // Refresh messages
     } catch (e) {
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
     }
   }
 
@@ -235,6 +235,7 @@ class ApplicationController extends GetxController {
       AppErrorHandler.showSuccessSnack('تم سحب الطلب بنجاح');
 
     } catch (e) {
+      print('خطاء في سسحب الطلب $e');
       AppErrorHandler.showErrorSnack(e);
     } finally {
       isLoading.value = false;
