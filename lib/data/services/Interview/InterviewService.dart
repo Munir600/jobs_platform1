@@ -21,12 +21,22 @@ class InterviewService {
   Future<PaginatedInterviewList> getInterviews({int? page}) async {
     final headers = await _getHeaders();
     String path = '/api/applications/interviews/';
+    
+    // Build query parameters
+    List<String> queryParams = [];
     if (page != null) {
-      path += '?page=$page';
+      queryParams.add('page=$page');
     }
+    // Order by newest first
+    queryParams.add('ordering=-created_at');
+    
+    if (queryParams.isNotEmpty) {
+      path += '?${queryParams.join('&')}';
+    }
+    
     try {
       final response = await _apiClient.get(path, headers: headers);
-      //print('the response for load interviewsss is: ${response.body}');
+      print('the response for load interviews is: ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PaginatedInterviewList.fromJson(jsonDecode(response.body));
       } else {

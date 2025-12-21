@@ -12,6 +12,15 @@ class InterviewController extends GetxController {
   final RxList<Interview> interviews = <Interview>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool isListLoading = false.obs;
+  final RxBool isLoadingMore = false.obs;
+  
+  // Pagination
+  final RxInt currentPage = 1.obs;
+  final RxInt totalCount = 0.obs;
+  final RxBool hasNextPage = false.obs;
+  
+  // Statistics
+  final RxMap<String, int> statistics = <String, int>{}.obs;
 
   @override
   void onInit() {
@@ -44,13 +53,22 @@ class InterviewController extends GetxController {
   Future<void> loadInterviews() async {
     try {
       isListLoading.value = true;
-      final response = await _interviewService.getInterviews();
+      currentPage.value = 1;
+      
+      final response = await _interviewService.getInterviews(page: 1);
       if (response.results != null) {
         interviews.assignAll(response.results!);
         _storage.write('interviews_list', response.results!.map((e) => e.toJson()).toList());
+        
+        // Update pagination info
+        totalCount.value = response.count ?? 0;
+        hasNextPage.value = response.next != null;
+        
+        // Calculate statistics
+        _calculateStatistics();
       }
     } catch (e) {
-     // AppErrorHandler.showErrorSnack(e);
+      AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -117,5 +135,50 @@ class InterviewController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> loadMoreInterviews() async {
+    if (!hasNextPage.value || isLoadingMore.value) return;
+    
+    try {
+      isLoadingMore.value = true;
+      final nextPage = currentPage.value + 1;
+      
+      final response = await _interviewService.getInterviews(page: nextPage);
+      if (response.results != null && response.results!.isNotEmpty) {
+        interviews.addAll(response.results!);
+        currentPage.value = nextPage;
+        hasNextPage.value = response.next != null;
+        
+        // Update cache
+        _storage.write('interviews_list', interviews.map((e) => e.toJson()).toList());
+        
+        // Recalculate statistics
+        _calculateStatistics();
+      }
+    } catch (e) {
+      print('Error loading more interviews: $e');
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+  void _calculateStatistics() {
+    final stats = <String, int>{
+      'total': interviews.length,
+      'scheduled': 0,
+      'completed': 0,
+      'cancelled': 0,
+      'rescheduled': 0,
+    };
+    
+    for (var interview in interviews) {
+      final status = interview.status?.toLowerCase() ?? '';
+      if (stats.containsKey(status)) {
+        stats[status] = (stats[status] ?? 0) + 1;
+      }
+    }
+    
+    statistics.value = stats;
   }
 }
