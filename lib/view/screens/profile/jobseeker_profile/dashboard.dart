@@ -39,7 +39,7 @@ class JobSeekerDashboard extends StatelessWidget {
         ),
         body: Column(
           children: [
-            _buildStatisticsSection(controller),
+           // _buildStatisticsSection(controller),
             const Expanded(
               child: TabBarView(
                 children: [

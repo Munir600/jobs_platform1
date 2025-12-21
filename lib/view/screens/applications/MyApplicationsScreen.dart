@@ -16,6 +16,15 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
     }
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundColor,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: _buildStatisticsSection(controller),
+        ),
+      ),
       body: Stack(
         children: [
           Obx(() {
@@ -187,4 +196,59 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
         return status ?? 'غير معروف';
     }
   }
+  Widget _buildStatisticsSection(ApplicationController controller) {
+    return Obx(() {
+      final stats = controller.statistics.value;
+      if (stats == null) return const SizedBox.shrink();
+
+      return Container(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            _buildStatCard('الكل', stats.totalApplications, Colors.blue),
+            const SizedBox(width: 8),
+            _buildStatCard('مقبول', stats.acceptedApplications, Colors.green),
+            const SizedBox(width: 8),
+            _buildStatCard('مرفوض', stats.rejectedApplications, Colors.red),
+            const SizedBox(width: 8),
+            _buildStatCard('قيد الانتظار', stats.pendingApplications, Colors.orange),
+          ],
+        ),
+      );
+    });
+  }
+  Widget _buildStatCard(String label, int count, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              count.toString(),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
