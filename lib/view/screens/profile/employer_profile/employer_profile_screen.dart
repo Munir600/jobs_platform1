@@ -6,6 +6,7 @@ import '../employer_profile/dashboard.dart';
 import '../employer_profile/setting.dart';
 import '../user_profile_screen.dart';
 import 'EmployerJobManagementScreen.dart';
+import 'employer_dashboard_stats.dart';
 
 class CompanyProfile extends StatelessWidget {
   CompanyProfile({super.key});
@@ -14,6 +15,7 @@ class CompanyProfile extends StatelessWidget {
 
   final List<Widget> _screens = [
     UserProfileScreen(),
+    EmployerDashboardStatsScreen(),
     MyCompaniesScreen(),
     EmployerJobManagementScreen(),
     EmployerDashboard(),
@@ -22,6 +24,7 @@ class CompanyProfile extends StatelessWidget {
 
   final List<String> _titles = [
     " تعديـل الملف الشخصي",
+    " لوحة التحكم",
     " ادارة شركاتي",
     " ادارة الوظائف",
     " ادارة الطلبات والمقابلات ",

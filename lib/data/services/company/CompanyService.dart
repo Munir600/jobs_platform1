@@ -15,6 +15,8 @@ import '../../models/company/PaginatedCompanyList.dart';
 import '../../models/company/PaginatedCompanyFollowerList.dart';
 import '../../models/company/PaginatedCompanyReviewList.dart';
 
+import '../../models/accounts/profile/employer/employer_dashboard.dart';
+
 class CompanyService {
   final ApiClient _apiClient = ApiClient();
   final GetStorage _storage = GetStorage();
@@ -273,6 +275,22 @@ class CompanyService {
     );
     if (response.statusCode != 204 && response.statusCode != 200) {
       throw Exception('Failed to delete company');
+    }
+  }
+
+  Future<EmployerDashboard> getEmployerDashboardStats() async {
+    final headers = await _getHeaders();
+    final response = await _apiClient.get(
+      '/api/companies/employer-dashboard-stats/',
+      headers: headers,
+    );
+    
+   // print('Get Employer Dashboard Stats Response: ${response.statusCode} ${response.body}');
+
+    if (response.statusCode == 200) {
+      return EmployerDashboard.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load employer dashboard stats');
     }
   }
 }
