@@ -62,7 +62,7 @@ class InterviewService {
       );
       print('the response for create interview is: ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
-         AppErrorHandler.showSuccessSnack(' تم جدولة المقابلة بنجاح');
+      //   AppErrorHandler.showSuccessSnack(' تم جدولة المقابلة بنجاح');
         return true;
       } else {
         throw Exception(response.body);

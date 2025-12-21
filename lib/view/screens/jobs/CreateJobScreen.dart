@@ -280,7 +280,6 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                             isDismissible: true,
                           );
                           return;
-
                         }
                         
                         final jobData = JobCreate(

@@ -439,7 +439,7 @@ class ApplicationDetailScreen extends GetView<ApplicationController> {
 
                     final success = await interviewController.createInterview(interview);
                     if (success) {
-                      Get.back(); // Close bottom sheet
+                      Navigator.of(context).pop();
                     }
                   } else {
                     Get.snackbar('خطأ', 'يرجى اختيار التاريخ والوقت');

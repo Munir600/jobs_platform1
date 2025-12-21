@@ -89,10 +89,11 @@ class InterviewController extends GetxController {
     try {
       isLoading.value = true;
       await _interviewService.createInterview(interview);
+      AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
       await loadInterviews();
-     // AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
       Get.back();
       return true;
+
     } catch (e) {
       print('Error creating interview: $e');
       AppErrorHandler.showErrorSnack(e);
