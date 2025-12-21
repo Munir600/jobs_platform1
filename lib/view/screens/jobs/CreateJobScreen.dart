@@ -267,6 +267,22 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                           return;
                         }
                         
+                       // Check if company is verified
+                        final selectedCompany = companyController.myCompanies.firstWhereOrNull((c) => c.id == selectedCompanyId);
+                        if (selectedCompany != null && (selectedCompany.isVerified == false || selectedCompany.isVerified == null)) {
+                          Get.snackbar('خطاء', 'عذراً، يجب توثيق الشركة أولاً لتتمكن من نشر وظيفة جديدة',
+                            backgroundColor: Colors.black87,
+                            colorText: Colors.white,
+                            snackPosition: SnackPosition.TOP,
+                            margin: const EdgeInsets.all(16),
+                            borderRadius: 12,
+                            duration: const Duration(seconds: 4),
+                            isDismissible: true,
+                          );
+                          return;
+
+                        }
+                        
                         final jobData = JobCreate(
                           title: titleController.text,
                           description: descriptionController.text,

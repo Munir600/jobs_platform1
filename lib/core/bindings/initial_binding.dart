@@ -15,7 +15,7 @@ class InitialBinding extends Bindings {
   void dependencies() {
     Get.put(ApiService(), permanent: true);
     Get.put<AuthController>(AuthController(), permanent: true);
-    Get.lazyPut<AccountController>(() => AccountController(), fenix: true);
+    Get.put<AccountController>(AccountController());
     Get.lazyPut<ApplicationController>(() => ApplicationController(), fenix: true);
     Get.lazyPut<CompanyController>(() => CompanyController(), fenix: true);
     Get.lazyPut<JobController>(() => JobController(), fenix: true);

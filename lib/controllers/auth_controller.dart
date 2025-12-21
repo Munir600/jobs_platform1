@@ -5,6 +5,7 @@ import 'package:jobs_platform1/core/utils/error_handler.dart';
 import '../core/api_service.dart';
 import '../core/constants.dart';
 import '../data/models/user_models.dart';
+import 'account/AccountController.dart';
 
 class AuthController extends GetxController {
   final ApiService _apiService = Get.find();
@@ -76,6 +77,12 @@ class AuthController extends GetxController {
       
       isLoggedIn.value = true;
       isLoading.value = false;
+      
+      // Fetch profile data to ensure it's fresh
+      if (Get.isRegistered<AccountController>()) {
+        Get.find<AccountController>().fetchProfile();
+      }
+
       AppErrorHandler.showSuccessSnack('$ms');
       return true;
     } catch (e) {
@@ -123,15 +130,21 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       await _apiService.post(ApiEndpoints.logout, {});
-        AppErrorHandler.showSuccessSnack('تم تسجيل الخروج بنجاح');
+      AppErrorHandler.showSuccessSnack('تم تسجيل الخروج بنجاح');
     } catch (e) {
       AppErrorHandler.showErrorSnack('$e');
     } finally {
+      // Clear local auth state
       _currentUser.value = null;
       isLoggedIn.value = false;
       _storage.remove('user_data');
       _apiService.removeAuthToken();
-      //_storage.remove(AppConstants.authTokenKey);
+      
+      // Clear AccountController state
+      if (Get.isRegistered<AccountController>()) {
+        Get.find<AccountController>().clearUserData();
+      }
+      
       Get.offAllNamed('/login');
     }
   }
@@ -239,6 +252,12 @@ class AuthController extends GetxController {
 
       isLoading.value = false;
       AppErrorHandler.showSuccessSnack('تم تفعيل الحساب بنجاح');
+      
+      // Fetch profile data
+      if (Get.isRegistered<AccountController>()) {
+        Get.find<AccountController>().fetchProfile();
+      }
+      
       Get.offAllNamed('/mainScreen');
       return true;
     } catch (e) {

@@ -23,11 +23,11 @@ class AccountService {
     final headers = await _getHeaders();
     final response = await _apiClient.get(ApiEndpoints.profile, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final json = jsonDecode(response.body);
       return ProfileResponse.fromJson(json['data']);
     } else {
-      throw Exception('Failed to load profile');
+      throw Exception(response.body);
     }
   }
 
@@ -53,19 +53,19 @@ class AccountService {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final json = jsonDecode(response.body);
         return User.fromJson(json['data']['user']);
       } else {
-        throw Exception('Failed to update profile with image');
+        throw Exception(response.body);
       }
     } else {
       final response = await _apiClient.put(ApiEndpoints.updateProfile, data, headers: headers);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final json = jsonDecode(response.body);
         return User.fromJson(json['data']['user']);
       } else {
-        throw Exception('Failed to update profile');
+        throw Exception(response.body);
       }
     }
   }
@@ -92,20 +92,62 @@ class AccountService {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        return EmployerProfile.fromJson(json['data'] ?? json); 
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return _parseEmployerProfileResponse(response.body);
       } else {
-        throw Exception('Failed to update employer profile with logo');
+        throw Exception(response.body);
       }
     } else {
       final response = await _apiClient.put(ApiEndpoints.updateEmployerProfile, data, headers: headers);
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        return EmployerProfile.fromJson(json['data'] ?? json);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return _parseEmployerProfileResponse(response.body);
       } else {
-        throw Exception('Failed to update employer profile');
+        throw Exception(response.body);
       }
+    }
+  }
+
+  Future<EmployerProfile> _parseEmployerProfileResponse(String responseBody) async {
+    try {
+      final json = jsonDecode(responseBody);
+      final data = json['data'];
+      
+      if (data != null) {
+        if (data['profile'] != null) {
+           return EmployerProfile.fromJson(data['profile']);
+        }
+        if (data['employer_profile'] != null) {
+           return EmployerProfile.fromJson(data['employer_profile']);
+        }
+        
+        // If 'id' is present in data directly
+        if (data['id'] != null) {
+          return EmployerProfile.fromJson(data);
+        }
+      }
+      
+      // Fallback: try to parse the root or data directly
+      return EmployerProfile.fromJson(data ?? json);
+      
+    } catch (e) {
+      print('Parsing error in _parseEmployerProfileResponse: $e');
+      // If parsing fails (likely due to missing User object or ID), fetch fresh profile
+      final profileResponse = await getProfile();
+      if (profileResponse.profile != null && profileResponse.user.isEmployer) {
+         // We might need to construct the EmployerProfile manually from the response if it's EmployerProfile
+         // But profileResponse.profile is dynamic.
+         
+         // Helper to safely cast or verify type could be useful, but for now:
+         try {
+             return EmployerProfile.fromJson(profileResponse.profile);
+         } catch(_) {
+             // If the profileResponse.profile is raw JSON map
+             if (profileResponse.profile is Map<String, dynamic>) {
+                 return EmployerProfile.fromJson(profileResponse.profile);
+             }
+         }
+      }
+      rethrow; 
     }
   }
 
@@ -131,7 +173,7 @@ class AccountService {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         try {
           final json = jsonDecode(response.body);
           final data = json['data'];
@@ -149,14 +191,14 @@ class AccountService {
             // Ensure id is present or defaults to 0 (already handled in model, but good to be safe)
             return JobSeekerProfile.fromJson(profileData);
           }
-          throw Exception('Failed to parse upload response and fetch profile');
+          throw Exception(response.body);
         }
       } else {
-        throw Exception('Failed to update job seeker profile with resume');
+        throw Exception(response.body);
       }
     } else {
       final response = await _apiClient.put(ApiEndpoints.updateJobSeekerProfile, data, headers: headers);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final json = jsonDecode(response.body);
         final responseData = json['data'];
         if (responseData != null && responseData['profile'] != null) {
@@ -164,7 +206,7 @@ class AccountService {
         }
         return JobSeekerProfile.fromJson(responseData ?? json);
       } else {
-        throw Exception('Failed to update job seeker profile');
+        throw Exception(response.body);
       }
     }
   }

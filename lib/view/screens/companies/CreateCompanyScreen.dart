@@ -256,6 +256,13 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
     final hasInternet = await NetworkUtils.checkInternet(context);
     if (!hasInternet) return;
     if (_formKey.currentState!.validate()) {
+      // Auto-correct website URL
+      String website = websiteController.text.trim();
+      if (website.isNotEmpty && !website.startsWith('http://') && !website.startsWith('https://')) {
+        website = 'https://$website';
+        websiteController.text = website; // Optional: update UI
+      }
+
       final companyCreate = CompanyCreate(
         name: nameController.text,
         description: descriptionController.text,
@@ -263,7 +270,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
         city: selectedCity!,
         industry: selectedIndustry!,
         size: selectedSize!,
-        website: websiteController.text.isNotEmpty ? websiteController.text : null,
+        website: website.isNotEmpty ? website : null,
         phone: phoneController.text.isNotEmpty ? phoneController.text : null,
         address: addressController.text.isNotEmpty ? addressController.text : null,
         logo: null, 

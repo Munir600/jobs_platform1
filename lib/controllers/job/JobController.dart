@@ -188,6 +188,7 @@ class JobController extends GetxController {
 
       return true;
     } catch (e) {
+      print('Error creating job: $e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {

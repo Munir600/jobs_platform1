@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
+import 'package:jobs_platform1/core/utils/error_handler.dart';
 
 import '../../../core/constants.dart';
 import '../api_client.dart';
@@ -61,7 +62,8 @@ class InterviewService {
       );
       print('the response for create interview is: ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
-         return true;
+         AppErrorHandler.showSuccessSnack(' تم جدولة المقابلة بنجاح');
+        return true;
       } else {
         throw Exception(response.body);
       }

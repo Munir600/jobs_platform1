@@ -15,8 +15,8 @@ class JobSeekerProfileScreen extends GetView<JobSeekerProfileController> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: const Text('السيرة الذاتية', style: TextStyle(color: AppColors.textColor)),
-        backgroundColor: Colors.transparent,
+        title: const Text('منشئ السيرة الذاتية', style: TextStyle(color: AppColors.textColor)),
+        backgroundColor: AppColors.primaryColor,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textColor),
       ),

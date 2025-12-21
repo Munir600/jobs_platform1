@@ -18,7 +18,6 @@ class JobseekerProfileScreen extends StatelessWidget {
     " تعديـل الملف الشخصي",
     " الوظائف المحفوظة",
     " لوحة التحكم",
-    "السيرة الذاتية",
     " تنبيهات الوظائف",
     "الإعدادات",
   ];
@@ -61,10 +60,8 @@ class JobseekerProfileScreen extends StatelessWidget {
       case 2:
         return Icons.dashboard_outlined;
       case 3:
-        return Icons.description_outlined;
-      case 4:
         return Icons.notifications_none;
-      case 5:
+      case 4:
         return Icons.settings_outlined;
       default:
         return Icons.circle;
@@ -73,49 +70,22 @@ class JobseekerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Reconstruct list here to avoid initialization issues or make screens lazy?
-    // screens list can be initialized.
-    // Wait, `JobSeekerProfileScreen` (Resume) implies it might need arguments?
-    // Assuming no args as per original.
-    
     final List<Widget> screens = [
         UserProfileScreen(),
         SavedJobsScreen(),
         JobSeekerDashboard(),
-        // We need to refer to the Resume screen.
-        // I'll use a dynamic approach or just assume the import works.
-        // Creating a local list in build is safer for context if needed.
     ];
-    
-    // Actually, I can't put `JobSeekerProfileScreen()` in the list inside this class if the names conflict
-    // and I don't use a prefix.
-    // I will use `const` where possible.
     
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Obx(() {
-        // We handle the index switch here.
-        // We need to instantiate the Resume screen.
-        // Let's assume the Resume screen is `JobSeekerResumeScreen` or `JobSeekerProfileScreen` (imported).
-        // Since I cannot change the imported file name right now, I have to guess valid usage.
-        // The original code `JobSeekerProfileScreen()` worked.
-        // So `JobSeekerProfileScreen` (capital S) must be available.
-        
-        // I will use a switch for clarity and safety.
         switch(_currentIndex.value) {
             case 0: return UserProfileScreen();
             case 1: return SavedJobsScreen();
             case 2: return JobSeekerDashboard();
-            case 4: return AlertJobsScreen();
-            case 5: return SettingScreen();
-            case 3: 
+            case 3: return AlertJobsScreen();
+            case 4: return SettingScreen();
             default:
-                 // Using reflection/Get to find the other screen? No.
-                 // I'll try to use the class name as user had it.
-                 // If it fails, I'll fix it.
-                 // To avoid conflict, I'm checking if I can use 'as' import.
-                 // But I'm writing string content.
-                 // I'll add `import 'JobSeekerProfileScreen.dart' as resume;` to be safe.
                  return resume.JobSeekerProfileScreen();
         }
       }),

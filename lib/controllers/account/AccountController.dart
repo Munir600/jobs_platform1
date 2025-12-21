@@ -38,17 +38,33 @@ class AccountController extends GetxController {
     final userData = _storage.read('user_data');
     if (userData != null) {
       currentUser.value = User.fromJson(userData);
+    } else {
+      currentUser.value = null;
     }
 
     final employerData = _storage.read('employer_profile');
     if (employerData != null) {
       employerProfile.value = EmployerProfile.fromJson(employerData);
+    } else {
+      employerProfile.value = null;
     }
 
     final jobSeekerData = _storage.read('job_seeker_profile');
     if (jobSeekerData != null) {
       jobSeekerProfile.value = JobSeekerProfile.fromJson(jobSeekerData);
+    } else {
+      jobSeekerProfile.value = null;
     }
+  }
+
+  void clearUserData() {
+    currentUser.value = null;
+    employerProfile.value = null;
+    jobSeekerProfile.value = null;
+    
+    _storage.remove('user_data');
+    _storage.remove('employer_profile');
+    _storage.remove('job_seeker_profile');
   }
 
   Future<void> fetchProfile() async {
@@ -100,9 +116,10 @@ class AccountController extends GetxController {
       final updatedProfile = await _accountService.updateEmployerProfile(data, companyLogo: companyLogo);
       employerProfile.value = updatedProfile;
       _storage.write('employer_profile', updatedProfile.toJson());
-      Get.snackbar('نجاح', 'تم تحديث بيانات الشركة بنجاح');
+      AppErrorHandler.showSuccessSnack('تم تحديث الملف الشخصي للشركة بنجاح');
       return true;
     } catch (e) {
+      print('Employer Profile Update Error: $e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {

@@ -46,10 +46,10 @@ class JobService {
 
     final response = await _apiClient.get(path, headers: headers);
     // print('response body jobs: ${response.body[3][11]}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load jobs');
+      throw Exception(response.body);
     }
   }
 
@@ -57,10 +57,10 @@ class JobService {
     final headers = await _getHeaders();
     final response = await _apiClient.get('/api/jobs/$slug/', headers: headers);
     print('response body job detail: ${response.body}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return JobDetail.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load job');
+      throw Exception(response.body);
     }
   }
 
@@ -74,7 +74,7 @@ class JobService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
-      throw Exception('Failed to create job');
+      throw Exception(response.body);
     }
   }
 
@@ -85,10 +85,10 @@ class JobService {
       job.toJson(),
       headers: headers,
     );
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
-      throw Exception('Failed to update job');
+      throw Exception(response.body);
     }
   }
 
@@ -99,7 +99,7 @@ class JobService {
       headers: headers,
     );
     if (response.statusCode != 204 && response.statusCode != 200) {
-      throw Exception('Failed to delete job');
+      throw Exception(response.body);
     }
   }
 
@@ -110,10 +110,10 @@ class JobService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobCategoryList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load job categories');
+      throw Exception(response.body);
     }
   }
 
@@ -124,10 +124,10 @@ class JobService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobAlertList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load job alerts');
+      throw Exception(response.body);
     }
   }
 
@@ -138,10 +138,10 @@ class JobService {
       alert.toJson(),
       headers: headers,
     );
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return JobAlert.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to create job alert');
+      throw Exception(response.body);
     }
   }
 
@@ -152,10 +152,10 @@ class JobService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobBookmarkList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load job bookmarks');
+      throw Exception(response.body);
     }
   }
 
@@ -167,7 +167,7 @@ class JobService {
       headers: headers,
     );
     if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to bookmark/unbookmark job');
+      throw Exception(response.body);
     }
   }
 
@@ -178,10 +178,10 @@ class JobService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load my jobs');
+      throw Exception(response.body);
     }
   }
 }
