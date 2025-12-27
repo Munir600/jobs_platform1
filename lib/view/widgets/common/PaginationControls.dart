@@ -21,14 +21,13 @@ class PaginationControls extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Previous button
+            
             _buildNavigationButton(
               label: 'السابق',
               icon: Icons.chevron_right,
@@ -38,12 +37,22 @@ class PaginationControls extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             
-            // Page numbers
-            ..._buildPageNumbers(),
+  
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: _buildPageNumbers(),
+                  ),
+                ),
+              ),
+            ),
             
             const SizedBox(width: 8),
             
-            // Next button
+            // Next button (Fixed)
             _buildNavigationButton(
               label: 'التالي',
               icon: Icons.chevron_left,

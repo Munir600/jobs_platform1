@@ -87,7 +87,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         title: Text(isEdit ? 'تعديل الشركة' : 'إنشاء شركة جديدة', style: const TextStyle(color: AppColors.textColor)),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.primaryColor,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),

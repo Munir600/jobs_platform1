@@ -102,16 +102,16 @@ class EmployerJobManagementScreen extends GetView<JobController> {
         return Column(
           children: [
             // Statistics Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: StatisticsHeader(
-                totalCount: controller.totalMyJobsCount.value,
-                currentPage: controller.currentMyJobsPage.value,
-                pageSize: JobController.pageSize,
-                itemNameSingular: 'وظيفة',
-                itemNamePlural: 'وظائف',
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //   child: StatisticsHeader(
+            //     totalCount: controller.totalMyJobsCount.value,
+            //     currentPage: controller.currentMyJobsPage.value,
+            //     pageSize: JobController.pageSize,
+            //     itemNameSingular: 'وظيفة',
+            //     itemNamePlural: 'وظائف',
+            //   ),
+            // ),
             
             // Jobs List
             Expanded(

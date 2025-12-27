@@ -24,6 +24,10 @@ class JobListScreen extends GetView<JobController> {
         iconTheme: const IconThemeData(color: AppColors.textColor),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => _showSearchDialog(context),
+          ),
+          IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterBottomSheet(context),
           ),
@@ -31,23 +35,6 @@ class JobListScreen extends GetView<JobController> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              onChanged: (val) => controller.setSearchQuery(val),
-              decoration: InputDecoration(
-                hintText: 'بحث عن وظيفة...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              ),
-            ),
-          ),
           Expanded(
             child: Obx(() {
               if (controller.isListLoading.value) {
@@ -66,16 +53,16 @@ class JobListScreen extends GetView<JobController> {
               return Column(
                 children: [
                   // Statistics Header
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: StatisticsHeader(
-                      totalCount: controller.totalJobsCount.value,
-                      currentPage: controller.currentJobsPage.value,
-                      pageSize: JobController.pageSize,
-                      itemNameSingular: 'وظيفة',
-                      itemNamePlural: 'وظائف',
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 16),
+                  //   child: StatisticsHeader(
+                  //     totalCount: controller.totalJobsCount.value,
+                  //     currentPage: controller.currentJobsPage.value,
+                  //     pageSize: JobController.pageSize,
+                  //     itemNameSingular: 'وظيفة',
+                  //     itemNamePlural: 'وظائف',
+                  //   ),
+                  // ),
                   
                   // Jobs List
                   Expanded(
@@ -110,6 +97,64 @@ class JobListScreen extends GetView<JobController> {
         ],
       ),
 
+    );
+  }
+
+  void _showSearchDialog(BuildContext context) {
+    final TextEditingController searchController = TextEditingController(
+      text: controller.searchQuery.value,
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.accentColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'البحث عن وظيفة',
+          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+        ),
+        content: TextField(
+          controller: searchController,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: 'ابحث عن وظيفة...',
+            prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          ),
+          onSubmitted: (value) {
+            controller.setSearchQuery(value);
+            Get.back();
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              searchController.clear();
+              controller.setSearchQuery('');
+              Get.back();
+            },
+            child: const Text('مسح', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              controller.setSearchQuery(searchController.text);
+              Get.back();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('بحث', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

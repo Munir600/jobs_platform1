@@ -79,16 +79,16 @@ class MyCompaniesScreen extends GetView<CompanyController> {
         return Column(
           children: [
             // Statistics Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: StatisticsHeader(
-                totalCount: controller.totalMyCompaniesCount.value,
-                currentPage: controller.currentMyCompaniesPage.value,
-                pageSize: CompanyController.pageSize,
-                itemNameSingular: 'شركة',
-                itemNamePlural: 'شركات',
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //   child: StatisticsHeader(
+            //     totalCount: controller.totalMyCompaniesCount.value,
+            //     currentPage: controller.currentMyCompaniesPage.value,
+            //     pageSize: CompanyController.pageSize,
+            //     itemNameSingular: 'شركة',
+            //     itemNamePlural: 'شركات',
+            //   ),
+            // ),
             
             // Companies List
             Expanded(

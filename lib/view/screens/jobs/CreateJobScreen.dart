@@ -121,7 +121,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         title: Text(isEditing ? 'تعديل الوظيفة' : 'نشر وظيفة جديدة', style: const TextStyle(color: AppColors.textColor)),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.primaryColor,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),
