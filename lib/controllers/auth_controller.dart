@@ -5,6 +5,7 @@ import 'package:jobs_platform1/core/utils/error_handler.dart';
 import '../core/api_service.dart';
 import '../core/constants.dart';
 import '../data/models/user_models.dart';
+import '../routes/app_routes.dart';
 import 'account/AccountController.dart';
 
 class AuthController extends GetxController {
@@ -12,6 +13,7 @@ class AuthController extends GetxController {
   final GetStorage _storage = GetStorage();
   final RxBool isLoading = false.obs;
   final RxBool isLoggedIn = false.obs;
+  final RxString erro_verifyPhone = ''.obs;
   final Rx<User?> _currentUser = Rx<User?>(null);
 
   final firstName = ''.obs;
@@ -67,18 +69,17 @@ class AuthController extends GetxController {
       _apiService.setAuthToken(token);
       print('TOKEN SET IN API SERVICE: $token');
       
-      final bool verified = response["data"]["user"]["is_verified"] ?? false;
-      if (!verified) {
-        isLoading.value = false;
-        Get.toNamed('/verify-phone', arguments: phone);
-        AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
-        return false;
-      }
-      
+      // final bool verified = response["data"]["user"]["is_verified"] ?? false;
+      // print('the response is_verified is :${response["data"]["user"]["is_verified"]}');
+      // if (!verified) {
+      //   isLoading.value = false;
+      //   AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
+      //   Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
+      //   return false;
+      // }
       isLoggedIn.value = true;
       isLoading.value = false;
       
-      // Fetch profile data to ensure it's fresh
       if (Get.isRegistered<AccountController>()) {
         Get.find<AccountController>().fetchProfile();
       }
@@ -88,6 +89,12 @@ class AuthController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       AppErrorHandler.showErrorSnack('$e');
+      final String errorStr = e.toString();
+      if (errorStr.contains('يجب التحقق من رقم الهاتف')) {
+        Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
+      }
+      print('the error message in catch is : $e');
+
       return false;
     }
   }
@@ -112,11 +119,11 @@ class AuthController extends GetxController {
         }
       } catch (e) {
         print('Error parsing user data: $e');
-        AppErrorHandler.showErrorSnack('خطأ في معالجة بيانات المستخدم: $e');
+        AppErrorHandler.showErrorSnack(response.body);
       }
 
       isLoading.value = false;
-      Get.toNamed('/verify-phone', arguments: registration.phone);
+      Get.toNamed(AppRoutes.verifyPhone, arguments: registration.phone);
       AppErrorHandler.showSuccessSnack('تم انشاء الحساب بنجاح، يرجى تفعيل رقم الهاتف');
       return true;
     } catch (e) {
@@ -132,7 +139,8 @@ class AuthController extends GetxController {
       await _apiService.post(ApiEndpoints.logout, {});
       AppErrorHandler.showSuccessSnack('تم تسجيل الخروج بنجاح');
     } catch (e) {
-      AppErrorHandler.showErrorSnack('$e');
+     //AppErrorHandler.showErrorSnack('$e');
+      print('ERROR during logout API call: $e');
     } finally {
       // Clear local auth state
       _currentUser.value = null;
@@ -262,7 +270,8 @@ class AuthController extends GetxController {
       return true;
     } catch (e) {
       isLoading.value = false;
-      print('ERROR verifyPhone: $e');
+      erro_verifyPhone.value = e.toString();
+      print('ERROR erro_verifyPhone is: ${erro_verifyPhone.value}');
       AppErrorHandler.showErrorSnack(e);
       return false;
     }

@@ -43,7 +43,8 @@ class InterviewService {
         throw Exception(response.body);
       }
     } catch (e) {
-      throw Exception('Error loading interviews: $e');
+      print('Error fetching interviews: $e');
+      throw Exception(e);
     }
   }
 
@@ -58,7 +59,8 @@ class InterviewService {
         throw Exception(response.body);
       }
     } catch (e) {
-      throw Exception('Error loading interview: $e');
+      print('Error fetching interview: $e');
+      throw Exception(e);
     }
   }
 
@@ -78,7 +80,8 @@ class InterviewService {
         throw Exception(response.body);
       }
     } catch (e) {
-      throw Exception('Error creating interview: $e');
+      print('Error creating interview: $e');
+      throw Exception(e);
     }
   }
 
@@ -97,7 +100,8 @@ class InterviewService {
         throw Exception(response.body);
       }
     } catch (e) {
-      throw Exception('Error updating interview: $e');
+      print('Error updating interview: $e');
+      throw Exception(e);
     }
   }
 }

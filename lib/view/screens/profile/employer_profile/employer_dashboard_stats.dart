@@ -9,7 +9,7 @@ class EmployerDashboardStatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(EmployerDashboardController());
+    final controller = Get.put(EmployerDashboardController(), permanent: true);
 
     return Scaffold(
       appBar: AppBar(
@@ -30,15 +30,33 @@ class EmployerDashboardStatsScreen extends StatelessWidget {
 
         if (controller.errorMessage.isNotEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('حدث خطأ: ${controller.errorMessage.value}'),
-                ElevatedButton(
-                  onPressed: () => controller.refreshStats(),
-                  child: const Text('إعادة المحاولة'),
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.cloud_off,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    controller.errorMessage.value,
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => controller.refreshStats(),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('إعادة المحاولة'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }

@@ -52,7 +52,9 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobApplicationList.fromJson(jsonDecode(response.body));
     } else {
+      print('Error fetching job applicationssss: ${response.body}');
       throw Exception(response.body);
+
     }
   }
 
@@ -62,6 +64,7 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return JobApplication.fromJson(jsonDecode(response.body)); 
     } else {
+      print('Error fetching application: ${response.body}');
       throw Exception(response.body);
     }
   }
@@ -103,6 +106,7 @@ class ApplicationService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedApplicationMessageList.fromJson(jsonDecode(response.body));
     } else {
+      print('Error fetching application messages: ${response.body}');
       throw Exception(response.body);
     }
   }

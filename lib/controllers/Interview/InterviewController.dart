@@ -68,6 +68,7 @@ class InterviewController extends GetxController {
         _calculateStatistics();
       }
     } catch (e) {
+      print('Error loading interviews in controller: $e');
       AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;

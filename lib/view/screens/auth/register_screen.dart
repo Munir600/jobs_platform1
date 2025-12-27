@@ -206,7 +206,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final ok = await auth.register(registration);
     if (ok) {
-      // Navigation is handled in AuthController (redirect to verify phone)
+      // AuthController (redirect to verify phone)
+     // Get.toNamed(AppRoutes.verifyPhone);
     } else {
      // Error handling is in AuthController
     }

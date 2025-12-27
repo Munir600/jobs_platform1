@@ -14,7 +14,6 @@ import '../../models/company/CompanyReview.dart';
 import '../../models/company/PaginatedCompanyList.dart';
 import '../../models/company/PaginatedCompanyFollowerList.dart';
 import '../../models/company/PaginatedCompanyReviewList.dart';
-
 import '../../models/accounts/profile/employer/employer_dashboard.dart';
 
 class CompanyService {
@@ -51,10 +50,10 @@ class CompanyService {
     final response = await _apiClient.get(path, headers: headers);
    // print('Get My Companies Response bbbb: ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedCompanyList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load companies');
+      throw Exception(response.body);
     }
   }
 
@@ -65,20 +64,20 @@ class CompanyService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedCompanyList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load my companies');
+      throw Exception(response.body);
     }
   }
 
   Future<Company> getCompany(String slug) async {
     final headers = await _getHeaders();
     final response = await _apiClient.get('/api/companies/$slug/', headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return Company.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load company');
+      throw Exception(response.body);
     }
   }
 
@@ -89,10 +88,10 @@ class CompanyService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load company jobs');
+      throw Exception(response.body);
     }
   }
 
@@ -123,10 +122,10 @@ class CompanyService {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201){
       return PaginatedCompanyReviewList.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load company reviews');
+      throw Exception(response.body);
     }
   }
 
@@ -137,10 +136,10 @@ class CompanyService {
       review.toJson(),
       headers: headers,
     );
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       return CompanyReview.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to create company review');
+      throw Exception(response.body);
     }
   }
   
@@ -183,7 +182,7 @@ class CompanyService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        throw Exception('Failed to create company with images: ${response.body}');
+        throw Exception(response.body);
       }
     } else {
       final response = await _apiClient.post(
@@ -195,7 +194,7 @@ class CompanyService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        throw Exception('Failed to create company: ${response.body}'); // Added body for debug
+        throw Exception(response.body);
       }
     }
   }
@@ -237,10 +236,10 @@ class CompanyService {
       var response = await http.Response.fromStream(streamedResponse);
       print('Update Company Multipart Response: ${response.statusCode} ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        throw Exception('Failed to update company with images: ${response.body}');
+        throw Exception(response.body);
       }
     } else {
       // Remove null values and image URL strings to avoid validation errors
@@ -258,10 +257,10 @@ class CompanyService {
         headers: headers,
       );
        print('Update Company Response: ${response.statusCode} ${response.body}');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        throw Exception('Failed to update company');
+        throw Exception(response.body);
       }
     }
   }
@@ -273,8 +272,8 @@ class CompanyService {
       path,
       headers: headers,
     );
-    if (response.statusCode != 204 && response.statusCode != 200) {
-      throw Exception('Failed to delete company');
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception(response.body);
     }
   }
 
@@ -285,12 +284,13 @@ class CompanyService {
       headers: headers,
     );
     
-   // print('Get Employer Dashboard Stats Response: ${response.statusCode} ${response.body}');
+    print('Get Employer Dashboard Stats Response: ${response.statusCode} ${response.body}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return EmployerDashboard.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load employer dashboard stats');
+      print('Error fetching employer dashboard stats: ${response.body}');
+      throw Exception(response.body);
     }
   }
 }

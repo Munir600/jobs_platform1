@@ -14,15 +14,24 @@ class AppErrorHandler {
       return "بيانات غير صالحة.";
     } else if (error is NetworkImageLoadException) {
       return "فشل تحميل الصورة. الصورة غير موجودة.";
-
     }
-    // else if (error is hostLookup) {
-    //   return "فشل تحميل الصورة. الصورة غير موجودة.";
-    //
-    // }
 
     try {
       final String errorStr = error.toString();
+      
+      // Check for network-related errors in the error string
+      if (errorStr.contains('SocketException') || 
+          errorStr.contains('Failed host lookup') ||
+          errorStr.contains('No address associated with hostname') ||
+          errorStr.contains('Network is unreachable')) {
+        return "لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.";
+      }
+      
+      if (errorStr.contains('ClientException') ||
+          errorStr.contains('Connection refused') ||
+          errorStr.contains('Connection timed out')) {
+        return "تعذر الوصول للخادم. حاول لاحقًا.";
+      }
 
       // Try to find JSON array or object
       int startIndex = errorStr.indexOf('{');
