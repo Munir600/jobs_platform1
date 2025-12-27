@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../data/models/company/companies_statistics.dart';
 import '../../widgets/companies/CompanyCard.dart';
 import 'package:get/get.dart';
 import '../../../controllers/company/CompanyController.dart';
@@ -7,7 +8,8 @@ import '../../../core/constants.dart';
 import '../../../data/models/company/Company.dart';
 import 'CompanyDetailScreen.dart';
 import '../../widgets/common/PaginationControls.dart';
-import '../../widgets/common/StatisticsHeader.dart';
+import '../../widgets/common/CompactStatisticsBar.dart';
+import '../../widgets/common/DetailedStatisticsSheet.dart';
 
 class CompanyListScreen extends GetView<CompanyController> {
   const CompanyListScreen({super.key});
@@ -52,18 +54,37 @@ class CompanyListScreen extends GetView<CompanyController> {
 
               return Column(
                 children: [
-                  // // Statistics Header
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  //   child: StatisticsHeader(
-                  //     totalCount: controller.totalCompaniesCount.value,
-                  //     currentPage: controller.currentCompaniesPage.value,
-                  //     pageSize: CompanyController.pageSize,
-                  //     itemNameSingular: 'شركة',
-                  //     itemNamePlural: 'شركات',
-                  //   ),
-                  // ),
-                  
+                  // Compact Statistics Bar
+                  Obx(() {
+                    final stats = controller.companiesStats.value;
+                    if (stats == null) return const SizedBox.shrink();
+                    
+                    return CompactStatisticsBar(
+                      items: [
+                        StatisticItem(
+                          icon: Icons.business,
+                          value: stats.totalCompanies ?? 0,
+                          label: 'إجمالي',
+                          color: AppColors.primaryColor,
+                        ),
+                        StatisticItem(
+                          icon: Icons.verified,
+                          value: stats.verifiedCompanies ?? 0,
+                          label: 'موثقة',
+                          color: Colors.blue,
+                        ),
+                        StatisticItem(
+                          icon: Icons.star,
+                          value: stats.featuredCompanies ?? 0,
+                          label: 'مميزة',
+                          color: Colors.amber,
+                        ),
+
+                      ],
+                      onShowDetails: () => _showDetailedStats(context, stats),
+                    );
+                  }),
+
                   // Companies List
                   Expanded(
                     child: RefreshIndicator(
@@ -235,5 +256,75 @@ class CompanyListScreen extends GetView<CompanyController> {
         ),
       ],
     );
+  }
+
+  void _showDetailedStats(BuildContext context, CompaniesStatistics stats) {
+    final colors = [
+      AppColors.primaryColor,
+      Colors.teal,
+      Colors.purple,
+      Colors.orange,
+      Colors.pink,
+      Colors.indigo,
+      Colors.cyan,
+    ];
+
+    final categories = <StatCategory>[];
+
+    // Companies by Size
+    if (stats.companiesBySize != null && stats.companiesBySize!.isNotEmpty) {
+      categories.add(StatCategory(
+        title: 'توزيع الشركات حسب الحجم',
+        icon: Icons.groups,
+        items: stats.companiesBySize!.asMap().entries.map<StatItem>((entry) {
+          final item = entry.value;
+          return StatItem(
+            label: AppEnums.companySizes[item.size] ?? item.size ?? 'غير محدد',
+            value: item.count ?? 0,
+            color: colors[entry.key % colors.length],
+          );
+        }).toList(),
+      ));
+    }
+
+    // Companies by Industry
+    if (stats.companiesByIndustry != null && stats.companiesByIndustry!.isNotEmpty) {
+      categories.add(StatCategory(
+        title: 'توزيع الشركات حسب القطاع',
+        icon: Icons.business_center,
+        items: stats.companiesByIndustry!.asMap().entries.map<StatItem>((entry) {
+          final item = entry.value;
+          return StatItem(
+            label: AppEnums.industries[item.industry] ?? item.industry ?? 'غير محدد',
+            value: item.count ?? 0,
+            color: colors[entry.key % colors.length],
+          );
+        }).toList(),
+      ));
+    }
+
+    // Companies by City
+    if (stats.companiesByCity != null && stats.companiesByCity!.isNotEmpty) {
+      categories.add(StatCategory(
+        title: 'توزيع الشركات حسب المدينة',
+        icon: Icons.location_city,
+        items: stats.companiesByCity!.asMap().entries.map<StatItem>((entry) {
+          final item = entry.value;
+          return StatItem(
+            label: AppEnums.cities[item.city] ?? item.city ?? 'غير محدد',
+            value: item.count ?? 0,
+            color: colors[entry.key % colors.length],
+          );
+        }).toList(),
+      ));
+    }  
+
+    if (categories.isNotEmpty) {
+      DetailedStatisticsSheet.show(
+        context,
+        title: 'إحصائيات الشركات التفصيلية',
+        categories: categories,
+      );
+    }
   }
 }

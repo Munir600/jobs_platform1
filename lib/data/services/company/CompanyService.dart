@@ -15,6 +15,7 @@ import '../../models/company/PaginatedCompanyList.dart';
 import '../../models/company/PaginatedCompanyFollowerList.dart';
 import '../../models/company/PaginatedCompanyReviewList.dart';
 import '../../models/accounts/profile/employer/employer_dashboard.dart';
+import '../../models/company/companies_statistics.dart';
 
 class CompanyService {
   final ApiClient _apiClient = ApiClient();
@@ -291,6 +292,19 @@ class CompanyService {
     } else {
       print('Error fetching employer dashboard stats: ${response.body}');
       throw Exception(response.body);
+    }
+  }
+
+  Future<CompaniesStatistics> getCompanyStatistics() async {
+    final headers = await _getHeaders();
+    final response = await _apiClient.get(
+      ApiEndpoints.companyStatistics,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      return CompaniesStatistics.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load company statistics');
     }
   }
 }

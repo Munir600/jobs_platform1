@@ -8,6 +8,9 @@ import 'JobDetailScreen.dart';
 import '../../widgets/jobs/JobCard.dart';
 import '../../widgets/common/PaginationControls.dart';
 import '../../widgets/common/StatisticsHeader.dart';
+import '../../widgets/common/CompactStatisticsBar.dart';
+import '../../widgets/common/DetailedStatisticsSheet.dart';
+import '../../../data/models/job/jobs_statistics.dart';
 
 class JobListScreen extends GetView<JobController> {
   const JobListScreen({super.key});
@@ -52,18 +55,37 @@ class JobListScreen extends GetView<JobController> {
 
               return Column(
                 children: [
-                  // Statistics Header
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  //   child: StatisticsHeader(
-                  //     totalCount: controller.totalJobsCount.value,
-                  //     currentPage: controller.currentJobsPage.value,
-                  //     pageSize: JobController.pageSize,
-                  //     itemNameSingular: 'وظيفة',
-                  //     itemNamePlural: 'وظائف',
-                  //   ),
-                  // ),
-                  
+                  // Compact Statistics Bar
+                  Obx(() {
+                    final stats = controller.jobsStats.value;
+                    if (stats == null) return const SizedBox.shrink();
+                    
+                    return CompactStatisticsBar(
+                      items: [
+                        StatisticItem(
+                          icon: Icons.work,
+                          value: stats.totalJobs ?? 0,
+                          label: 'إجمالي',
+                          color: AppColors.primaryColor,
+                        ),
+                        StatisticItem(
+                          icon: Icons.star,
+                          value: stats.featuredJobs ?? 0,
+                          label: 'مميزة',
+                          color: Colors.amber,
+                        ),
+                        StatisticItem(
+                          icon: Icons.local_fire_department,
+                          value: stats.urgentJobs ?? 0,
+                          label: 'عاجلة',
+                          color: Colors.red,
+                        ),
+                      ],
+                      onShowDetails: () => _showDetailedStats(context, stats),
+                    );
+                  }),
+
+  
                   // Jobs List
                   Expanded(
                     child: RefreshIndicator(
@@ -237,5 +259,75 @@ class JobListScreen extends GetView<JobController> {
         ),
       ],
     );
+  }
+
+  void _showDetailedStats(BuildContext context, JobsStatistics stats) {
+    final colors = [
+      AppColors.primaryColor,
+      Colors.teal,
+      Colors.purple,
+      Colors.orange,
+      Colors.pink,
+      Colors.indigo,
+      Colors.cyan,
+    ];
+
+    final categories = <StatCategory>[];
+
+    // Jobs by Type
+    if (stats.jobsByType != null && stats.jobsByType!.isNotEmpty) {
+      categories.add(StatCategory(
+        title: 'توزيع الوظائف حسب النوع',
+        icon: Icons.category,
+        items: stats.jobsByType!.asMap().entries.map<StatItem>((entry) {
+          final item = entry.value;
+          return StatItem(
+            label: AppEnums.jobTypes[item.jobType] ?? item.jobType ?? 'غير محدد',
+            value: item.count ?? 0,
+            color: colors[entry.key % colors.length],
+          );
+        }).toList(),
+      ));
+    }
+
+    // Jobs by City
+    if (stats.jobsByCity != null && stats.jobsByCity!.isNotEmpty) {
+      categories.add(StatCategory(
+        title: 'توزيع الوظائف حسب المدينة',
+        icon: Icons.location_city,
+        items: stats.jobsByCity!.asMap().entries.map<StatItem>((entry) {
+          final item = entry.value;
+          return StatItem(
+            label: AppEnums.cities[item.city] ?? item.city ?? 'غير محدد',
+            value: item.count ?? 0,
+            color: colors[entry.key % colors.length],
+          );
+        }).toList(),
+      ));
+    }
+
+    // Jobs by Category
+    if (stats.jobsByCategory != null && stats.jobsByCategory!.isNotEmpty) {
+      categories.add(StatCategory(
+        title: 'توزيع الوظائف حسب الفئة',
+        icon: Icons.label,
+        items: stats.jobsByCategory!.asMap().entries.map<StatItem>((entry) {
+          final item = entry.value;
+          return StatItem(
+            label: item.categoryName ?? 'غير مصنف',
+            value: item.count ?? 0,
+            color: colors[entry.key % colors.length],
+          );
+        }).toList(),
+      ));
+    }
+
+    if (categories.isNotEmpty) {
+      DetailedStatisticsSheet.show(
+        context,
+        title: 'إحصائيات الوظائف التفصيلية',
+        categories: categories,
+      );
+    }
   }
 }

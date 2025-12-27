@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 import '../../core/utils/error_handler.dart';
+import '../../data/models/job/jobs_statistics.dart';
 import '../../data/services/job/JobService.dart';
 import '../../data/models/job/JobDetail.dart';
 import '../../data/models/job/JobCreate.dart';
@@ -55,6 +56,9 @@ class JobController extends GetxController {
   final RxInt totalMyJobsPages = 1.obs;
   final RxInt totalMyJobsCount = 0.obs;
   static const int pageSize = 5; // Items per page
+  
+  // Statistics Observable
+  final Rx<JobsStatistics?> jobsStats = Rx<JobsStatistics?>(null);
 
   @override
   void onInit() {
@@ -62,6 +66,7 @@ class JobController extends GetxController {
     loadCachedData();
     // loadJobs();
     loadCategories();
+    loadJobStatistics();
   }
 
   @override
@@ -411,6 +416,17 @@ class JobController extends GetxController {
   void goToPreviousMyJobsPage() {
     if (currentMyJobsPage.value > 1) {
       loadMyJobsPage(currentMyJobsPage.value - 1);
+    }
+  }
+  
+  // Load Job Statistics
+  Future<void> loadJobStatistics() async {
+    try {
+      final stats = await _jobService.getJobStatistics();
+      jobsStats.value = stats;
+    } catch (e) {
+      print('Error loading job statistics: $e');
+      // Don't show error to user, just log it
     }
   }
 }

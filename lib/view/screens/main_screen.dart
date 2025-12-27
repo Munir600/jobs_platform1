@@ -7,6 +7,7 @@ import '../../core/utils/network_utils.dart';
 import 'companies/CompanyListScreen.dart';
 import 'jobs/JobListScreen.dart';
 import 'messages/ai_chat.dart';
+import 'messages/message_screen.dart';
 import 'profile/employer_profile/employer_profile_screen.dart';
 import 'profile/jobseeker_profile/jobseeker_profile_screen.dart';
 
@@ -24,8 +25,7 @@ class MainScreen extends StatelessWidget {
       case 1:
         return CompanyListScreen();
       case 2:
-        chatController;
-        return AiChat();
+        return MessagesScreen();
       case 3:
         return authController.isJobSeeker
             ? JobseekerProfileScreen()

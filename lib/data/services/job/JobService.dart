@@ -11,6 +11,7 @@ import '../../models/job/PaginatedJobListList.dart';
 import '../../models/job/PaginatedJobCategoryList.dart';
 import '../../models/job/PaginatedJobAlertList.dart';
 import '../../models/job/PaginatedJobBookmarkList.dart';
+import '../../models/job/jobs_statistics.dart';
 
 class JobService {
   final ApiClient _apiClient = ApiClient();
@@ -190,6 +191,19 @@ class JobService {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {
       throw Exception(response.body);
+    }
+  }
+
+  Future<JobsStatistics> getJobStatistics() async {
+    final headers = await _getHeaders();
+    final response = await _apiClient.get(
+      ApiEndpoints.jobStatistics,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      return JobsStatistics.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load job statistics');
     }
   }
 }

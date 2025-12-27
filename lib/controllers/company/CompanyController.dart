@@ -9,6 +9,7 @@ import '../../data/models/company/Company.dart';
 import '../../data/models/company/CompanyCreate.dart';
 import '../../data/models/company/CompanyReview.dart';
 import '../../data/models/company/CompanyFollower.dart';
+import '../../data/models/company/companies_statistics.dart';
 
 class CompanyController extends GetxController {
   final CompanyService _companyService = CompanyService();
@@ -42,12 +43,16 @@ class CompanyController extends GetxController {
   final RxInt totalMyCompaniesPages = 1.obs;
   final RxInt totalMyCompaniesCount = 0.obs;
   static const int pageSize = 5; // Items per page
+  
+  // Statistics Observable
+  final Rx<CompaniesStatistics?> companiesStats = Rx<CompaniesStatistics?>(null);
 
   @override
   void onInit() {
     super.onInit();
     loadCachedData();
     loadCompanies();
+    loadCompanyStatistics();
   }
 
   void loadCachedData() {
@@ -397,6 +402,16 @@ class CompanyController extends GetxController {
   void goToPreviousMyCompaniesPage() {
     if (currentMyCompaniesPage.value > 1) {
       loadMyCompaniesPage(currentMyCompaniesPage.value - 1);
+    }
+  }
+  
+
+  Future<void> loadCompanyStatistics() async {
+    try {
+      final stats = await _companyService.getCompanyStatistics();
+      companiesStats.value = stats;
+    } catch (e) {
+      print('Error loading company statistics: $e');
     }
   }
 }
