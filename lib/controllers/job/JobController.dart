@@ -137,10 +137,9 @@ class JobController extends GetxController {
       // Update pagination metadata
       totalJobsCount.value = response.count ?? 0;
       totalJobsPages.value = (totalJobsCount.value / pageSize).ceil();
-      
-   //   print('the response for loadjobs is $response');
+
     } catch (e) {
-       AppErrorHandler.showErrorSnack(e);
+       print('Error loading jobs: $e');
     } finally {
       isListLoading.value = false;
     }

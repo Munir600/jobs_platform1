@@ -1,6 +1,7 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
+import '../../../controllers/auth_controller.dart';
 import '../../../core/constants.dart';
 import '../api_client.dart';
 import '../../models/job/JobDetail.dart';
@@ -14,7 +15,7 @@ import '../../models/job/PaginatedJobBookmarkList.dart';
 class JobService {
   final ApiClient _apiClient = ApiClient();
  final GetStorage _storage = GetStorage();
-
+  final isUserLoggedIn = Get.find<AuthController>();
   Future<Map<String, String>> _getHeaders() async {
     final token = _storage.read(AppConstants.authTokenKey);
     print('Token from jobs  is : $token');
@@ -33,7 +34,14 @@ class JobService {
     bool? isUrgent,
   }) async {
     final headers = await _getHeaders();
-    String path = '/api/jobs/?';
+    String path = '';
+    if(isUserLoggedIn.isLoggedIn.value){
+      path = '/api/jobs/recommended/?';
+    }else{
+      path = '/api/jobs/?';
+    }
+     //print('is user logged in from jobs service : ${isUserLoggedIn.isLoggedIn.value}');
+    print('path after if  : $path');
     if (page != null) path += 'page=$page&';
     if (search != null) path += 'search=$search&';
     if (city != null) path += 'city=$city&';
