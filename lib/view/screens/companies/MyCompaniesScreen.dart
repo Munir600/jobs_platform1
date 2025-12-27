@@ -8,6 +8,8 @@ import '../../../core/constants.dart';
 import '../../../data/models/company/Company.dart';
 import 'CreateCompanyScreen.dart';
 import 'CompanyDetailScreen.dart';
+import '../../widgets/common/PaginationControls.dart';
+import '../../widgets/common/StatisticsHeader.dart';
 
 class MyCompaniesScreen extends GetView<CompanyController> {
   const MyCompaniesScreen({super.key});
@@ -74,22 +76,52 @@ class MyCompaniesScreen extends GetView<CompanyController> {
           );
         }
 
-        return RefreshIndicator(
-          onRefresh: () async => await controller.getMyCompanies(),
-          color: AppColors.primaryColor,
-          child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
-            itemCount: companies.length,
-            itemBuilder: (context, index) {
-              final company = companies[index];
-              return CompanyCard(
-                company: company,
-                showControls: true,
-                onEdit: () => Get.to(() => CreateCompanyScreen(company: company)),
-                onDelete: () => _confirmDelete(company),
-              );
-            },
-          ),
+        return Column(
+          children: [
+            // Statistics Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: StatisticsHeader(
+                totalCount: controller.totalMyCompaniesCount.value,
+                currentPage: controller.currentMyCompaniesPage.value,
+                pageSize: CompanyController.pageSize,
+                itemNameSingular: 'شركة',
+                itemNamePlural: 'شركات',
+              ),
+            ),
+            
+            // Companies List
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async => await controller.getMyCompanies(),
+                color: AppColors.primaryColor,
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
+                  itemCount: companies.length,
+                  itemBuilder: (context, index) {
+                    final company = companies[index];
+                    return CompanyCard(
+                      company: company,
+                      showControls: true,
+                      onEdit: () => Get.to(() => CreateCompanyScreen(company: company)),
+                      onDelete: () => _confirmDelete(company),
+                    );
+                  },
+                ),
+              ),
+            ),
+            
+            // Pagination Controls
+            Padding(
+              padding: const EdgeInsets.only(bottom: 80),
+              child: PaginationControls(
+                currentPage: controller.currentMyCompaniesPage.value,
+                totalPages: controller.totalMyCompaniesPages.value,
+                onPageChanged: controller.loadMyCompaniesPage,
+                isLoading: controller.isListLoading.value,
+              ),
+            ),
+          ],
         );
       }),
     );

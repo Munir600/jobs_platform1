@@ -33,6 +33,15 @@ class CompanyController extends GetxController {
   final RxString selectedSize = ''.obs;
   final RxBool isFeatured = false.obs;
   final RxBool isVerified = false.obs;
+  
+  // Pagination Observables
+  final RxInt currentCompaniesPage = 1.obs;
+  final RxInt totalCompaniesPages = 1.obs;
+  final RxInt totalCompaniesCount = 0.obs;
+  final RxInt currentMyCompaniesPage = 1.obs;
+  final RxInt totalMyCompaniesPages = 1.obs;
+  final RxInt totalMyCompaniesCount = 0.obs;
+  static const int pageSize = 5; // Items per page
 
   @override
   void onInit() {
@@ -61,6 +70,7 @@ class CompanyController extends GetxController {
     try {
       isListLoading.value = true;
       final response = await _companyService.getCompanies(
+        page: currentCompaniesPage.value,
         search: searchQuery.value.isNotEmpty ? searchQuery.value : null,
         city: selectedCity.value.isNotEmpty ? selectedCity.value : null,
         industry: selectedIndustry.value.isNotEmpty ? selectedIndustry.value : null,
@@ -79,6 +89,11 @@ class CompanyController extends GetxController {
           }
         }
       }
+      
+      // Update pagination metadata
+      totalCompaniesCount.value = response.count ?? 0;
+      totalCompaniesPages.value = (totalCompaniesCount.value / pageSize).ceil();
+      
      }
      catch (e)
      {
@@ -127,11 +142,16 @@ class CompanyController extends GetxController {
     try {
       if (showLoading) isListLoading.value = true;
 
-      final response = await _companyService.getMyCompanies();
+      final response = await _companyService.getMyCompanies(page: currentMyCompaniesPage.value);
       if (response.results != null) {
         myCompanies.assignAll(response.results!);
         _storage.write('my_companies_list', response.results!.map((e) => e.toJson()).toList());
       }
+      
+      // Update pagination metadata
+      totalMyCompaniesCount.value = response.count ?? 0;
+      totalMyCompaniesPages.value = (totalMyCompaniesCount.value / pageSize).ceil();
+      
       print('CompanyController: Fetched ${myCompanies.length} companies');
       for( var company in myCompanies){
         print('CompanyController: Company - ${company.name}, Slug - ${company.slug}');
@@ -317,6 +337,7 @@ class CompanyController extends GetxController {
 
   void setSearchQuery(String query) {
     searchQuery.value = query;
+    currentCompaniesPage.value = 1; // Reset to first page when searching
     loadCompanies();
   }
 
@@ -326,6 +347,7 @@ class CompanyController extends GetxController {
     if (size != null) selectedSize.value = size;
     if (featured != null) isFeatured.value = featured;
     if (verified != null) isVerified.value = verified;
+    currentCompaniesPage.value = 1; // Reset to first page when filtering
     loadCompanies();
   }
 
@@ -336,6 +358,45 @@ class CompanyController extends GetxController {
     selectedSize.value = '';
     isFeatured.value = false;
     isVerified.value = false;
+    currentCompaniesPage.value = 1; // Reset to first page when clearing filters
     loadCompanies();
+  }
+  
+  // Pagination Methods for Companies
+  void loadCompaniesPage(int page) {
+    if (page < 1 || page > totalCompaniesPages.value) return;
+    currentCompaniesPage.value = page;
+    loadCompanies();
+  }
+  
+  void goToNextCompaniesPage() {
+    if (currentCompaniesPage.value < totalCompaniesPages.value) {
+      loadCompaniesPage(currentCompaniesPage.value + 1);
+    }
+  }
+  
+  void goToPreviousCompaniesPage() {
+    if (currentCompaniesPage.value > 1) {
+      loadCompaniesPage(currentCompaniesPage.value - 1);
+    }
+  }
+  
+  // Pagination Methods for My Companies
+  void loadMyCompaniesPage(int page) {
+    if (page < 1 || page > totalMyCompaniesPages.value) return;
+    currentMyCompaniesPage.value = page;
+    getMyCompanies();
+  }
+  
+  void goToNextMyCompaniesPage() {
+    if (currentMyCompaniesPage.value < totalMyCompaniesPages.value) {
+      loadMyCompaniesPage(currentMyCompaniesPage.value + 1);
+    }
+  }
+  
+  void goToPreviousMyCompaniesPage() {
+    if (currentMyCompaniesPage.value > 1) {
+      loadMyCompaniesPage(currentMyCompaniesPage.value - 1);
+    }
   }
 }

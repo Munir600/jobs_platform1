@@ -46,12 +46,21 @@ class JobController extends GetxController {
   final RxBool isRemote = false.obs;
   final RxBool isUrgent = false.obs;
   final RxnInt selectedCompanyId = RxnInt();
+  
+  // Pagination Observables
+  final RxInt currentJobsPage = 1.obs;
+  final RxInt totalJobsPages = 1.obs;
+  final RxInt totalJobsCount = 0.obs;
+  final RxInt currentMyJobsPage = 1.obs;
+  final RxInt totalMyJobsPages = 1.obs;
+  final RxInt totalMyJobsCount = 0.obs;
+  static const int pageSize = 5; // Items per page
 
   @override
   void onInit() {
     super.onInit();
     loadCachedData();
-    // loadJobs(); // Defer to onReady or keep here if safe
+    // loadJobs();
     loadCategories();
   }
 
@@ -73,6 +82,12 @@ class JobController extends GetxController {
     isRemote.close();
     isUrgent.close();
     selectedCompanyId.close();
+    currentJobsPage.close();
+    totalJobsPages.close();
+    totalJobsCount.close();
+    currentMyJobsPage.close();
+    totalMyJobsPages.close();
+    totalMyJobsCount.close();
     super.onClose();
   }
 
@@ -104,6 +119,7 @@ class JobController extends GetxController {
      try {
       isListLoading.value = true;
       final response = await _jobService.getJobs(
+        page: currentJobsPage.value,
         search: searchQuery.value.isNotEmpty ? searchQuery.value : null,
         city: selectedCity.value.isNotEmpty ? selectedCity.value : null,
         jobType: selectedJobType.value.isNotEmpty ? selectedJobType.value : null,
@@ -117,6 +133,12 @@ class JobController extends GetxController {
         jobs.assignAll(response.results!);
         _storage.write('jobs_list', response.results!.map((e) => e.toJson()).toList());
       }
+      
+      // Update pagination metadata
+      totalJobsCount.value = response.count ?? 0;
+      totalJobsPages.value = (totalJobsCount.value / pageSize).ceil();
+      
+   //   print('the response for loadjobs is $response');
     } catch (e) {
        AppErrorHandler.showErrorSnack(e);
     } finally {
@@ -127,11 +149,16 @@ class JobController extends GetxController {
   Future<void> loadMyJobs() async {
     try {
       isListLoading.value = true;
-      final response = await _jobService.getMyJobs();
+      final response = await _jobService.getMyJobs(page: currentMyJobsPage.value);
       if (response.results != null) {
         myJobs.assignAll(response.results!);
         _storage.write('my_jobs_list', response.results!.map((e) => e.toJson()).toList());
       }
+      
+      // Update pagination metadata
+      totalMyJobsCount.value = response.count ?? 0;
+      totalMyJobsPages.value = (totalMyJobsCount.value / pageSize).ceil();
+      
     } catch (e) {
      // AppErrorHandler.showErrorSnack(e);
     } finally {
@@ -288,13 +315,8 @@ class JobController extends GetxController {
 
   Future<void> bookmarkJob(int jobId) async {
     try {
-      // Check current bookmark status BEFORE toggling
       final isCurrentlyBookmarked = bookmarks.any((b) => b.job?.id == jobId);
-      
-      // Toggle bookmark
       await _jobService.bookmarkJob(jobId);
-      
-      // Reload bookmarks to get updated state
       await loadBookmarks();
       
       // Show appropriate message based on PREVIOUS state
@@ -310,6 +332,7 @@ class JobController extends GetxController {
 
   void setSearchQuery(String query) {
     searchQuery.value = query;
+    currentJobsPage.value = 1; // Reset to first page when searching
     loadJobs();
   }
 
@@ -329,6 +352,7 @@ class JobController extends GetxController {
     if (category != null) selectedCategory.value = category;
     if (remote != null) isRemote.value = remote;
     if (urgent != null) isUrgent.value = urgent;
+    currentJobsPage.value = 1; // Reset to first page when filtering
     loadJobs();
   }
 
@@ -341,6 +365,7 @@ class JobController extends GetxController {
     selectedCategory.value = '';
     isRemote.value = false;
     isUrgent.value = false;
+    currentJobsPage.value = 1; // Reset to first page when clearing filters
     loadJobs();
   }
   
@@ -350,5 +375,43 @@ class JobController extends GetxController {
   
   void clearCompanyFilter() {
     selectedCompanyId.value = null;
+  }
+  
+  // Pagination Methods for Jobs
+  void loadJobsPage(int page) {
+    if (page < 1 || page > totalJobsPages.value) return;
+    currentJobsPage.value = page;
+    loadJobs();
+  }
+  
+  void goToNextJobsPage() {
+    if (currentJobsPage.value < totalJobsPages.value) {
+      loadJobsPage(currentJobsPage.value + 1);
+    }
+  }
+  
+  void goToPreviousJobsPage() {
+    if (currentJobsPage.value > 1) {
+      loadJobsPage(currentJobsPage.value - 1);
+    }
+  }
+  
+  // Pagination Methods for My Jobs
+  void loadMyJobsPage(int page) {
+    if (page < 1 || page > totalMyJobsPages.value) return;
+    currentMyJobsPage.value = page;
+    loadMyJobs();
+  }
+  
+  void goToNextMyJobsPage() {
+    if (currentMyJobsPage.value < totalMyJobsPages.value) {
+      loadMyJobsPage(currentMyJobsPage.value + 1);
+    }
+  }
+  
+  void goToPreviousMyJobsPage() {
+    if (currentMyJobsPage.value > 1) {
+      loadMyJobsPage(currentMyJobsPage.value - 1);
+    }
   }
 }

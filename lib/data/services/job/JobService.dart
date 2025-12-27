@@ -45,7 +45,7 @@ class JobService {
     if (isUrgent != null) path += 'is_urgent=$isUrgent&';
 
     final response = await _apiClient.get(path, headers: headers);
-    // print('response body jobs: ${response.body[3][11]}');
+     print('response body jobs in services: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {

@@ -6,6 +6,8 @@ import '../../../core/constants.dart';
 import '../../../data/models/job/JobList.dart';
 import 'JobDetailScreen.dart';
 import '../../widgets/jobs/JobCard.dart';
+import '../../widgets/common/PaginationControls.dart';
+import '../../widgets/common/StatisticsHeader.dart';
 
 class JobListScreen extends GetView<JobController> {
   const JobListScreen({super.key});
@@ -61,20 +63,47 @@ class JobListScreen extends GetView<JobController> {
                 );
               }
 
-              return RefreshIndicator(
-                onRefresh: controller.loadJobs,
-                color: AppColors.primaryColor,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: controller.jobs.length > 15 ? 15 : controller.jobs.length,
-                  itemBuilder: (context, index) {
-                    final job = controller.jobs[index];
-                    return JobCard(
-                      job: job,
-                      onBookmark: () => controller.bookmarkJob(job.id!),
-                    );
-                  },
-                ),
+              return Column(
+                children: [
+                  // Statistics Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: StatisticsHeader(
+                      totalCount: controller.totalJobsCount.value,
+                      currentPage: controller.currentJobsPage.value,
+                      pageSize: JobController.pageSize,
+                      itemNameSingular: 'وظيفة',
+                      itemNamePlural: 'وظائف',
+                    ),
+                  ),
+                  
+                  // Jobs List
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: controller.loadJobs,
+                      color: AppColors.primaryColor,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: controller.jobs.length,
+                        itemBuilder: (context, index) {
+                          final job = controller.jobs[index];
+                          return JobCard(
+                            job: job,
+                            onBookmark: () => controller.bookmarkJob(job.id!),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  
+                  // Pagination Controls
+                  PaginationControls(
+                    currentPage: controller.currentJobsPage.value,
+                    totalPages: controller.totalJobsPages.value,
+                    onPageChanged: controller.loadJobsPage,
+                    isLoading: controller.isListLoading.value,
+                  ),
+                ],
               );
             }),
           ),

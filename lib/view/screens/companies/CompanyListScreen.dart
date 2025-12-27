@@ -6,6 +6,8 @@ import '../../../config/app_colors.dart';
 import '../../../core/constants.dart';
 import '../../../data/models/company/Company.dart';
 import 'CompanyDetailScreen.dart';
+import '../../widgets/common/PaginationControls.dart';
+import '../../widgets/common/StatisticsHeader.dart';
 
 class CompanyListScreen extends GetView<CompanyController> {
   const CompanyListScreen({super.key});
@@ -61,20 +63,47 @@ class CompanyListScreen extends GetView<CompanyController> {
                 );
               }
 
-              return RefreshIndicator(
-                onRefresh: controller.loadCompanies,
-                color: AppColors.primaryColor,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: controller.companies.length,
-                  itemBuilder: (context, index) {
-                    final company = controller.companies[index];
-                    return CompanyCard(
-                      company: company,
-                      showControls: false,
-                    );
-                  },
-                ),
+              return Column(
+                children: [
+                  // Statistics Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: StatisticsHeader(
+                      totalCount: controller.totalCompaniesCount.value,
+                      currentPage: controller.currentCompaniesPage.value,
+                      pageSize: CompanyController.pageSize,
+                      itemNameSingular: 'شركة',
+                      itemNamePlural: 'شركات',
+                    ),
+                  ),
+                  
+                  // Companies List
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: controller.loadCompanies,
+                      color: AppColors.primaryColor,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: controller.companies.length,
+                        itemBuilder: (context, index) {
+                          final company = controller.companies[index];
+                          return CompanyCard(
+                            company: company,
+                            showControls: false,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  
+                  // Pagination Controls
+                  PaginationControls(
+                    currentPage: controller.currentCompaniesPage.value,
+                    totalPages: controller.totalCompaniesPages.value,
+                    onPageChanged: controller.loadCompaniesPage,
+                    isLoading: controller.isListLoading.value,
+                  ),
+                ],
               );
             }),
           ),
