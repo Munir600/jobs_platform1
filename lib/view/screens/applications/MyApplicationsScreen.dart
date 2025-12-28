@@ -3,28 +3,57 @@ import 'package:get/get.dart';
 import '../../../controllers/application/ApplicationController.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/models/application/JobApplication.dart';
+import '../../../data/models/application/ApplicationStatistics.dart';
 import 'package:intl/intl.dart';
 import '../application/ApplicationDetailScreen.dart';
+import '../../widgets/common/CompactStatisticsBar.dart';
+import '../../widgets/common/DetailedStatisticsSheet.dart';
 
-class MyApplicationsScreen extends GetView<ApplicationController> {
+class MyApplicationsScreen extends StatefulWidget {
   const MyApplicationsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<MyApplicationsScreen> createState() => _MyApplicationsScreenState();
+}
+
+class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
+  final controller = Get.find<ApplicationController>();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
     if (controller.myApplications.isEmpty && !controller.isListLoading.value) {
        Future.microtask(() => controller.loadMyApplications());
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (controller.hasMoreMyApplications.value) {
+         controller.loadMoreMyApplications();
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundColor,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: _buildStatisticsSection(controller),
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: AppColors.backgroundColor,
+      //   elevation: 0,
+      //   automaticallyImplyLeading: false,
+      //   title: const Text('طلباتي', style: TextStyle(color: AppColors.textColor)),
+      //   centerTitle: true,
+      // ),
       body: Stack(
         children: [
           Obx(() {
@@ -32,7 +61,7 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
               return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
             }
 
-            if (controller.myApplications.isEmpty) {
+            if (controller.myApplications.isEmpty && controller.statistics.value == null) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -43,8 +72,7 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
                     ),
                      const SizedBox(height: 16),
                      ElevatedButton(
-                       onPressed:
-                       controller.loadMyApplications,
+                       onPressed: controller.loadMyApplications,
                        child: const Text('تحديث')
                      )
                   ],
@@ -56,11 +84,20 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
               onRefresh: controller.loadMyApplications,
               color: AppColors.primaryColor,
               child: ListView.builder(
+                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
-                itemCount: controller.myApplications.length,
+                padding: const EdgeInsets.symmetric(horizontal: 16), // Adjusted padding
+                itemCount: controller.myApplications.length + 2, // +2 for header and footer
                 itemBuilder: (context, index) {
-                  final application = controller.myApplications[index];
+                   if (index == 0) {
+                    return _buildStatisticsHeader();
+                   }
+                   
+                   if (index == controller.myApplications.length + 1) {
+                     return _buildLoadingFooter();
+                   }
+                   
+                  final application = controller.myApplications[index - 1]; // -1 for header
                   return _buildApplicationCard(application);
                 },
               ),
@@ -69,6 +106,90 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
         ],
       ),
     );
+  }
+
+  Widget _buildStatisticsHeader() {
+    return Obx(() {
+      final stats = controller.statistics.value;
+      if (stats == null) return const SizedBox.shrink();
+
+      return CompactStatisticsBar(
+        items: [
+          StatisticItem(
+            icon: Icons.assignment,
+            value: stats.totalApplications,
+            label: 'الكل',
+            color: Colors.blue,
+          ),
+          StatisticItem(
+            icon: Icons.hourglass_empty,
+            value: stats.pendingApplications,
+            label: 'قيد الانتظار',
+            color: Colors.orange,
+          ),
+          StatisticItem(
+            icon: Icons.check_circle_outline,
+            value: stats.acceptedApplications,
+            label: 'مقبول',
+            color: Colors.green,
+          ),
+          StatisticItem(
+            icon: Icons.cancel_outlined,
+            value: stats.rejectedApplications,
+            label: 'مرفوض',
+            color: Colors.red,
+          ),
+        ],
+        onShowDetails: () => _showDetailedStats(context, stats),
+      );
+    });
+  }
+
+  void _showDetailedStats(BuildContext context, ApplicationStatistics stats) {
+    final colors = [
+      Colors.orange,
+      Colors.green,
+      Colors.red,
+      Colors.purple,
+      Colors.blue,
+      Colors.grey,
+      Colors.teal,
+    ];
+
+    if (stats.applicationsByStatus.isEmpty) return;
+
+    final category = StatCategory(
+      title: 'حالة الطلبات',
+      icon: Icons.assignment_ind,
+      items: stats.applicationsByStatus.asMap().entries.map<StatItem>((entry) {
+        final item = entry.value;
+        return StatItem(
+          label: _getStatusText(item.status),
+          value: item.count,
+          color: colors[entry.key % colors.length],
+        );
+      }).toList(),
+    );
+
+    DetailedStatisticsSheet.show(
+      context,
+      title: 'تفاصيل إحصائيات الطلبات',
+      categories: [category],
+    );
+  }
+
+  Widget _buildLoadingFooter() {
+    return Obx(() {
+      if (!controller.isLoadingMoreMyApplications.value) {
+        return const SizedBox.shrink();
+      }
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: CircularProgressIndicator(color: AppColors.primaryColor),
+        ),
+      );
+    });
   }
 
   Widget _buildApplicationCard(JobApplication application) {
@@ -143,7 +264,7 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
                 const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () {
-                      Get.to(() => ApplicationDetailScreen(application: application));
+                       Get.to(() => ApplicationDetailScreen(application: application));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
@@ -173,6 +294,9 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
         return Colors.red;
       case 'withdrawn':
         return Colors.grey;
+      case 'interview_scheduled':
+      case 'interview':
+        return Colors.indigo;
       default:
         return AppColors.primaryColor;
     }
@@ -192,63 +316,11 @@ class MyApplicationsScreen extends GetView<ApplicationController> {
         return 'مرفوض';
       case 'withdrawn':
         return 'منسحب';
+      case 'interview':
+      case 'interview_scheduled':
+        return 'مقابلة';
       default:
         return status ?? 'غير معروف';
     }
   }
-  Widget _buildStatisticsSection(ApplicationController controller) {
-    return Obx(() {
-      final stats = controller.statistics.value;
-      if (stats == null) return const SizedBox.shrink();
-
-      return Container(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            _buildStatCard('الكل', stats.totalApplications, Colors.blue),
-            const SizedBox(width: 8),
-            _buildStatCard('مقبول', stats.acceptedApplications, Colors.green),
-            const SizedBox(width: 8),
-            _buildStatCard('مرفوض', stats.rejectedApplications, Colors.red),
-            const SizedBox(width: 8),
-            _buildStatCard('قيد الانتظار', stats.pendingApplications, Colors.orange),
-          ],
-        ),
-      );
-    });
-  }
-  Widget _buildStatCard(String label, int count, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Column(
-          children: [
-            Text(
-              count.toString(),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
 }

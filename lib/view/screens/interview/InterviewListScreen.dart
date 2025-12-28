@@ -4,7 +4,8 @@ import '../../../controllers/Interview/InterviewController.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/models/Interview/Interview.dart';
 import 'package:intl/intl.dart';
-
+import '../../widgets/common/CompactStatisticsBar.dart';
+import '../../widgets/common/DetailedStatisticsSheet.dart';
 import 'InterviewDetailScreen.dart';
 
 class InterviewListScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class _InterviewListScreenState extends State<InterviewListScreen> {
               color: AppColors.primaryColor,
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: controller.interviews.length + 2, // +2 for header and footer
                 itemBuilder: (context, index) {
                   // Statistics header
@@ -89,58 +90,68 @@ class _InterviewListScreenState extends State<InterviewListScreen> {
   Widget _buildStatisticsHeader() {
     return Obx(() {
       final stats = controller.statistics;
-      return Card(
-        color: AppColors.accentColor,
-        margin: const EdgeInsets.only(bottom: 16),
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'إحصائيات المقابلات',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textColor,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'الإجمالي: ${controller.totalCount.value}',
-                      style: const TextStyle(
-                        color: AppColors.primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildStatItem('مجدولة', stats['scheduled'] ?? 0, Colors.blue),
-                  _buildStatItem('مكتملة', stats['completed'] ?? 0, Colors.green),
-                  _buildStatItem('ملغاة', stats['cancelled'] ?? 0, Colors.red),
-                  _buildStatItem('معاد جدولتها', stats['rescheduled'] ?? 0, Colors.orange),
-                ],
-              ),
-            ],
+      
+      return CompactStatisticsBar(
+        items: [
+           StatisticItem(
+            icon: Icons.calendar_today,
+            value: stats['total'] ?? 0,
+            label: 'الإجمالي',
+            color: Colors.blue,
           ),
-        ),
+          StatisticItem(
+            icon: Icons.schedule,
+            value: stats['scheduled'] ?? 0,
+            label: 'مجدولة',
+            color: Colors.orange,
+          ),
+          StatisticItem(
+            icon: Icons.check_circle,
+            value: stats['completed'] ?? 0,
+            label: 'مكتملة',
+            color: Colors.green,
+          ),
+          StatisticItem(
+            icon: Icons.cancel,
+            value: stats['cancelled'] ?? 0,
+            label: 'ملغاة',
+            color: Colors.red,
+          ),
+        ],
+        onShowDetails: () => _showDetailedStats(context),
       );
     });
+  }
+
+  void _showDetailedStats(BuildContext context) {
+    if (controller.detailedStatistics.isEmpty) return;
+
+    final colors = [
+      Colors.blue,
+      Colors.orange,
+      Colors.green,
+      Colors.red,
+      Colors.purple,
+    ];
+
+    final category = StatCategory(
+      title: 'حالة المقابلات',
+      icon: Icons.pie_chart,
+      items: controller.detailedStatistics.asMap().entries.map<StatItem>((entry) {
+        final item = entry.value;
+        return StatItem(
+          label: _getStatusText(item['status']),
+          value: item['count'],
+          color: colors[entry.key % colors.length],
+        );
+      }).toList(),
+    );
+
+    DetailedStatisticsSheet.show(
+      context,
+      title: 'إحصائيات المقابلات التفصيلية',
+      categories: [category],
+    );
   }
 
   Widget _buildStatItem(String label, int count, Color color) {
@@ -228,6 +239,7 @@ class _InterviewListScreenState extends State<InterviewListScreen> {
               ),
               const SizedBox(height: 8),
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
                   const SizedBox(width: 8),

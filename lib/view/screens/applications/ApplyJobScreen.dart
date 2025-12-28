@@ -19,7 +19,7 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
   @override
   void initState() {
     super.initState();
-    controller = Get.put(ApplyJobController() ,permanent: true);
+    controller = Get.put(ApplyJobController());
   }
 
   @override

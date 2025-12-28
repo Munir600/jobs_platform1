@@ -1,5 +1,6 @@
 import 'dart:io'; // Added
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart'; // Added
 import 'package:get/get.dart';
 import '../../../controllers/company/CompanyController.dart';
@@ -100,7 +101,9 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSectionTitle('المعلومات الأساسية'),
-              _buildTextField(nameController, 'اسم الشركة', validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+              _buildTextField(nameController, 'اسم الشركة', validator: (v) => v!.isEmpty ? 'مطلوب' : null, inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[\u0600-\u06FFa-zA-Z\s]')),
+              ]),
               const SizedBox(height: 16),
               _buildTextField(descriptionController, 'وصف الشركة', maxLines: 4, validator: (v) => v!.isEmpty ? 'مطلوب' : null),
               const SizedBox(height: 16),
@@ -226,13 +229,14 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator}) {
+  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator, List<TextInputFormatter>? inputFormatters}) {
     return CustomTextField(
       controller: controller,
       labelText: label,
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: validator,
+      inputFormatters: inputFormatters,
     );
   }
 

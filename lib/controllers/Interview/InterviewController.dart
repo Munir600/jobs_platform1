@@ -21,6 +21,7 @@ class InterviewController extends GetxController {
   
   // Statistics
   final RxMap<String, int> statistics = <String, int>{}.obs;
+  final RxList<Map<String, dynamic>> detailedStatistics = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
@@ -33,6 +34,7 @@ class InterviewController extends GetxController {
       final cachedInterviews = _storage.read('interviews_list');
       if (cachedInterviews != null && cachedInterviews is List) {
         interviews.assignAll(cachedInterviews.map((e) => Interview.fromJson(e)).toList());
+        _calculateStatistics();
       }
     } catch (e) {
       print('Error loading cached interviews: $e');
@@ -42,7 +44,9 @@ class InterviewController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    loadInterviews();
+    if(interviews.isEmpty) {
+       loadInterviews();
+    }
   }
 
   @override
@@ -166,20 +170,37 @@ class InterviewController extends GetxController {
 
   void _calculateStatistics() {
     final stats = <String, int>{
-      'total': interviews.length,
+      'total': totalCount.value, // Use total from API if available, else local
       'scheduled': 0,
       'completed': 0,
       'cancelled': 0,
       'rescheduled': 0,
     };
     
+    // Reset separate counts to recalculate based on *all* loaded interviews
+    // Note: This is an approximation if we don't have all interviews loaded.
+    // Ideally the backend should provide stats.
+    // For now, we calculate based on loaded items + total count from API for 'total'.
+    
+    var detailedStatsMap = <String, int>{};
+
     for (var interview in interviews) {
-      final status = interview.status?.toLowerCase() ?? '';
+      final status = interview.status?.toLowerCase() ?? 'unknown';
       if (stats.containsKey(status)) {
         stats[status] = (stats[status] ?? 0) + 1;
       }
+      
+      detailedStatsMap[status] = (detailedStatsMap[status] ?? 0) + 1;
     }
     
+    // If we have total count from API greater than loaded, we might be missing stats.
+    // But we work with what we have.
+    
     statistics.value = stats;
+    
+    detailedStatistics.assignAll(detailedStatsMap.entries.map((e) => {
+      'status': e.key,
+      'count': e.value
+    }).toList());
   }
 }

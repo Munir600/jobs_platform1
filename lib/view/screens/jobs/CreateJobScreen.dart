@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jobs_platform1/core/utils/error_handler.dart';
 import '../../../controllers/job/JobController.dart';
@@ -183,7 +184,9 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   }),
                   const SizedBox(height: 16),
                   
-                  _buildTextField(titleController, 'عنوان الوظيفة', validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+                  _buildTextField(titleController, 'عنوان الوظيفة', validator: (v) => v!.isEmpty ? 'مطلوب' : null, inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\u0600-\u06FFa-zA-Z\s]')),
+                  ]),
                   const SizedBox(height: 16),
                   _buildDropdown('المدينة', AppEnums.cities, (val) => setState(() => selectedCity = val), value: selectedCity, validator: (v) => v == null ? 'مطلوب' : null),
                   const SizedBox(height: 16),
@@ -346,13 +349,14 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator}) {
+  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator, List<TextInputFormatter>? inputFormatters}) {
     return CustomTextField(
       controller: controller,
       labelText: label,
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: validator,
+      inputFormatters: inputFormatters,
     );
   }
 

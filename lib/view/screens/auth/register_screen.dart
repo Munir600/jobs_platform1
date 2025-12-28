@@ -368,6 +368,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             Expanded(
                               child: CustomTextField(
                                 controller: _first,
+                                textInputAction: TextInputAction.next,
                                 labelText: 'الاسم الأول',
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -381,6 +382,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             Expanded(
                               child: CustomTextField(
                                 controller: _last,
+                                textInputAction: TextInputAction.next,
                                 labelText: 'الاسم الأخير',
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -395,6 +397,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         CustomTextField(
                           controller: _email,
+                          textInputAction: TextInputAction.next,
                           labelText: 'البريد الإلكتروني',
                           prefixIcon: Icon(
                             Icons.email_outlined,
@@ -415,6 +418,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         CustomTextField(
                           controller: _phone,
+                          textInputAction: TextInputAction.next,
                           labelText: 'رقم الهاتف',
                           prefixIcon: Icon(
                             Icons.phone_android,
@@ -441,6 +445,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         CustomTextField(
                           controller: _password,
+                          textInputAction: TextInputAction.next,
                           labelText: 'كلمة المرور',
                           prefixIcon: Icon(
                             Icons.lock_outline,
@@ -480,6 +485,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         CustomTextField(
                           controller: _confirm,
+                          textInputAction: TextInputAction.done,
                           labelText: 'تأكيد كلمة المرور',
                           prefixIcon: Icon(
                             Icons.lock_outline,

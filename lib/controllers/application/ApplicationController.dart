@@ -29,6 +29,16 @@ class ApplicationController extends GetxController {
   final RxBool isListLoading = false.obs;
   final RxBool isMessageLoading = false.obs;
 
+  // Pagination for My Applications (Job Seeker)
+  final RxInt myApplicationsPage = 1.obs;
+  final RxBool hasMoreMyApplications = false.obs;
+  final RxBool isLoadingMoreMyApplications = false.obs;
+
+  // Pagination for Job Applications (Employer)
+  final RxInt jobApplicationsPage = 1.obs;
+  final RxBool hasMoreJobApplications = false.obs;
+  final RxBool isLoadingMoreJobApplications = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -70,9 +80,15 @@ class ApplicationController extends GetxController {
   Future<void> loadMyApplications() async {
     try {
       isListLoading.value = true;
-      final response = await _applicationService.getMyApplications();
+      myApplicationsPage.value = 1;
+
+      // Load statistics alongside list
+      loadStatistics();
+      
+      final response = await _applicationService.getMyApplications(page: 1);
       if (response.results != null) {
         myApplications.assignAll(response.results!);
+        hasMoreMyApplications.value = response.next != null;
         _storage.write('my_applications', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
@@ -82,19 +98,48 @@ class ApplicationController extends GetxController {
     }
   }
 
+  Future<void> loadMoreMyApplications() async {
+    if (!hasMoreMyApplications.value || isLoadingMoreMyApplications.value) return;
+
+    try {
+      isLoadingMoreMyApplications.value = true;
+      final nextPage = myApplicationsPage.value + 1;
+      
+      final response = await _applicationService.getMyApplications(page: nextPage);
+      if (response.results != null && response.results!.isNotEmpty) {
+        myApplications.addAll(response.results!);
+        myApplicationsPage.value = nextPage;
+        hasMoreMyApplications.value = response.next != null;
+      } else {
+        hasMoreMyApplications.value = false;
+      }
+    } catch (e) {
+      print('Error loading more my applications: $e');
+    } finally {
+      isLoadingMoreMyApplications.value = false;
+    }
+  }
+
   Future<void> loadJobApplications({int? jobId}) async {
     try {
       isListLoading.value = true;
+      jobApplicationsPage.value = 1; // Reset to page 1
+      
+      // Load statistics alongside list
+      loadStatistics();
+
       if (jobId != null) {
          final cachedJobApps = _storage.read('job_applications_$jobId');
          if(cachedJobApps != null && cachedJobApps is List) {
-            jobApplications.assignAll(cachedJobApps.map((e) => JobApplication.fromJson(e)).toList());
+            // Only load cache if we don't have existing data or if explicitly refreshing (handled by caller logic usually, but here specific request)
+            // Ideally we overwrite with fresh data below
          }
       }
 
-      final response = await _applicationService.getJobApplications(jobId: jobId);
+      final response = await _applicationService.getJobApplications(page: 1, jobId: jobId);
       if (response.results != null) {
         jobApplications.assignAll(response.results!);
+        hasMoreJobApplications.value = response.next != null;
         if (jobId != null) {
            _storage.write('job_applications_$jobId', response.results!.map((e) => e.toJson()).toList());
         }
@@ -103,6 +148,28 @@ class ApplicationController extends GetxController {
     //  AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreJobApplications({int? jobId}) async {
+    if (!hasMoreJobApplications.value || isLoadingMoreJobApplications.value) return;
+
+    try {
+      isLoadingMoreJobApplications.value = true;
+      final nextPage = jobApplicationsPage.value + 1;
+
+      final response = await _applicationService.getJobApplications(page: nextPage, jobId: jobId);
+      if (response.results != null && response.results!.isNotEmpty) {
+        jobApplications.addAll(response.results!);
+        jobApplicationsPage.value = nextPage;
+        hasMoreJobApplications.value = response.next != null;
+      } else {
+         hasMoreJobApplications.value = false;
+      }
+    } catch (e) {
+      print('Error loading more job applications: $e');
+    } finally {
+      isLoadingMoreJobApplications.value = false;
     }
   }
 
