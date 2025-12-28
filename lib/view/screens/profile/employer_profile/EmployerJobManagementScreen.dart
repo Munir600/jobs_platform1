@@ -220,12 +220,13 @@ class EmployerJobManagementScreen extends GetView<JobController> {
             ),
             
             // Pagination Controls
-            PaginationControls(
-              currentPage: controller.currentMyJobsPage.value,
-              totalPages: controller.totalMyJobsPages.value,
-              onPageChanged: controller.loadMyJobsPage,
-              isLoading: controller.isListLoading.value,
-            ),
+            if (controller.totalMyJobsPages.value > 1)
+              PaginationControls(
+                currentPage: controller.currentMyJobsPage.value,
+                totalPages: controller.totalMyJobsPages.value,
+                onPageChanged: controller.loadMyJobsPage,
+                isLoading: controller.isListLoading.value,
+              ),
           ],
         );
       }),

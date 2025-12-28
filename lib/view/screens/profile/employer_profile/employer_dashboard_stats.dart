@@ -75,6 +75,20 @@ class EmployerDashboardStatsScreen extends StatelessWidget {
               children: [
                 _buildOverviewSection(stats.overview),
                 const SizedBox(height: 24),
+                _buildSectionTitle('توزيع الوظائف'),
+                _buildChartCard(
+                  title: 'الوظائف حسب المدينة',
+                  child: _buildHorizontalBarChart(stats.charts!.jobsByCity),
+                ),
+                _buildChartCard(
+                  title: 'الوظائف حسب الفئة',
+                  child: _buildHorizontalBarChart(stats.charts!.jobsByCategory),
+                ),
+                _buildChartCard(
+                  title: 'الوظائف حسب النوع',
+                  child: _buildPieChart(stats.charts!.jobsByType),
+                ),
+                const SizedBox(height: 24),
                 if (stats.charts != null) ...[
                   _buildSectionTitle('تحليلات الطلبات'),
                   _buildChartCard(
@@ -84,20 +98,6 @@ class EmployerDashboardStatsScreen extends StatelessWidget {
                   _buildChartCard(
                     title: 'حالة الطلبات',
                     child: _buildPieChart(stats.charts!.applicationsByStatus),
-                  ),
-                   const SizedBox(height: 24),
-                  _buildSectionTitle('توزيع الوظائف'),
-                  _buildChartCard(
-                    title: 'الوظائف حسب المدينة',
-                    child: _buildHorizontalBarChart(stats.charts!.jobsByCity),
-                  ),
-                   _buildChartCard(
-                    title: 'الوظائف حسب الفئة',
-                    child: _buildHorizontalBarChart(stats.charts!.jobsByCategory),
-                  ),
-                   _buildChartCard(
-                    title: 'الوظائف حسب النوع',
-                    child: _buildPieChart(stats.charts!.jobsByType),
                   ),
                   const SizedBox(height: 24),
                   _buildSectionTitle('تحليلات المتقدمين'),
@@ -144,6 +144,7 @@ class EmployerDashboardStatsScreen extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 1.0,
       children: [
+        _buildStatCard('إجمالي الشركات', overview.totalCompanies, Icons.business, Colors.blue),
         _buildStatCard('إجمالي الوظائف', overview.totalJobs, Icons.work, Colors.blue),
         _buildStatCard('الوظائف النشطة', overview.activeJobs, Icons.check_circle, Colors.green),
         _buildStatCard('إجمالي الطلبات', overview.totalApplications, Icons.description, Colors.orange),

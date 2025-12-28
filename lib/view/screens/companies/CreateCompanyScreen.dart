@@ -97,6 +97,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -114,13 +115,44 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
               _buildSectionTitle('معلومات الاتصال والموقع'),
               _buildDropdown('المدينة', AppEnums.cities, selectedCity, (v) => setState(() => selectedCity = v)),
               const SizedBox(height: 16),
-              _buildTextField(emailController, 'البريد الإلكتروني', validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+              _buildTextField(emailController, 'البريد الإلكتروني', validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'مطلوب';
+                }
+                final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                if (!emailRegex.hasMatch(value)) {
+                  return 'الرجاء إدخال بريد إلكتروني صحيح';
+                }
+                return null;
+              }),
               const SizedBox(height: 16),
-              _buildTextField(phoneController, 'رقم الهاتف'),
+              _buildTextField(phoneController, 'رقم الهاتف', keyboardType: TextInputType.phone, validator: (value) {
+                  if (value == null || value.isEmpty) return null;
+                  final prefixRegExp = RegExp(r'^(77|78|73|71|70)');
+                  if (!prefixRegExp.hasMatch(value)) {
+                    if (value.length < 3) return null;
+                    return 'رقم الهاتف يجب أن يبدأ بـ 77 أو 78 أو 73 أو 71 أو 70';
+                  }
+                  final numericRegExp = RegExp(r'^[0-9]+$');
+                  if (!numericRegExp.hasMatch(value)) {
+                    return 'يسمح فقط بإدخال الأرقام';
+                  }
+                  if (value.length != 9) {
+                    return 'رقم الهاتف يجب ان يكون 9 أرقام';
+                  }
+                  return null;
+              }),
               const SizedBox(height: 16),
               _buildTextField(addressController, 'العنوان التفصيلي'),
               const SizedBox(height: 16),
-              _buildTextField(websiteController, 'الموقع الإلكتروني'),
+              _buildTextField(websiteController, 'الموقع الإلكتروني', validator: (value) {
+                if (value == null || value.isEmpty) return null;
+                final urlPattern = r'^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$';
+                if (!RegExp(urlPattern).hasMatch(value)) {
+                  return 'الرجاء إدخال رابط صحيح';
+                }
+                return null;
+              }),
               const SizedBox(height: 16),
               _buildSectionTitle('معلومات إضافية'),
               Row(

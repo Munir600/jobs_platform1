@@ -330,9 +330,9 @@ class CompanyController extends GetxController {
       FocusManager.instance.primaryFocus?.unfocus();
       Get.back(result: true);
       AppErrorHandler.showSuccessSnack('تم حذف الشركة بنجاح');
-      
       return true;
     } catch (e) {
+      print('the error delete company in controoler is : $e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {

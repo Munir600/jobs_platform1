@@ -88,7 +88,10 @@ class CompanyListScreen extends GetView<CompanyController> {
                   // Companies List
                   Expanded(
                     child: RefreshIndicator(
-                      onRefresh: controller.loadCompanies,
+                      onRefresh: () async {
+                        await controller.loadCompanies();
+                        await controller.loadCompanyStatistics();
+                      },
                       color: AppColors.primaryColor,
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),

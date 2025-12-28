@@ -266,15 +266,20 @@ class CompanyService {
     }
   }
 
-  Future<void> deleteCompany(String slug) async {
+  Future<bool> deleteCompany(String slug) async {
     final headers = await _getHeaders();
     final path = ApiEndpoints.deleteCompany.replaceAll('{slug}', slug);
     final response = await _apiClient.delete(
       path,
       headers: headers,
     );
-    if (response.statusCode != 201 && response.statusCode != 200) {
+    print('Delete Company Response: ${response.statusCode} ${response.body}');
+    if (response.statusCode == 204 || response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error deleting company: ${response.body}');
       throw Exception(response.body);
+
     }
   }
 
@@ -301,10 +306,11 @@ class CompanyService {
       ApiEndpoints.companyStatistics,
       headers: headers,
     );
-    if (response.statusCode == 200) {
+    print('Get Company Statistics Response: ${response.statusCode} ${response.body}');
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return CompaniesStatistics.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to load company statistics');
+      throw Exception(response.body);
     }
   }
 }

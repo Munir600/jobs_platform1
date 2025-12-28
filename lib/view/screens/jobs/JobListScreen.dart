@@ -89,7 +89,10 @@ class JobListScreen extends GetView<JobController> {
                   // Jobs List
                   Expanded(
                     child: RefreshIndicator(
-                      onRefresh: controller.loadJobs,
+                      onRefresh: () async {
+                        await controller.loadJobs();
+                        await controller.loadJobStatistics();
+                      },
                       color: AppColors.primaryColor,
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -106,6 +109,7 @@ class JobListScreen extends GetView<JobController> {
                   ),
                   
                   // Pagination Controls
+                  if(controller.totalJobsPages.value > 1)
                   PaginationControls(
                     currentPage: controller.currentJobsPage.value,
                     totalPages: controller.totalJobsPages.value,

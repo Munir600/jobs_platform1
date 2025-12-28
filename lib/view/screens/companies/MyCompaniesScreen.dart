@@ -112,15 +112,16 @@ class MyCompaniesScreen extends GetView<CompanyController> {
             ),
             
             // Pagination Controls
-            Padding(
-              padding: const EdgeInsets.only(bottom: 80),
-              child: PaginationControls(
-                currentPage: controller.currentMyCompaniesPage.value,
-                totalPages: controller.totalMyCompaniesPages.value,
-                onPageChanged: controller.loadMyCompaniesPage,
-                isLoading: controller.isListLoading.value,
+            if (controller.totalMyCompaniesPages.value > 1)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 80),
+                child: PaginationControls(
+                  currentPage: controller.currentMyCompaniesPage.value,
+                  totalPages: controller.totalMyCompaniesPages.value,
+                  onPageChanged: controller.loadMyCompaniesPage,
+                  isLoading: controller.isListLoading.value,
+                ),
               ),
-            ),
           ],
         );
       }),
