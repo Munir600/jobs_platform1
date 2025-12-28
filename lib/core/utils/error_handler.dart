@@ -15,6 +15,9 @@ class AppErrorHandler {
     } else if (error is NetworkImageLoadException) {
       return "فشل تحميل الصورة. الصورة غير موجودة.";
     }
+    else if (error.toString().contains('response has a status code of 404')) {
+      return "السيرة الذاتية غير موجودة ... يرجى رفعها مرة اخرى.";
+    }
 
     try {
       final String errorStr = error.toString();

@@ -13,27 +13,27 @@ class ResumeController extends GetxController {
   Future<void> openResume(dynamic resumePath) async {
     try {
       if (resumePath == null) {
-        AppErrorHandler.showErrorSnack('لا توجد سيرة ذاتية للعرض');
+      //  AppErrorHandler.showErrorSnack('لا توجد سيرة ذاتية للعرض');
         return;
       }
 
       if (resumePath is File) {
         final result = await OpenFilex.open(resumePath.path);
         if (result.type != ResultType.done) {
-          AppErrorHandler.showErrorSnack('لا يمكن فتح الملف: ${result.message}');
+        //  AppErrorHandler.showErrorSnack('لا يمكن فتح الملف: ${result.message}');
         }
       } else if (resumePath is String) {
-        if (resumePath.startsWith('http')) {
+        if (resumePath.startsWith('https') || resumePath.startsWith('http')) {
           await _downloadAndOpenResume(resumePath);
         } else {
            final result = await OpenFilex.open(resumePath);
            if (result.type != ResultType.done) {
-             AppErrorHandler.showErrorSnack('لا يمكن فتح الملف: ${result.message}');
+           //  AppErrorHandler.showErrorSnack('لا يمكن فتح الملف: ${result.message}');
            }
         }
       }
     } catch (e) {
-      AppErrorHandler.showErrorSnack('حدث خطأ أثناء فتح الملف');
+    //  AppErrorHandler.showErrorSnack('حدث خطأ أثناء فتح الملف');
       print('Error opening resume: $e');
     }
   }
@@ -46,7 +46,7 @@ class ResumeController extends GetxController {
       if (await file.exists()) {
         final result = await OpenFilex.open(file.path);
         if (result.type != ResultType.done) {
-           AppErrorHandler.showErrorSnack('لا يمكن فتح الملف المحفوظ: ${result.message}');
+         //  AppErrorHandler.showErrorSnack('لا يمكن فتح الملف المحفوظ: ${result.message}');
         }
       } else {
         Get.dialog(
@@ -60,13 +60,13 @@ class ResumeController extends GetxController {
 
         final result = await OpenFilex.open(file.path);
         if (result.type != ResultType.done) {
-          AppErrorHandler.showErrorSnack('لا يمكن فتح الملف الذي تم تنزيله: ${result.message}');
+         // AppErrorHandler.showErrorSnack('لا يمكن فتح الملف الذي تم تنزيله: ${result.message}');
         }
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
-      print('Download error: $e');
-      AppErrorHandler.showErrorSnack('فشل تنزيل الملف');
+      //print('Download error: $e');
+        AppErrorHandler.showErrorSnack(e);
     }
   }
 }
