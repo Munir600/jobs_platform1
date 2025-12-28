@@ -44,10 +44,10 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
   String? selectedExperienceLevel;
   String? selectedEducationLevel;
   int? selectedCompanyId;
-  bool isRemote = false;
   bool isUrgent = false;
   bool isFeatured = false;
   bool salaryNegotiable = false;
+  bool isActive = true;
   
   bool isLoadingJobDetails = false;
 
@@ -112,7 +112,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       isUrgent = job.isUrgent ?? false;
       isFeatured = job.isFeatured ?? false;
       salaryNegotiable = job.isSalaryNegotiable ?? false;
-      isRemote = false;
+      isActive = job.isActive ?? true;
     });
   }
 
@@ -226,6 +226,12 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   const SizedBox(height: 16),
                   _buildSectionTitle('إعدادات إضافية'),
                   CheckboxListTile(
+                    title: const Text('نشط'),
+                    subtitle: const Text('إظهار الوظيفة للباحثين عن عمل'),
+                    value: isActive,
+                    onChanged: (val) =>(),// setState(() => isActive = val!),
+                  ),
+                  CheckboxListTile(
                     title: const Text('توظيف عاجل'),
                     value: isUrgent,
                     onChanged: (val) => setState(() => isUrgent = val!),
@@ -299,10 +305,10 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                           salaryMax: int.tryParse(salaryMaxController.text),
                           isSalaryNegotiable: salaryNegotiable,
                           benefits: benefitsController.text,
-                          // isRemote: isRemote, 
                           isUrgent: isUrgent,
                           isFeatured: isFeatured,
                           applicationDeadline: deadlineController.text.isNotEmpty ? deadlineController.text : null,
+                          isActive: isActive,
                         );
                         
                         bool success;

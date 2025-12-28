@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import '../../../core/utils/error_handler.dart';
 import '../../models/accounts/User.dart';
 import '../../models/accounts/EmployerProfile.dart';
 import '../../models/accounts/JobSeekerProfile.dart';
@@ -70,9 +71,8 @@ class AccountService {
     }
   }
 
-  Future<EmployerProfile> updateEmployerProfile(Map<String, dynamic> data, {File? companyLogo}) async {
+  Future<Map<String, dynamic>> updateEmployerProfile(Map<String, dynamic> data, {File? companyLogo}) async {
     final headers = await _getHeaders();
-
     if (companyLogo != null) {
       var request = http.MultipartRequest('PUT', Uri.parse(AppConstants.baseUrl + ApiEndpoints.updateEmployerProfile));
       request.headers.addAll(headers);
@@ -91,7 +91,7 @@ class AccountService {
 
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-
+      print('Employer Profile Update Response A:${response.statusCode} : ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseEmployerProfileResponse(response.body);
       } else {
@@ -99,6 +99,7 @@ class AccountService {
       }
     } else {
       final response = await _apiClient.put(ApiEndpoints.updateEmployerProfile, data, headers: headers);
+      print('Employer Profile Update Response B:${response.statusCode} : ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseEmployerProfileResponse(response.body);
       } else {
@@ -107,43 +108,50 @@ class AccountService {
     }
   }
 
-  Future<EmployerProfile> _parseEmployerProfileResponse(String responseBody) async {
+  Future<Map<String, dynamic>> _parseEmployerProfileResponse(String responseBody) async {
     try {
       final json = jsonDecode(responseBody);
       final data = json['data'];
+      String message = 'تم تحديث الملف الشخصي بنجاح';
+      
+      if (data != null && data['message'] != null) {
+        message = data['message'];
+      }
+
+      EmployerProfile? profile;
       
       if (data != null) {
         if (data['profile'] != null) {
-           return EmployerProfile.fromJson(data['profile']);
-        }
-        if (data['employer_profile'] != null) {
-           return EmployerProfile.fromJson(data['employer_profile']);
-        }
-        
-        // If 'id' is present in data directly
-        if (data['id'] != null) {
-          return EmployerProfile.fromJson(data);
+           profile = EmployerProfile.fromJson(data['profile']);
+        } else if (data['employer_profile'] != null) {
+           profile = EmployerProfile.fromJson(data['employer_profile']);
+        } else if (data['id'] != null) {
+           // If 'id' is present in data directly
+           profile = EmployerProfile.fromJson(data);
         }
       }
       
       // Fallback: try to parse the root or data directly
-      return EmployerProfile.fromJson(data ?? json);
+      profile ??= EmployerProfile.fromJson(data ?? json);
+      
+      return {'profile': profile, 'message': message};
       
     } catch (e) {
       print('Parsing error in _parseEmployerProfileResponse: $e');
-      // If parsing fails (likely due to missing User object or ID), fetch fresh profile
+      // Fallback to fetching profile again
       final profileResponse = await getProfile();
       if (profileResponse.profile != null && profileResponse.user.isEmployer) {
-         // We might need to construct the EmployerProfile manually from the response if it's EmployerProfile
-         // But profileResponse.profile is dynamic.
-         
-         // Helper to safely cast or verify type could be useful, but for now:
          try {
-             return EmployerProfile.fromJson(profileResponse.profile);
+             return {
+               'profile': EmployerProfile.fromJson(profileResponse.profile),
+               'message': 'تم تحديث الملف الشخصي بنجاح'
+             };
          } catch(_) {
-             // If the profileResponse.profile is raw JSON map
              if (profileResponse.profile is Map<String, dynamic>) {
-                 return EmployerProfile.fromJson(profileResponse.profile);
+                 return {
+                   'profile': EmployerProfile.fromJson(profileResponse.profile),
+                   'message': 'تم تحديث الملف الشخصي بنجاح'
+                 };
              }
          }
       }

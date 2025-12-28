@@ -101,18 +101,6 @@ class EmployerJobManagementScreen extends GetView<JobController> {
         }
         return Column(
           children: [
-            // Statistics Header
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            //   child: StatisticsHeader(
-            //     totalCount: controller.totalMyJobsCount.value,
-            //     currentPage: controller.currentMyJobsPage.value,
-            //     pageSize: JobController.pageSize,
-            //     itemNameSingular: 'وظيفة',
-            //     itemNamePlural: 'وظائف',
-            //   ),
-            // ),
-            
             // Jobs List
             Expanded(
               child: RefreshIndicator(
@@ -144,23 +132,28 @@ class EmployerJobManagementScreen extends GetView<JobController> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    job.title ?? 'بدون عنوان',
-                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: job.isActive == true ? Colors.green[100] : Colors.red[100],
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    job.isActive == true ? 'نشط' : 'غير نشط',
-                                    style: TextStyle(
-                                      color: job.isActive == true ? Colors.green[800] : Colors.red[800],
-                                      fontSize: 12,
+                                    job.title ?? 'عنوان الوظيفة',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textColor,
                                     ),
                                   ),
+                                ),
+                                Wrap(
+                                  spacing: 8,
+                                  children: [
+                                    _buildBadge(
+                                      job.isActive == true ? 'نشط' : 'غير نشط',
+                                      job.isActive == true ? Colors.green : Colors.red,
+                                    ),
+                                    if (job.isFeatured == true)
+                                      _buildBadge('مميز', Colors.orange),
+                                    if (job.isUrgent == true)
+                                      _buildBadge('عاجل', Colors.redAccent),
+                                    if ( job.applicationsCount! > 0)
+                                      _buildBadge('${job.applicationsCount} متقدم', Colors.green),
+                                  ],
                                 ),
                               ],
                             ),
@@ -173,13 +166,6 @@ class EmployerJobManagementScreen extends GetView<JobController> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                TextButton.icon(
-                                  onPressed: () {
-                                   // Get.to(() => (job: job));
-                                  },
-                                  icon: const Icon(Icons.lock_open, color: Colors.green),
-                                  label: const Text('الحالة', style: TextStyle(color: Colors.black)),
-                                ),
                                 TextButton.icon(
                                   onPressed: () {
                                     Get.to(() => CreateJobScreen(job: job));
@@ -311,4 +297,28 @@ class EmployerJobManagementScreen extends GetView<JobController> {
       ),
     );
   }
+  Widget _buildBadge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+
+        ],
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+      ),
+    );
+  }
+
 }
+

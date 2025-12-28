@@ -19,6 +19,7 @@ class JobCreate {
   final String? contactPhone;
   final bool? isFeatured;
   final bool? isUrgent;
+  final bool? isActive;
 
   JobCreate({
     required this.title,
@@ -41,6 +42,7 @@ class JobCreate {
     this.contactPhone,
     this.isFeatured,
     this.isUrgent,
+    this.isActive,
   });
 
   factory JobCreate.fromJson(Map<String, dynamic> json) {
@@ -65,6 +67,7 @@ class JobCreate {
       contactPhone: json['contact_phone'],
       isFeatured: json['is_featured'],
       isUrgent: json['is_urgent'],
+      isActive: json['is_active']
     );
   }
 
@@ -90,6 +93,7 @@ class JobCreate {
       'contact_phone': contactPhone,
       'is_featured': isFeatured,
       'is_urgent': isUrgent,
+      'is_active': isActive,
     };
   }
 }

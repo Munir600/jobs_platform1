@@ -536,6 +536,23 @@ paths:
       operationId: applications_interviews_list
       description: قائمة المقابلات
       parameters:
+      - in: query
+        name: interview_type
+        schema:
+          type: string
+          title: نوع المقابلة
+          enum:
+          - hr
+          - in_person
+          - phone
+          - technical
+          - video
+        description: |-
+          * `phone` - مقابلة هاتفية
+          * `video` - مقابلة فيديو
+          * `in_person` - مقابلة شخصية
+          * `technical` - مقابلة تقنية
+          * `hr` - مقابلة موارد بشرية
       - name: ordering
         required: false
         in: query
@@ -548,6 +565,21 @@ paths:
         description: رقم الصفحة ضمن النتائج المقسمة.
         schema:
           type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          title: الحالة
+          enum:
+          - cancelled
+          - completed
+          - rescheduled
+          - scheduled
+        description: |-
+          * `scheduled` - مجدولة
+          * `completed` - مكتملة
+          * `cancelled` - ملغية
+          * `rescheduled` - معاد جدولتها
       tags:
       - applications
       security:
@@ -680,6 +712,14 @@ paths:
       operationId: applications_job_applications_list
       description: طلبات التوظيف للوظائف التي أنشرها
       parameters:
+      - in: query
+        name: is_viewed
+        schema:
+          type: boolean
+      - in: query
+        name: job
+        schema:
+          type: integer
       - name: ordering
         required: false
         in: query
@@ -698,6 +738,29 @@ paths:
         description: مصطلح البحث.
         schema:
           type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          title: الحالة
+          enum:
+          - accepted
+          - interview_completed
+          - interview_scheduled
+          - pending
+          - rejected
+          - reviewed
+          - shortlisted
+          - withdrawn
+        description: |-
+          * `pending` - قيد المراجعة
+          * `reviewed` - تمت المراجعة
+          * `shortlisted` - في القائمة المختصرة
+          * `interview_scheduled` - تم تحديد موعد المقابلة
+          * `interview_completed` - تمت المقابلة
+          * `accepted` - مقبول
+          * `rejected` - مرفوض
+          * `withdrawn` - منسحب
       tags:
       - applications
       security:
@@ -715,6 +778,72 @@ paths:
       operationId: applications_my_applications_list
       description: طلبات التوظيف الخاصة بي
       parameters:
+      - in: query
+        name: job__city
+        schema:
+          type: string
+          title: المدينة
+          enum:
+          - abyan
+          - aden
+          - al_bayda
+          - al_hudaydah
+          - al_jawf
+          - al_maharah
+          - al_mahwit
+          - amran
+          - dhamar
+          - hadhramaut
+          - hajjah
+          - ibb
+          - lahij
+          - marib
+          - raymah
+          - remote
+          - saada
+          - sanaa
+          - shabwah
+          - socotra
+          - taiz
+        description: |-
+          * `sanaa` - صنعاء
+          * `aden` - عدن
+          * `abyan` - أبين
+          * `amran` - عمران
+          * `al_bayda` - البيضاء
+          * `al_hudaydah` - الحديدة
+          * `al_jawf` - الجوف
+          * `al_maharah` - المهرة
+          * `al_mahwit` - المحويت
+          * `dhamar` - ذمار
+          * `hadhramaut` - حضرموت
+          * `hajjah` - حجة
+          * `ibb` - إب
+          * `lahij` - لحج
+          * `marib` - مأرب
+          * `raymah` - ريمة
+          * `saada` - صعدة
+          * `shabwah` - شبوة
+          * `socotra` - سقطرى
+          * `taiz` - تعز
+          * `remote` - عمل عن بُعد
+      - in: query
+        name: job__job_type
+        schema:
+          type: string
+          title: نوع الوظيفة
+          enum:
+          - contract
+          - freelance
+          - full_time
+          - internship
+          - part_time
+        description: |-
+          * `full_time` - دوام كامل
+          * `part_time` - دوام جزئي
+          * `contract` - عقد مؤقت
+          * `freelance` - عمل حر
+          * `internship` - تدريب
       - name: ordering
         required: false
         in: query
@@ -727,6 +856,29 @@ paths:
         description: رقم الصفحة ضمن النتائج المقسمة.
         schema:
           type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          title: الحالة
+          enum:
+          - accepted
+          - interview_completed
+          - interview_scheduled
+          - pending
+          - rejected
+          - reviewed
+          - shortlisted
+          - withdrawn
+        description: |-
+          * `pending` - قيد المراجعة
+          * `reviewed` - تمت المراجعة
+          * `shortlisted` - في القائمة المختصرة
+          * `interview_scheduled` - تم تحديد موعد المقابلة
+          * `interview_completed` - تمت المقابلة
+          * `accepted` - مقبول
+          * `rejected` - مرفوض
+          * `withdrawn` - منسحب
       tags:
       - applications
       security:
@@ -1223,22 +1375,48 @@ paths:
           type: string
           title: المدينة
           enum:
+          - abyan
           - aden
+          - al_bayda
+          - al_hudaydah
+          - al_jawf
+          - al_maharah
+          - al_mahwit
+          - amran
           - dhamar
-          - hodeidah
+          - hadhramaut
+          - hajjah
           - ibb
-          - mukalla
+          - lahij
+          - marib
+          - raymah
           - remote
+          - saada
           - sanaa
+          - shabwah
+          - socotra
           - taiz
         description: |-
           * `sanaa` - صنعاء
           * `aden` - عدن
-          * `taiz` - تعز
-          * `hodeidah` - الحديدة
-          * `ibb` - إب
+          * `abyan` - أبين
+          * `amran` - عمران
+          * `al_bayda` - البيضاء
+          * `al_hudaydah` - الحديدة
+          * `al_jawf` - الجوف
+          * `al_maharah` - المهرة
+          * `al_mahwit` - المحويت
           * `dhamar` - ذمار
-          * `mukalla` - المكلا
+          * `hadhramaut` - حضرموت
+          * `hajjah` - حجة
+          * `ibb` - إب
+          * `lahij` - لحج
+          * `marib` - مأرب
+          * `raymah` - ريمة
+          * `saada` - صعدة
+          * `shabwah` - شبوة
+          * `socotra` - سقطرى
+          * `taiz` - تعز
           * `remote` - عمل عن بُعد
       - in: query
         name: company
@@ -1770,6 +1948,97 @@ paths:
         3. المشابهة للوظائف التي تقدم لها سابقاً (نفس الفئة)
         مع استبعاد الوظائف التي تقدم لها بالفعل
       parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: city
+        schema:
+          type: string
+          title: المدينة
+          enum:
+          - abyan
+          - aden
+          - al_bayda
+          - al_hudaydah
+          - al_jawf
+          - al_maharah
+          - al_mahwit
+          - amran
+          - dhamar
+          - hadhramaut
+          - hajjah
+          - ibb
+          - lahij
+          - marib
+          - raymah
+          - remote
+          - saada
+          - sanaa
+          - shabwah
+          - socotra
+          - taiz
+        description: |-
+          * `sanaa` - صنعاء
+          * `aden` - عدن
+          * `abyan` - أبين
+          * `amran` - عمران
+          * `al_bayda` - البيضاء
+          * `al_hudaydah` - الحديدة
+          * `al_jawf` - الجوف
+          * `al_maharah` - المهرة
+          * `al_mahwit` - المحويت
+          * `dhamar` - ذمار
+          * `hadhramaut` - حضرموت
+          * `hajjah` - حجة
+          * `ibb` - إب
+          * `lahij` - لحج
+          * `marib` - مأرب
+          * `raymah` - ريمة
+          * `saada` - صعدة
+          * `shabwah` - شبوة
+          * `socotra` - سقطرى
+          * `taiz` - تعز
+          * `remote` - عمل عن بُعد
+      - in: query
+        name: company
+        schema:
+          type: integer
+      - in: query
+        name: experience_level
+        schema:
+          type: string
+          title: مستوى الخبرة
+          enum:
+          - entry
+          - expert
+          - junior
+          - mid
+          - senior
+        description: |-
+          * `entry` - مبتدئ (0-2 سنة)
+          * `junior` - مبتدئ متقدم (2-4 سنوات)
+          * `mid` - متوسط (4-7 سنوات)
+          * `senior` - خبير (7-10 سنوات)
+          * `expert` - خبير متقدم (10+ سنوات)
+      - in: query
+        name: job_type
+        schema:
+          type: string
+          title: نوع الوظيفة
+          enum:
+          - contract
+          - freelance
+          - full_time
+          - internship
+          - part_time
+        description: |-
+          * `full_time` - دوام كامل
+          * `part_time` - دوام جزئي
+          * `contract` - عقد مؤقت
+          * `freelance` - عمل حر
+          * `internship` - تدريب
       - name: ordering
         required: false
         in: query
@@ -1867,21 +2136,47 @@ components:
       enum:
       - sanaa
       - aden
-      - taiz
-      - hodeidah
-      - ibb
+      - abyan
+      - amran
+      - al_bayda
+      - al_hudaydah
+      - al_jawf
+      - al_maharah
+      - al_mahwit
       - dhamar
-      - mukalla
+      - hadhramaut
+      - hajjah
+      - ibb
+      - lahij
+      - marib
+      - raymah
+      - saada
+      - shabwah
+      - socotra
+      - taiz
       - remote
       type: string
       description: |-
         * `sanaa` - صنعاء
         * `aden` - عدن
-        * `taiz` - تعز
-        * `hodeidah` - الحديدة
-        * `ibb` - إب
+        * `abyan` - أبين
+        * `amran` - عمران
+        * `al_bayda` - البيضاء
+        * `al_hudaydah` - الحديدة
+        * `al_jawf` - الجوف
+        * `al_maharah` - المهرة
+        * `al_mahwit` - المحويت
         * `dhamar` - ذمار
-        * `mukalla` - المكلا
+        * `hadhramaut` - حضرموت
+        * `hajjah` - حجة
+        * `ibb` - إب
+        * `lahij` - لحج
+        * `marib` - مأرب
+        * `raymah` - ريمة
+        * `saada` - صعدة
+        * `shabwah` - شبوة
+        * `socotra` - سقطرى
+        * `taiz` - تعز
         * `remote` - عمل عن بُعد
     Company:
       type: object

@@ -9,8 +9,6 @@ import '../../../data/models/job/JobCreate.dart';
 import '../../../data/models/job/JobDetail.dart';
 import '../../../data/models/job/JobList.dart';
 import '../../../core/constants.dart';
-import '../companies/CompanyDetailScreen.dart';
-import 'CreateJobScreen.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final String jobSlug;
@@ -51,6 +49,31 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryColor,
+        title: const Text('تفاصيل الوظيفة', style: TextStyle(color: Colors.black)),
+        centerTitle: true,
+        actions: [
+          if (!widget.isEmployer)
+            Obx(() {
+              final job = controller.currentJob.value;
+              if (job == null) return const SizedBox.shrink();
+              
+              final isBookmarked = controller.bookmarks.any((b) => b.job?.id == job.id);
+              return IconButton(
+                icon: Icon(
+                  (isBookmarked ) ? Icons.bookmark : Icons.bookmark_border,
+                  color: (isBookmarked) ? Colors.green : Colors.black,
+                ),
+                onPressed: () {
+                  if (job.id != null) {
+                    controller.bookmarkJob(job.id!);
+                  }
+                },
+              );
+            }),
+        ],
+      ),
       body: Obx(() {
         if (controller.isJobDetailLoading.value && controller.currentJob.value == null) {
           return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
@@ -72,23 +95,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           }
         }
 
-        return CustomScrollView(
-          slivers: [
-            _buildSliverAppBar(job),
-            SliverToBoxAdapter(
+        return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.isEmployer) ...[
-                      _buildEmployerStats(job),
-                      const SizedBox(height: 16),
-                      _buildStatusBadges(job),
-                      const SizedBox(height: 16),
-                      const Divider(),
-                      const SizedBox(height: 16),
-                    ],
                     _buildHeader(job, formattedDate),
                     const SizedBox(height: 24),
                     _buildSectionTitle('تفاصيل الوظيفة'),
@@ -115,10 +127,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       Text(job.benefits!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
                       const SizedBox(height: 24),
                     ],
-                    const SizedBox(height: 16),
-                    if (widget.isEmployer)
-                       _buildEmployerActions(job),
-                    SizedBox(height: widget.isEmployer ? 16 : 0),
                     Obx(() {
                       final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
                       final isDeadlinePassed = job.applicationDeadline != null && DateTime.tryParse(job.applicationDeadline!)!.isBefore(DateTime.now());
@@ -149,49 +157,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                   ],
                 ),
               ),
-            ),
-          ],
         );
       }),
     );
   }
 
-  Widget _buildSliverAppBar(JobDetail job) {
-    return SliverAppBar(
-      expandedHeight: 150,
-      pinned: true,
-      backgroundColor: AppColors.primaryColor,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          color: AppColors.primaryColor,
-          child: Center(
-            child: Icon(Icons.work_outline, size: 80, color: Colors.white.withOpacity(0.3)),
-          ),
-        ),
-      ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Get.back(),
-      ),
-      actions: [
-        if (!widget.isEmployer)
-          Obx(() {
-            final isBookmarked = controller.bookmarks.any((b) => b.job?.id == job.id);
-            return IconButton(
-              icon: Icon(
-                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                if (job.id != null) {
-                  controller.bookmarkJob(job.id!);
-                }
-              },
-            );
-          }),
-      ],
-    );
-  }
+
 
   Widget _buildHeader(JobDetail job, String date) {
     return Column(
@@ -276,182 +247,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     return Text(
       title,
       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
-    );
-  }
-
-  Widget _buildEmployerStats(JobDetail job) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue[100]!),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem('المشاهدات', '${job.viewsCount ?? 0}', Icons.visibility),
-          _buildStatItem('المتقدمين', '${job.applicationsCount ?? 0}', Icons.people),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon, {bool isLink = false}) {
-    return Column(
-      children: [
-        Icon(icon, color: isLink ? Colors.blue : AppColors.primaryColor),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: isLink ? Colors.blue : AppColors.primaryColor,
-            decoration: isLink ? TextDecoration.underline : null,
-          ),
-        ),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
-    );
-  }
-
-  Widget _buildStatusBadges(JobDetail job) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Wrap(
-          spacing: 8,
-          children: [
-            _buildBadge(
-              job.isActive == true ? 'نشط' : 'غير نشط',
-              job.isActive == true ? Colors.green : Colors.red,
-            ),
-            if (job.isFeatured == true)
-              _buildBadge('مميز', Colors.orange),
-            if (job.isUrgent == true)
-              _buildBadge('عاجل', Colors.redAccent),
-          ],
-        ),
-        if (widget.isEmployer)
-          Transform.scale(
-            scale: 0.8,
-            child: Switch(
-              value: job.isActive ?? false,
-              activeColor: Colors.green,
-              onChanged: (value) {
-                _toggleJobStatus(job, value);
-              },
-            ),
-          ),
-      ],
-    );
-  }
-
-  void _toggleJobStatus(JobDetail job, bool isActive) {
-     if (job.slug.isEmpty) return;
-
-    final jobCreate = JobCreate(
-      title: job.title,
-      description: job.description,
-      requirements: job.requirements,
-      responsibilities: job.responsibilities,
-      benefits: job.benefits,
-      skills: job.skills,
-      company: job.company?.id ?? 0,
-      category: job.category?.id,
-      jobType: job.jobType,
-      experienceLevel: job.experienceLevel,
-      educationLevel: job.educationLevel,
-      city: job.city,
-      salaryMin: job.salaryMin,
-      salaryMax: job.salaryMax,
-      isSalaryNegotiable: job.isSalaryNegotiable,
-      applicationDeadline: job.applicationDeadline,
-      contactEmail: job.contactEmail,
-      contactPhone: job.contactPhone,
-      isFeatured: job.isFeatured,
-      isUrgent: job.isUrgent,
-      // isActive: isActive // Backend support pending for direct active toggle?
-    );
-
-    controller.updateJob(job.slug, jobCreate).then((success) {
-      if (success) {
-        controller.loadJobDetail(slug);
-      }
-    });
-  }
-
-  Widget _buildBadge(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
-      ),
-    );
-  }
-
-  Widget _buildEmployerActions(JobDetail job) {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {
-               final jobList = JobList(
-                id: job.id,
-                title: job.title,
-                slug: job.slug,
-                jobType: job.jobType,
-                experienceLevel: job.experienceLevel,
-                city: job.city,
-              );
-              Get.to(() => CreateJobScreen(job: jobList));
-            }, 
-            icon: const Icon(Icons.edit, color: Colors.white),
-            label: const Text('تعديل', style: TextStyle(color: Colors.white)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {
-               Get.defaultDialog(
-                title: 'حذف الوظيفة',
-                middleText: 'هل أنت متأكد من رغبتك في حذف هذه الوظيفة؟',
-                textConfirm: 'حذف',
-                textCancel: 'إلغاء',
-                confirmTextColor: Colors.white,
-                buttonColor: Colors.red,
-                onConfirm: () {
-                  if (job.slug.isNotEmpty) {
-                    controller.deleteJob(job.slug);
-                    Get.back(); // Close dialog
-                    Get.back(); // Go back to list
-                  }
-                },
-              );
-            },
-            icon: const Icon(Icons.delete, color: Colors.white),
-            label: const Text('حذف', style: TextStyle(color: Colors.white)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

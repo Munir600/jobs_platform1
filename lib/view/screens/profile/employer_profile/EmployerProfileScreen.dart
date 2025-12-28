@@ -109,7 +109,7 @@ class _EmployerProfileViewState extends State<_EmployerProfileView> {
 
       controller.updateEmployerProfile(data, companyLogo: _logoFile.value).then((success) {
         if (success) {
-         Get.back();
+         // Get.back();
         }
       });
     }

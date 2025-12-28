@@ -202,7 +202,6 @@ class CompanyService {
 
   Future<bool> updateCompany(String slug, CompanyCreate company, {File? logo, File? coverImage}) async {
     final headers = await _getHeaders();
-    // Use the correctly formatted URL from AppConstants
     final urlString = AppConstants.baseUrl + ApiEndpoints.updateCompany.replaceAll('{slug}', slug);
     
     if (logo != null || coverImage != null) {
@@ -235,11 +234,12 @@ class CompanyService {
 
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-      print('Update Company Multipart Response: ${response.statusCode} ${response.body}');
+ //     print('Update Company Multipart Response A: ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
+   //     print('Error updating company with multipart A: ${response.body}');
         throw Exception(response.body);
       }
     } else {
@@ -257,10 +257,11 @@ class CompanyService {
         data,
         headers: headers,
       );
-       print('Update Company Response: ${response.statusCode} ${response.body}');
+     //  print('Update Company Response  B: ${response.statusCode} ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
+      //  print('Error updating company B: ${response.body}');
         throw Exception(response.body);
       }
     }

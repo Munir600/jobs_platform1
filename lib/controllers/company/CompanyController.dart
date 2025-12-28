@@ -302,17 +302,20 @@ class CompanyController extends GetxController {
   Future<bool> updateCompany(String slug, CompanyCreate company, {File? logo, File? coverImage}) async {
     try {
       isLoading.value = true;
+
       await _companyService.updateCompany(slug, company, logo: logo, coverImage: coverImage);
-      
+
       getMyCompanies(showLoading: false);
       loadCompanies();
       
       FocusManager.instance.primaryFocus?.unfocus();
       Get.back(result: true);
+     // print('the company updated successfully in controller');
       AppErrorHandler.showSuccessSnack('تم تحديث بيانات الشركة بنجاح');
 
       return true;
     } catch (e) {
+      print('the error update company in controoler is : $e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {

@@ -95,15 +95,12 @@ class CompanyDetailScreen extends GetView<CompanyController> {
         )
             : Container(color: AppColors.primaryColor),
       ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Get.back(),
-      ),
+
       actions: [
         IconButton(
           icon: Icon(
             (currentCompany.isFollowing ?? false) ? Icons.favorite : Icons.favorite_border,
-            color: (currentCompany.isFollowing ?? false) ? Colors.red : Colors.white,
+            color: (currentCompany.isFollowing ?? false) ? Colors.red : Colors.black,
           ),
           onPressed: () => controller.followCompany(currentCompany.id!),
         ),

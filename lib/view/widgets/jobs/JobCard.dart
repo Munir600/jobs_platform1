@@ -183,7 +183,7 @@ class JobCard extends StatelessWidget {
                       child: Text(isDeadlinePassed ? 'انتهى التقديم' : 'تقديم الآن'),
                     ),
                     OutlinedButton(
-                      onPressed: (isEmployer || isDeadlinePassed) ? null : onBookmark,
+                      onPressed: (isDeadlinePassed) ? null : onBookmark,
                       style: OutlinedButton.styleFrom(
                         disabledBackgroundColor: Colors.grey[350],
                         disabledForegroundColor: Colors.black38,

@@ -113,10 +113,13 @@ class AccountController extends GetxController {
   Future<bool> updateEmployerProfile(Map<String, dynamic> data, {File? companyLogo}) async {
     try {
       isLoading.value = true;
-      final updatedProfile = await _accountService.updateEmployerProfile(data, companyLogo: companyLogo);
+      final result = await _accountService.updateEmployerProfile(data, companyLogo: companyLogo);
+      final updatedProfile = result['profile'] as EmployerProfile;
+      final message = result['message'] as String;
+      
       employerProfile.value = updatedProfile;
       _storage.write('employer_profile', updatedProfile.toJson());
-      AppErrorHandler.showSuccessSnack('تم تحديث الملف الشخصي للشركة بنجاح');
+      AppErrorHandler.showSuccessSnack(message);
       return true;
     } catch (e) {
       print('Employer Profile Update Error: $e');
