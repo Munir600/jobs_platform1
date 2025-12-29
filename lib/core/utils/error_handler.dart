@@ -18,6 +18,9 @@ class AppErrorHandler {
     else if (error.toString().contains('response has a status code of 404')) {
       return "السيرة الذاتية غير موجودة ... يرجى رفعها مرة اخرى.";
     }
+    else if (error.toString().contains('انتهت الجلسة')) {
+      return "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى";
+    }
 
     try {
       final String errorStr = error.toString();

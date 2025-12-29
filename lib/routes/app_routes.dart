@@ -24,6 +24,8 @@ class AppRoutes {
   static const String home = '/home';
   static const String mainScreen = '/mainScreen';
   static const String verifyPhone = '/verify-phone';
+  static const String forgotPassword = '/forgot-password';
+  static const String resetPassword = '/reset-password';
   
   // Jobs
   static const String jobs = '/jobs';

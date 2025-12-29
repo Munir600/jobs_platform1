@@ -6,6 +6,7 @@ import '../core/api_service.dart';
 import '../core/constants.dart';
 import '../data/models/user_models.dart';
 import '../routes/app_routes.dart';
+import '../view/screens/main_screen.dart';
 import 'account/AccountController.dart';
 
 class AuthController extends GetxController {
@@ -15,6 +16,7 @@ class AuthController extends GetxController {
   final RxBool isLoggedIn = false.obs;
   final RxString erro_verifyPhone = ''.obs;
   final Rx<User?> _currentUser = Rx<User?>(null);
+  String? _tempPassword;
 
   final firstName = ''.obs;
   final lastName = ''.obs;
@@ -52,6 +54,7 @@ class AuthController extends GetxController {
   Future<bool> login(String phone, String password) async {
     try {
       isLoading.value = true;
+      _tempPassword = password;
       final userLogin = UserLogin(phone: phone, password: password);
       print("JSON SENT TO API: ${userLogin.toJson()}");
       final response = await _apiService.post(
@@ -62,39 +65,43 @@ class AuthController extends GetxController {
       print("The USERTYPE  FROM API: ${response["data"]["user"]["user_type"]}");
       _currentUser.value = User.fromJson(response["data"]["user"]
       );
-     // _storage.write('user_data', response["data"]["user"]);
+      _storage.write('user_data', response["data"]["user"]);
       final token = response["data"]["token"];
       final ms=response["data"]["message"];
-     // print('MESSAGES login  FROM API is : $ms');
+      print('MESSAGES login  FROM API is : $ms');
       _apiService.setAuthToken(token);
-      print('TOKEN SET IN API SERVICE: $token');
+      print('TOKEN SET IN API SERVICE After Login: $token');
       
-      // final bool verified = response["data"]["user"]["is_verified"] ?? false;
-      // print('the response is_verified is :${response["data"]["user"]["is_verified"]}');
-      // if (!verified) {
-      //   isLoading.value = false;
-      //   AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
-      //   Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
-      //   return false;
-      // }
+      final bool verified = response["data"]["user"]["is_verified"] ?? false;
+      print('the response is_verified is :${response["data"]["user"]["is_verified"]}');
+      if (!verified) {
+        isLoading.value = false;
+        AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
+        Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
+        return false;
+      }
       isLoggedIn.value = true;
       isLoading.value = false;
       
       if (Get.isRegistered<AccountController>()) {
         Get.find<AccountController>().fetchProfile();
       }
-
       AppErrorHandler.showSuccessSnack('$ms');
       return true;
     } catch (e) {
+      print('the error login is : $e');
       isLoading.value = false;
       AppErrorHandler.showErrorSnack('$e');
       final String errorStr = e.toString();
       if (errorStr.contains('يجب التحقق من رقم الهاتف')) {
-        Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
+        Get.toNamed(
+          AppRoutes.verifyPhone,
+          arguments: {
+            'phone': phone,
+            'canResendImmediately': true,
+          },
+        );
       }
-      print('the error message in catch is : $e');
-
       return false;
     }
   }
@@ -107,24 +114,12 @@ class AuthController extends GetxController {
         ApiEndpoints.register,
         registration.toJson(),
       );
-      print('RESPONSE FROM API: $response');
-      final token = response['data']['token'];
-      _apiService.setAuthToken(token);
-     // isLoggedIn.value = true; // wait for verification
-      
-      try {
-        if (response['data']['user'] != null) {
-          _currentUser.value = User.fromJson(response['data']['user']);
-          _storage.write('user_data', response['data']['user']);
-        }
-      } catch (e) {
-        print('Error parsing user data: $e');
-        AppErrorHandler.showErrorSnack(response.body);
-      }
-
       isLoading.value = false;
       Get.toNamed(AppRoutes.verifyPhone, arguments: registration.phone);
-      AppErrorHandler.showSuccessSnack('تم انشاء الحساب بنجاح، يرجى تفعيل رقم الهاتف');
+      String ms=response['data']['message']??''.toString();
+      print('the message response after register is : $ms');
+      print('the response register body is : ${response['data']}');
+      AppErrorHandler.showSuccessSnack(ms);
       return true;
     } catch (e) {
       isLoading.value = false;
@@ -147,12 +142,9 @@ class AuthController extends GetxController {
       isLoggedIn.value = false;
       _storage.remove('user_data');
       _apiService.removeAuthToken();
-      
-      // Clear AccountController state
       if (Get.isRegistered<AccountController>()) {
         Get.find<AccountController>().clearUserData();
       }
-      
       Get.offAllNamed('/login');
     }
   }
@@ -161,12 +153,9 @@ class AuthController extends GetxController {
     final token = _storage.read(AppConstants.authTokenKey);
 
     if (stored != null && token != null) {
-      isLoggedIn.value = true;
       _apiService.setAuthToken(token);
-      
       final user = User.fromJson(stored);
       _currentUser.value = user;
-
       firstName.value = user.firstName;
       lastName.value = user.lastName;
       email.value = user.email;
@@ -203,7 +192,6 @@ class AuthController extends GetxController {
       userType.value = updatedUser.userType;
       isVerified.value = updatedUser.isVerified;
       createdAt.value = updatedUser.createdAt.toIso8601String();
-
       isLoading.value = false;
       AppErrorHandler.showSuccessSnack('تم تحديث الملف الشخصي بنجاح');
       return true;
@@ -220,16 +208,22 @@ class AuthController extends GetxController {
   Future<bool> changePassword(PasswordChange passwordChange) async {
     try {
       isLoading.value = true;
-
-      await _apiService.post(
+      final response = await _apiService.post(
         '/api/accounts/change-password/',
         passwordChange.toJson(),
       );
-
+      print("RESPONSE FROM API AFTER PASSWORD CHANGE: $response");
       isLoading.value = false;
-      AppErrorHandler.showSuccessSnack('تم تغيير كلمة المرور بنجاح');
+      String ms=response['data']['message']??'تم تغيير كلمة المرور '.toString();
+      String token=response['data']['token']??'';
+      print('TOKEN SET IN API SERVICE befor Password Change: ${_apiService.authToken}');
+      _apiService.setAuthToken(token);
+      print('TOKEN SET IN API SERVICE After Password Change: ${_apiService.authToken}');
+      AppErrorHandler.showSuccessSnack(ms);
+
       return true;
     } catch (e) {
+      print('error in changePassword: $e');
       isLoading.value = false;
       AppErrorHandler.showErrorSnack(e);
       return false;
@@ -247,26 +241,15 @@ class AuthController extends GetxController {
         },
       );
       print('VERIFY PHONE RESPONSE: $response');
-      final token = response['data']['token'];
-      if(token != null) {
-          _apiService.setAuthToken(token);
-          
-         // update user data
-          final user = User.fromJson(response['data']['user']);
-          _currentUser.value = user;
-          _storage.write('user_data', response['data']['user']);
-          isLoggedIn.value = true;
-      }
-
       isLoading.value = false;
-      AppErrorHandler.showSuccessSnack('تم تفعيل الحساب بنجاح');
-      
-      // Fetch profile data
-      if (Get.isRegistered<AccountController>()) {
-        Get.find<AccountController>().fetchProfile();
+      String ms=response['data']['message']??'تم التحقق بنجاح'.toString();
+      AppErrorHandler.showSuccessSnack(ms);
+      final ok = await login(phone, _tempPassword!);
+      if (ok) {
+        Get.offAll(() => MainScreen());
+        return true;
       }
-      
-      Get.offAllNamed('/mainScreen');
+      _tempPassword = null;
       return true;
     } catch (e) {
       isLoading.value = false;
@@ -288,13 +271,17 @@ class AuthController extends GetxController {
       );
 
       isLoading.value = false;
-      final message = response['data']['message'] ?? 'تم إعادة إرسال كود التحقق';
+      final message = response['data']['message'] ?? 'تم إعادة إرسال الكود';
+
       AppErrorHandler.showSuccessSnack(message);
       return true;
     } catch (e) {
       isLoading.value = false;
+      print('error in resendVerificationCode: $e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     }
   }
+
+
 }

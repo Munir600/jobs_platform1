@@ -20,21 +20,26 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   int _timerSeconds = 600; // 10 minutes
 
   @override
-  void initState() {
+ void initState() {
     super.initState();
-    _phone = Get.arguments as String? ?? '';
-    _startTimer();
+    final args = Get.arguments;
+    if (args is Map) {
+      _phone = args['phone'] ?? '';
+      if (args['canResendImmediately'] == true) {
+        _canResend = true;
+        _timerSeconds = 0;
+      } else {
+        _startTimer();
+      }
+    } else {
+      _phone = args as String? ?? '';
+      _startTimer();
+    }
   }
+
 
   void _startTimer() {
     _canResend = false;
-    // print('Error Message from storage erro_verifyPhone: $erro_verifyPhone');
-    // if(erro_verifyPhone.isNotEmpty && erro_verifyPhone.contains('انتهت صلاحية كود التحقق. الرجاء طلب كود جديد')) {
-    //   setState(() {
-    //     _canResend = true;
-    //     _timerSeconds=0;
-    //   });
-    // }
     _timerSeconds = 600; // Reset to 10 minutes
     Future.delayed(const Duration(seconds: 1), _tick);
   }
@@ -61,7 +66,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   void _resendCode([AuthController? auth]) {
     final controller = auth ?? Get.find<AuthController>();
     print('Error Message from storage erro_verifyPhone: ${controller.erro_verifyPhone}');
-    if (controller.erro_verifyPhone.isNotEmpty && controller.erro_verifyPhone.contains('انتهت صلاحية كود التحقق')) {
+    if (controller.erro_verifyPhone.isNotEmpty || controller.erro_verifyPhone.contains('انتهت صلاحية كود التحقق')) {
       setState(() {
         _canResend = true;
         _timerSeconds = 0;
@@ -170,7 +175,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                         : () async {
                       if (_formKey.currentState!.validate()) {
                         await auth.verifyPhone(_phone, _codeController.text.trim());
-                        _resendCode(auth);
+                       // _resendCode(auth);
                       }
                     },
                     child: auth.isLoading.value
@@ -224,3 +229,4 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     );
   }
 }
+//       AppErrorHandler.showSuccessSnack(message);

@@ -33,7 +33,6 @@ class _NextScreenDeciderState extends State<_NextScreenDecider> {
   Future<void> _navigate() async {
     final token = await StorageService.getToken();
     if (!mounted) return;
-
     final route = token != null ? AppRoutes.mainScreen : AppRoutes.login;
     Navigator.pushReplacementNamed(context, route);
   }

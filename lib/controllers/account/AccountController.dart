@@ -84,7 +84,7 @@ class AccountController extends GetxController {
         jobSeekerProfile.value = profile;
         _storage.write('job_seeker_profile', profile.toJson());
       }
-
+      print('the response in fetchProfile in AccountContrller is : ${currentUser.value.toString()}');
     } catch (e) {
       print('Error fetching profile: $e');
      // AppErrorHandler.showErrorSnack(e);

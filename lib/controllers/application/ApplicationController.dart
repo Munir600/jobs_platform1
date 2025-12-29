@@ -131,8 +131,7 @@ class ApplicationController extends GetxController {
       if (jobId != null) {
          final cachedJobApps = _storage.read('job_applications_$jobId');
          if(cachedJobApps != null && cachedJobApps is List) {
-            // Only load cache if we don't have existing data or if explicitly refreshing (handled by caller logic usually, but here specific request)
-            // Ideally we overwrite with fresh data below
+            jobApplications.assignAll(cachedJobApps.map((e) => JobApplication.fromJson(e)).toList());
          }
       }
 
@@ -247,21 +246,6 @@ class ApplicationController extends GetxController {
     }
   }
 
-  // Future<void> createInterview(InterviewCreate interview) async {
-  //   try {
-  //     isLoading.value = true;
-  //     await _applicationService.createInterview(interview);
-  //     await loadInterviews();
-  //     AppErrorHandler.showSuccessSnack('تم جدولة المقابلة بنجاح');
-  //
-  //   } catch (e) {
-  //     AppErrorHandler.showErrorSnack(e);
-  //
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
-
   Future<bool> createApplication(JobApplicationCreate application) async {
     try {
       isLoading.value = true;
@@ -316,7 +300,7 @@ class ApplicationController extends GetxController {
       _storage.write('application_statistics', stats.toJson());
     } catch (e) {
       print('Failed to load statistics: $e');
-      AppErrorHandler.showErrorSnack(e);
+     // AppErrorHandler.showErrorSnack(e);
 
     }
   }

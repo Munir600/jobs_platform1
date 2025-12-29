@@ -21,6 +21,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final RxBool _obscurePassword = true.obs;
 
   @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments;
+    if (args is Map) {
+      if (args['phone'] != null) _phone.text = args['phone'];
+      if (args['password'] != null) _password.text = args['password'];
+    }
+  }
+
+  @override
   void dispose() {
     _phone.dispose();
     _password.dispose();
@@ -37,10 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     
     if (ok) {
       Get.offAll(() => MainScreen());
-    if (ok) {
-      Get.offAll(() => MainScreen());
     }
-  }
   }
 
   @override
