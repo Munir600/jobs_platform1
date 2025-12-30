@@ -4,7 +4,6 @@ import '../../../../config/app_colors.dart';
 import '../../jobs/saved_jobs.dart';
 import '../user_profile_screen.dart';
 import 'JobSeekerProfileScreen.dart' as resume;
-import 'alert_jobs.dart';
 import 'dashboard.dart';
 import 'setting.dart';
 
@@ -18,7 +17,6 @@ class JobseekerProfileScreen extends StatelessWidget {
     " تعديـل الملف الشخصي",
     " الوظائف المحفوظة",
     " لوحة التحكم",
-    " تنبيهات الوظائف",
     "الإعدادات",
   ];
 
@@ -60,8 +58,6 @@ class JobseekerProfileScreen extends StatelessWidget {
       case 2:
         return Icons.dashboard_outlined;
       case 3:
-        return Icons.notifications_none;
-      case 4:
         return Icons.settings_outlined;
       default:
         return Icons.circle;
@@ -83,8 +79,7 @@ class JobseekerProfileScreen extends StatelessWidget {
             case 0: return UserProfileScreen();
             case 1: return SavedJobsScreen();
             case 2: return JobSeekerDashboard();
-            case 3: return AlertJobsScreen();
-            case 4: return SettingScreen();
+            case 3: return SettingScreen();
             default:
                  return resume.JobSeekerProfileScreen();
         }

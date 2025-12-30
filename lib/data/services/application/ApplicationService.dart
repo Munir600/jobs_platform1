@@ -76,7 +76,7 @@ class ApplicationService {
       application.toJson(),
       headers: headers,
     );
-    print('Create Application Response: ${response.body}');
+    print('Create Application Response status code is : ${response.statusCode} and the body is: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return JobApplicationCreate.fromJson(jsonDecode(response.body));
     } else {

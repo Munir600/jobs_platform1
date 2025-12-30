@@ -21,18 +21,14 @@ class AppErrorHandler {
     else if (error.toString().contains('انتهت الجلسة')) {
       return "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى";
     }
-
     try {
       final String errorStr = error.toString();
-      
-      // Check for network-related errors in the error string
-      if (errorStr.contains('SocketException') || 
+      if (errorStr.contains('SocketException') ||
           errorStr.contains('Failed host lookup') ||
           errorStr.contains('No address associated with hostname') ||
           errorStr.contains('Network is unreachable')) {
         return "لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.";
       }
-      
       if (errorStr.contains('ClientException') ||
           errorStr.contains('Connection refused') ||
           errorStr.contains('Connection timed out')) {
@@ -47,40 +43,63 @@ class AppErrorHandler {
       if (startIndex == -1) {
         startIndex = errorStr.indexOf('[');
         endIndex = errorStr.lastIndexOf(']');
-      } else {
-        // If object found, check if array is outer (e.g. wrapped error) but unlikely given the format
-        // stick to object preference if found first? 
-        // actually let's just find the first valid json start
       }
 
       if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
         final String jsonStr = errorStr.substring(startIndex, endIndex + 1);
-        final dynamic decoded = jsonDecode(jsonStr);
-
-        if (decoded is Map<String, dynamic>) {
-          final List<String> errorMessages = [];
-          decoded.forEach((key, value) {
-            if (value is List) {
-              for (var v in value) {
-                errorMessages.add(v.toString());
-              }
-            } else {
-              errorMessages.add(value.toString());
-            }
-          });
-
-          if (errorMessages.isNotEmpty) {
-            return errorMessages.join('\n');
+        try {
+          final dynamic decoded = jsonDecode(jsonStr);
+          final List<String> messages = _extractMessages(decoded);
+          if (messages.isNotEmpty) {
+            return messages.toSet().join('\n'); // Remove duplicates and join
           }
-        } else if (decoded is List) {
-           return decoded.join('\n');
+        } catch (e) {
+          // JSON decode failed, ignore
         }
       }
     } catch (_) {
       return "حدث خطأ غير متوقع. حاول مرة أخرى.";
     }
 
+    // Fallback if no JSON or specific patterns matched, but try to clean up the string if it's the raw exception
+    if (error.toString().contains('Exception: ')) {
+        return error.toString().replaceAll('Exception: ', '').trim();
+    }
+    
     return "حدث خطأ غير متوقع. حاول مرة أخرى.";
+  }
+
+  static List<String> _extractMessages(dynamic data) {
+    final List<String> messages = [];
+    
+    if (data is String) {
+      messages.add(data);
+    } else if (data is List) {
+      for (var item in data) {
+        messages.addAll(_extractMessages(item));
+      }
+    } else if (data is Map) {
+      // Prioritize specific error keys if present
+      if (data.containsKey('non_field_errors')) {
+        messages.addAll(_extractMessages(data['non_field_errors']));
+      } else if (data.containsKey('detail')) {
+        messages.addAll(_extractMessages(data['detail']));
+      } else if (data.containsKey('message')) {
+         messages.addAll(_extractMessages(data['message']));
+      } else if (data.containsKey('error')) {
+         messages.addAll(_extractMessages(data['error']));
+      } else if (data.containsKey('data')) {
+         // Often APIs wrap errors in a 'data' field
+         messages.addAll(_extractMessages(data['data']));
+      } else if (data.containsKey('errors')) {
+         messages.addAll(_extractMessages(data['errors']));
+      } else {
+         for (var value in data.values) {
+            messages.addAll(_extractMessages(value));
+         }
+      }
+    }
+    return messages;
   }
 
   static void showErrorSnack(dynamic error) {

@@ -142,6 +142,7 @@ class EmployerJobManagementScreen extends GetView<JobController> {
                                 ),
                                 Wrap(
                                   spacing: 8,
+                                  runSpacing: 8,
                                   children: [
                                     _buildBadge(
                                       job.isActive == true ? 'نشط' : 'غير نشط',
@@ -301,17 +302,17 @@ class EmployerJobManagementScreen extends GetView<JobController> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-
-        ],
+        border: Border.all(color: color.withValues(alpha: 1)),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.1),
+        //     blurRadius: 4,
+        //     offset: const Offset(0, 2),
+        //   ),
+        //
+        // ],
       ),
       child: Text(
         text,

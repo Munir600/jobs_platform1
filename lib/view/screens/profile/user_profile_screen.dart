@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jobs_platform1/core/constants.dart';
@@ -272,24 +273,68 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
-                      _buildTextField(_firstNameCtrl, 'الاسم الأول'),
+                      _buildTextField(
+                        _firstNameCtrl,
+                        'الاسم الأول',
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\u0600-\u06FF\s]')),
+                        ],
+                      ),
                       const SizedBox(height: 16),
-                      _buildTextField(_lastNameCtrl, 'الاسم الأخير'),
+                      _buildTextField(
+                        _lastNameCtrl,
+                        'الاسم الأخير',
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\u0600-\u06FF\s]')),
+                        ],
+                      ),
                       const SizedBox(height: 16),
-                      _buildTextField(_emailCtrl, 'البريد الإلكتروني'),
+                      _buildTextField(
+                        _emailCtrl,
+                        'البريد الإلكتروني',
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'البريد الإلكتروني مطلوب';
+                          }
+                          if (!GetUtils.isEmail(val)) {
+                            return 'البريد الإلكتروني غير صحيح';
+                          }
+                          return null;
+                        },
+                      ),
                       const SizedBox(height: 16),
-                      _buildTextField(_phoneCtrl, 'رقم الهاتف'),
+                      _buildTextField(
+                        _phoneCtrl,
+                        'رقم الهاتف',
+                        readOnly: true,
+                        isRequired: false,
+                      ),
                       const SizedBox(height: 16),
                       GestureDetector(
                         onTap: () => _pickDateOfBirth(context),
                         child: AbsorbPointer(
-                          child: _buildTextField(_dobCtrl, 'تاريخ الميلاد'),
+                          child: _buildTextField(
+                            _dobCtrl,
+                            'تاريخ الميلاد',
+                            isRequired: false,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _buildTextField(_locationCtrl, 'الموقع / المدينة'),
+                      _buildTextField(
+                        _locationCtrl,
+                        'الموقع / المدينة',
+                        isRequired: false,
+                      ),
                       const SizedBox(height: 16),
-                      _buildTextField(_bioCtrl, 'نبذة عني', maxLines: 4),
+                      _buildTextField(
+                        _bioCtrl,
+                        'نبذة عني',
+                        maxLines: 4,
+                        isRequired: false,
+                      ),
                       const SizedBox(height: 24),
                       
                       // Submit Button
@@ -353,12 +398,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     TextEditingController controller,
     String label, {
     int maxLines = 1,
+    bool isRequired = true,
+    bool readOnly = false,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
   }) {
     return CustomTextField(
       controller: controller,
       labelText: label,
       maxLines: maxLines,
-      validator: (v) => v!.isEmpty ? 'هذا الحقل مطلوب' : null,
+      readOnly: readOnly,
+      inputFormatters: inputFormatters,
+      validator: validator ??
+          (v) => (isRequired && (v == null || v.isEmpty))
+              ? 'هذا الحقل مطلوب'
+              : null,
     );
   }
 }

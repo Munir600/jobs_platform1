@@ -95,11 +95,11 @@ class MainScreen extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.business_center_sharp),
               label: 'الوظائف',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search),
+              icon: Icon(Icons.business),
               label: 'الشركات',
             ),
             BottomNavigationBarItem(

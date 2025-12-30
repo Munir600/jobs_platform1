@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../controllers/application/ApplyJobController.dart';
 import '../../../config/app_colors.dart';
@@ -64,7 +65,8 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
                 TextField(
                   controller: controller.salaryController,
                   keyboardType: TextInputType.number,
-                  decoration: _inputDecoration('مثال: 1000'),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: _inputDecoration('مثال: 100000'),
                 ),
                 const SizedBox(height: 16),
                 _buildSectionTitle('تاريخ التوفر (اختياري)'),

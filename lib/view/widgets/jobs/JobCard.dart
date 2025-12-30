@@ -80,6 +80,7 @@ class JobCard extends StatelessWidget {
                   ),
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       _buildBadge(
                         job.isActive == true ? 'نشط' : 'غير نشط',
@@ -121,20 +122,30 @@ class JobCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Wrap(
-                spacing: 8,
-                runSpacing: 4,
+                spacing: 3,
+                runSpacing: 8,
                 children: [
-                  Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
+                  Icon(Icons.location_on, size: 18, color: Colors.blue[600]),
                   Text(
                     ' ${job.city != null ? AppEnums.cities[job.city] ?? job.city : 'غير محدد'}',
                     style: const TextStyle(fontSize: 13),
                   ),
+                  Icon(Icons.local_fire_department, size: 18, color: Colors.red[600]),
                   if (salaryText.isNotEmpty)
                     Text(salaryText, style: const TextStyle(fontSize: 13)),
+
+                ],
+              ),
+              Wrap(
+                spacing: 3,
+                runSpacing: 4,
+                children: [
+                  Icon(Icons.alarm, size: 18, color: Colors.green),
                   Text(
                     job.jobType != null ? AppEnums.jobTypes[job.jobType] ?? job.jobType : 'غير محدد',
                     style: const TextStyle(fontSize: 13),
                   ),
+                  Icon(Icons.calendar_month_sharp, size: 18, color: Colors.blue[600]),
                   Text(timeAgo, style: const TextStyle(fontSize: 13)),
                 ],
               ),
@@ -231,17 +242,17 @@ class JobCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-
-        ],
+        border: Border.all(color: color.withValues(alpha: 1)),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.1),
+        //     blurRadius: 4,
+        //     offset: const Offset(0, 2),
+        //   ),
+        //
+        // ],
       ),
       child: Text(
         text,

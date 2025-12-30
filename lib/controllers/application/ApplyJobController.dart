@@ -41,7 +41,7 @@ class ApplyJobController extends GetxController {
       AppErrorHandler.showSuccessSnack('تم تقديم الطلب بنجاح');
       
     } catch (e) {
-     // print("Submit Application Response: $e");
+      print("Submit Application Response: $e");
       AppErrorHandler.showErrorSnack(e);
     } finally {
       isLoading.value = false;

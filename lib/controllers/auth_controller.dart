@@ -71,18 +71,9 @@ class AuthController extends GetxController {
       print('MESSAGES login  FROM API is : $ms');
       _apiService.setAuthToken(token);
       print('TOKEN SET IN API SERVICE After Login: $token');
-      
-      final bool verified = response["data"]["user"]["is_verified"] ?? false;
-      print('the response is_verified is :${response["data"]["user"]["is_verified"]}');
-      if (!verified) {
-        isLoading.value = false;
-        AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
-        Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
-        return false;
-      }
       isLoggedIn.value = true;
       isLoading.value = false;
-      
+
       if (Get.isRegistered<AccountController>()) {
         Get.find<AccountController>().fetchProfile();
       }
@@ -134,10 +125,9 @@ class AuthController extends GetxController {
       await _apiService.post(ApiEndpoints.logout, {});
       AppErrorHandler.showSuccessSnack('تم تسجيل الخروج بنجاح');
     } catch (e) {
-     //AppErrorHandler.showErrorSnack('$e');
+      //AppErrorHandler.showErrorSnack('$e');
       print('ERROR during logout API call: $e');
     } finally {
-      // Clear local auth state
       _currentUser.value = null;
       isLoggedIn.value = false;
       _storage.remove('user_data');
