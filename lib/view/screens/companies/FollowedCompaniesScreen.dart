@@ -25,10 +25,10 @@ class FollowedCompaniesScreen extends GetView<FollowedCompaniesController> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => _showSearchDialog(context),
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.search),
+          //   onPressed: () => _showSearchDialog(context),
+          // ),
           // IconButton(
           //   icon: const Icon(Icons.filter_list),
           //   onPressed: () => _showFilterBottomSheet(context),
@@ -117,64 +117,7 @@ class FollowedCompaniesScreen extends GetView<FollowedCompaniesController> {
       ),
     );
   }
-  void _showSearchDialog(BuildContext context) {
-    final TextEditingController searchController = TextEditingController(
-      text: controller.searchQuery.value,
-    );
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.accentColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'البحث عن شركة',
-          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
-        ),
-        content: TextField(
-          controller: searchController,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: 'ابحث عن شركة...',
-            prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          ),
-          onSubmitted: (value) {
-            controller.setSearchQuery(value);
-            Get.back();
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              searchController.clear();
-              controller.setSearchQuery('');
-              Get.back();
-            },
-            child: const Text('مسح', style: TextStyle(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              controller.setSearchQuery(searchController.text);
-              Get.back();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('بحث', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
+  //
   // void _showSearchDialog(BuildContext context) {
   //   final TextEditingController searchController = TextEditingController(
   //     text: controller.searchQuery.value,
@@ -301,27 +244,27 @@ class FollowedCompaniesScreen extends GetView<FollowedCompaniesController> {
   //   );
   // }
 
-  Widget _buildDropdownFilter(String label, String currentValue,
-      Map<String, String> items, Function(String?) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(
-            fontWeight: FontWeight.bold, color: AppColors.textColor)),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: currentValue.isNotEmpty ? currentValue : null,
-          items: items.entries.map((e) =>
-              DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12, vertical: 8),
-          ),
-          hint: Text('اختر $label'),
-        ),
-      ],
-    );
-  }
+  // Widget _buildDropdownFilter(String label, String currentValue,
+  //     Map<String, String> items, Function(String?) onChanged) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(label, style: const TextStyle(
+  //           fontWeight: FontWeight.bold, color: AppColors.textColor)),
+  //       const SizedBox(height: 8),
+  //       DropdownButtonFormField<String>(
+  //         value: currentValue.isNotEmpty ? currentValue : null,
+  //         items: items.entries.map((e) =>
+  //             DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+  //         onChanged: onChanged,
+  //         decoration: InputDecoration(
+  //           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+  //           contentPadding: const EdgeInsets.symmetric(
+  //               horizontal: 12, vertical: 8),
+  //         ),
+  //         hint: Text('اختر $label'),
+  //       ),
+  //     ],
+  //   );
+  // }
 }
