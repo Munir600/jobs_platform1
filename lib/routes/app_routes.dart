@@ -51,7 +51,7 @@ class AppRoutes {
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: signup, page: () => const RegisterScreen()),
     GetPage(name: verifyPhone, page: () => const VerifyPhoneScreen()),
-    GetPage(name: home, page: () => const HomeScreen()),
+   // GetPage(name: home, page: () => const HomeScreen()),
     GetPage(name: mainScreen,page: () => MainScreen()),
     
     // Jobs

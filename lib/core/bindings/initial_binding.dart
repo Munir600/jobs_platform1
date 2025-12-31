@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../controllers/ChatController.dart';
 import '../../controllers/account/JobSeekerProfileController.dart';
 import '../../controllers/application/ApplyJobController.dart';
+import '../../controllers/company/FollowedCompaniesController.dart';
 import '../../core/api_service.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/account/AccountController.dart';
@@ -23,5 +24,6 @@ class InitialBinding extends Bindings {
     Get.lazyPut<JobSeekerProfileController>(() => JobSeekerProfileController(), fenix: true);
    // Get.lazyPut<ApplyJobController>(() => ApplyJobController(), fenix: true);
     Get.lazyPut<ChatController>(() => ChatController() , fenix: true);
+    Get.lazyPut<FollowedCompaniesController>(() => FollowedCompaniesController(), fenix: true);
   }
 }

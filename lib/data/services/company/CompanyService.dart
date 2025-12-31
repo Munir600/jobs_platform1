@@ -116,6 +116,33 @@ class CompanyService {
     }
   }
 
+  Future<PaginatedCompanyFollowerList> getFollowedCompanies({
+    int? page,
+    String? search,
+    String? city,
+    String? industry,
+    String? size,
+  }) async {
+    final headers = await _getHeaders();
+    String path = '${ApiEndpoints.followedCompanies}?';
+    if (page != null) path += 'page=$page&';
+    if (search != null) path += 'search=$search&';
+    if (city != null) path += 'city=$city&';
+    if (industry != null) path += 'industry=$industry&';
+    if (size != null) path += 'size=$size&';
+
+    final response = await _apiClient.get(path, headers: headers);
+     print('Get Followed Companies Response statusCode : ${response.statusCode}');
+    print('Followed Companies Response: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return PaginatedCompanyFollowerList.fromJson(jsonDecode(response.body));
+    } else {
+      print('Error fetching followed companies: ${response.body}');
+      throw Exception(response.body);
+    }
+  }
+
   Future<PaginatedCompanyReviewList> getCompanyReviews(int companyId, {int? page}) async {
     final headers = await _getHeaders();
     String path = '/api/companies/$companyId/reviews/';

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../../../config/app_colors.dart';
+import '../../companies/FollowedCompaniesScreen.dart';
 import '../../jobs/saved_jobs.dart';
 import '../user_profile_screen.dart';
 import 'JobSeekerProfileScreen.dart' as resume;
@@ -16,6 +17,7 @@ class JobseekerProfileScreen extends StatelessWidget {
   final List<String> _titles = [
     " تعديـل الملف الشخصي",
     " الوظائف المحفوظة",
+    "الشركات المتابعة",
     " لوحة التحكم",
     "الإعدادات",
   ];
@@ -56,8 +58,10 @@ class JobseekerProfileScreen extends StatelessWidget {
       case 1:
         return Icons.bookmark_border;
       case 2:
-        return Icons.dashboard_outlined;
+        return Icons.business;
       case 3:
+        return Icons.dashboard_outlined;
+      case 4:
         return Icons.settings_outlined;
       default:
         return Icons.circle;
@@ -78,8 +82,9 @@ class JobseekerProfileScreen extends StatelessWidget {
         switch(_currentIndex.value) {
             case 0: return UserProfileScreen();
             case 1: return SavedJobsScreen();
-            case 2: return JobSeekerDashboard();
-            case 3: return SettingScreen();
+            case 2: return FollowedCompaniesScreen();
+            case 3: return JobSeekerDashboard();
+            case 4: return SettingScreen();
             default:
                  return resume.JobSeekerProfileScreen();
         }
