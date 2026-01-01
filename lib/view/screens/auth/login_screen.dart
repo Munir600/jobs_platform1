@@ -167,12 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              Get.snackbar(
-                                'تنبيه',
-                                'الرجاء التواصل مع خدمة العملاء',
-                                backgroundColor: Colors.white,
-                                colorText: AppColors.textColor,
-                              );
+                              Get.toNamed(AppRoutes.forgotPassword);
                             },
                             style: TextButton.styleFrom(
                               foregroundColor: AppColors.primaryColor,
@@ -180,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: const Text('نسيت كلمة المرور'),
                           ),
                         ),
+
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,

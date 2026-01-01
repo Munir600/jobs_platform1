@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
+import '../controllers/auth/forgot_password_controller.dart';
+import '../controllers/auth/reset_password_controller.dart';
 import '../view/screens/auth/login_screen.dart';
 import '../view/screens/auth/register_screen.dart';
 import '../view/screens/auth/verify_phone_screen.dart';
+import '../view/screens/auth/forgot_password_screen.dart';
+import '../view/screens/auth/reset_password_screen.dart';
 import '../view/screens/home_screen.dart';
 import '../view/screens/jobs/JobListScreen.dart';
 import '../view/screens/jobs/JobDetailScreen.dart';
@@ -26,6 +30,7 @@ class AppRoutes {
   static const String verifyPhone = '/verify-phone';
   static const String forgotPassword = '/forgot-password';
   static const String resetPassword = '/reset-password';
+
   
   // Jobs
   static const String jobs = '/jobs';
@@ -51,7 +56,18 @@ class AppRoutes {
     GetPage(name: login, page: () => const LoginScreen()),
     GetPage(name: signup, page: () => const RegisterScreen()),
     GetPage(name: verifyPhone, page: () => const VerifyPhoneScreen()),
-   // GetPage(name: home, page: () => const HomeScreen()),
+    GetPage(
+      name: forgotPassword,
+      page: () => const ForgotPasswordScreen(),
+      binding: BindingsBuilder(() => Get.lazyPut(() => ForgotPasswordController())),
+    ),
+    GetPage(
+      name: resetPassword,
+      page: () => const ResetPasswordScreen(),
+      binding: BindingsBuilder(() => Get.lazyPut(() => ResetPasswordController())),
+    ),
+    GetPage(name: home, page: () => const HomeScreen()),
+
     GetPage(name: mainScreen,page: () => MainScreen()),
     
     // Jobs

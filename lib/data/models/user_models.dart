@@ -109,3 +109,38 @@ class PasswordChange {
     };
   }
 }
+
+class PasswordResetRequest {
+  final String phone;
+
+  PasswordResetRequest({required this.phone});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'phone': phone,
+    };
+  }
+}
+
+class PasswordResetConfirm {
+  final String phone;
+  final String verificationCode;
+  final String newPassword;
+  final String newPasswordConfirm;
+
+  PasswordResetConfirm({
+    required this.phone,
+    required this.verificationCode,
+    required this.newPassword,
+    required this.newPasswordConfirm,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'phone': phone,
+      'verification_code': verificationCode,
+      'new_password': newPassword,
+      'new_password_confirm': newPasswordConfirm,
+    };
+  }
+}

@@ -71,9 +71,18 @@ class AuthController extends GetxController {
       print('MESSAGES login  FROM API is : $ms');
       _apiService.setAuthToken(token);
       print('TOKEN SET IN API SERVICE After Login: $token');
+      
+      final bool verified = response["data"]["user"]["is_verified"] ?? false;
+      print('the response is_verified is :${response["data"]["user"]["is_verified"]}');
+      if (!verified) {
+        isLoading.value = false;
+        AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
+        Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
+        return false;
+      }
       isLoggedIn.value = true;
       isLoading.value = false;
-
+      
       if (Get.isRegistered<AccountController>()) {
         Get.find<AccountController>().fetchProfile();
       }
@@ -125,9 +134,10 @@ class AuthController extends GetxController {
       await _apiService.post(ApiEndpoints.logout, {});
       AppErrorHandler.showSuccessSnack('تم تسجيل الخروج بنجاح');
     } catch (e) {
-      //AppErrorHandler.showErrorSnack('$e');
+     //AppErrorHandler.showErrorSnack('$e');
       print('ERROR during logout API call: $e');
     } finally {
+      // Clear local auth state
       _currentUser.value = null;
       isLoggedIn.value = false;
       _storage.remove('user_data');
@@ -198,27 +208,62 @@ class AuthController extends GetxController {
   Future<bool> changePassword(PasswordChange passwordChange) async {
     try {
       isLoading.value = true;
-      final response = await _apiService.post(
-        '/api/accounts/change-password/',
+
+      await _apiService.post(
+        ApiEndpoints.changePassword,
         passwordChange.toJson(),
       );
-      print("RESPONSE FROM API AFTER PASSWORD CHANGE: $response");
-      isLoading.value = false;
-      String ms=response['data']['message']??'تم تغيير كلمة المرور '.toString();
-      String token=response['data']['token']??'';
-      print('TOKEN SET IN API SERVICE befor Password Change: ${_apiService.authToken}');
-      _apiService.setAuthToken(token);
-      print('TOKEN SET IN API SERVICE After Password Change: ${_apiService.authToken}');
-      AppErrorHandler.showSuccessSnack(ms);
 
+      isLoading.value = false;
+      AppErrorHandler.showSuccessSnack('تم تغيير كلمة المرور بنجاح');
       return true;
     } catch (e) {
-      print('error in changePassword: $e');
       isLoading.value = false;
       AppErrorHandler.showErrorSnack(e);
       return false;
     }
   }
+
+  Future<bool> resetPasswordRequest(String phone) async {
+    try {
+      isLoading.value = true;
+      final response = await _apiService.post(
+        ApiEndpoints.resetPasswordRequest,
+        {"phone": phone},
+      );
+      isLoading.value = false;
+      String ms = response['data']?['message'] ?? 'تم ارسال كود التحقق ';
+      print('the response resetPasswordRequest is : $response');
+      AppErrorHandler.showSuccessSnack(ms);
+      return true;
+    } catch (e) {
+      isLoading.value = false;
+      print('ERROR resetPasswordRequest: $e');
+      AppErrorHandler.showErrorSnack(e);
+      return false;
+    }
+  }
+
+  Future<bool> resetPasswordConfirm(PasswordResetConfirm data) async {
+    try {
+      isLoading.value = true;
+      final response = await _apiService.post(
+        ApiEndpoints.resetPasswordConfirm,
+        data.toJson(),
+      );
+      isLoading.value = false;
+      String ms = response['data']?['message'] ?? 'تم تغيير كلمة المرور بنجاح';
+      print('the response resetPasswordConfirm is : $response');
+      AppErrorHandler.showSuccessSnack(ms);
+      return true;
+    } catch (e) {
+      isLoading.value = false;
+      print('ERROR resetPasswordConfirm: $e');
+      AppErrorHandler.showErrorSnack(e);
+      return false;
+    }
+  }
+
 
   Future<bool> verifyPhone(String phone, String code) async {
     try {
@@ -272,6 +317,5 @@ class AuthController extends GetxController {
       return false;
     }
   }
-
-
+  
 }

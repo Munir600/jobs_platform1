@@ -24,8 +24,9 @@ class ApiEndpoints {
   static const String users = '/api/accounts/users/';
   static const String verifyPhone = '/api/accounts/verify-phone/';
   static const String resendVerificationCode = '/api/accounts/resend-verification-code/';
-
   static const String changePassword = '/api/accounts/change-password/';
+  static const String resetPasswordRequest = '/api/accounts/password-reset/request/';
+  static const String resetPasswordConfirm = '/api/accounts/password-reset/confirm/';
   static const String updateProfile = '/api/accounts/profile/update/';
   static const String updateEmployerProfile = '/api/accounts/profile/employer/';
   static const String updateJobSeekerProfile = '/api/accounts/profile/job-seeker/';
