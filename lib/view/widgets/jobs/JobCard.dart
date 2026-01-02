@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/app_colors.dart';
 import '../../../controllers/job/JobController.dart';
@@ -207,7 +208,19 @@ class JobCard extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: onShare ?? () {
-                        Get.snackbar('مشاركة', 'سيتم إضافة وظيفة المشاركة قريباً');
+                        final jobUrl = 'https://alyaarihazem.github.io/Hire-Me/jobs/job-details/${job.slug}';
+                        Clipboard.setData(ClipboardData(text: jobUrl));
+                        Get.snackbar(
+                          'تم النسخ',
+                          'تم نسخ رابط الوظيفة إلى الحافظة',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white,
+                          duration: const Duration(seconds: 2),
+                          margin: const EdgeInsets.all(16),
+                          borderRadius: 12,
+                          icon: const Icon(Icons.check_circle, color: Colors.white),
+                        );
                       },
                       icon: const Icon(Icons.share_outlined),
                     ),
