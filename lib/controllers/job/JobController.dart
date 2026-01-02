@@ -278,11 +278,13 @@ class JobController extends GetxController {
   Future<void> loadCategories() async {
     try {
       final response = await _jobService.getJobCategories();
-      if (response.results != null) {
-        categories.assignAll(response.results!);
-        _storage.write('job_categories', response.results!.map((e) => e.toJson()).toList());
+      if (response.isNotEmpty) {
+        categories.assignAll(response);
+        _storage.write('job_categories', response.map((e) => e.toJson()).toList());
       }
+      print('the response for load Categories is : ${response.length} categories loaded');
     } catch (e) {
+      print('the error for loadCategories is $e');
      // AppErrorHandler.showErrorSnack(e);
     }
   }

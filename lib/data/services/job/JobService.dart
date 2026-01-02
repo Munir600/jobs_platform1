@@ -6,6 +6,7 @@ import '../../../controllers/auth_controller.dart';
 import '../../../core/api_service.dart';
 import '../../../core/constants.dart';
 import '../../../routes/app_routes.dart';
+import '../../models/job/JobCategory.dart';
 import '../api_client.dart';
 import '../../models/job/JobDetail.dart';
 import '../../models/job/JobCreate.dart';
@@ -127,16 +128,16 @@ class JobService {
     }
   }
 
-  Future<PaginatedJobCategoryList> getJobCategories({int? page}) async {
+  Future<List<JobCategory>> getJobCategories() async {
     final headers = await _getHeaders();
     String path = '/api/jobs/categories/';
-    if (page != null) {
-      path += '?page=$page';
-    }
     final response = await _apiClient.get(path, headers: headers);
+    print('the response for get Categories is : ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return PaginatedJobCategoryList.fromJson(jsonDecode(response.body));
+      final List<dynamic> categoriesJson = jsonDecode(response.body);
+      return categoriesJson.map((json) => JobCategory.fromJson(json)).toList();
     } else {
+      print('the error for get Categories is ${response.body}');
       throw Exception(response.body);
     }
   }

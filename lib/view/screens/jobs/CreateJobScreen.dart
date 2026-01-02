@@ -44,6 +44,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
   String? selectedExperienceLevel;
   String? selectedEducationLevel;
   int? selectedCompanyId;
+  int? selectedCategory;
   bool isUrgent = false;
   bool isFeatured = false;
   bool salaryNegotiable = false;
@@ -108,6 +109,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       selectedExperienceLevel = job.experienceLevel;
       selectedEducationLevel = job.educationLevel;
       selectedCompanyId = job.company?.id; 
+      selectedCategory = job.category?.id;
       
       isUrgent = job.isUrgent ?? false;
       isFeatured = job.isFeatured ?? false;
@@ -183,7 +185,35 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                     );
                   }),
                   const SizedBox(height: 16),
-                  
+                  // Category Selection
+                  Obx(() {
+                    if (jobController.categories.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return DropdownButtonFormField<int>(
+                      value: selectedCategory,
+                      items: jobController.categories.map((category) {
+                        return DropdownMenuItem(
+                          value: category.id,
+                          child: Text(category.name),
+                        );
+                      }).toList(),
+                      onChanged: (val) => setState(() => selectedCategory = val),
+                      validator: (val) => val == null ? 'يرجى اختيار الفئة' : null,
+                      decoration: InputDecoration(
+                        labelText: 'الفئة',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.all(16),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 16),
                   _buildTextField(titleController, 'عنوان الوظيفة', validator: (v) => v!.isEmpty ? 'مطلوب' : null, inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'[\u0600-\u06FFa-zA-Z\s]')),
                   ]),
@@ -196,6 +226,10 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   const SizedBox(height: 16),
                   _buildDropdown('المستوى التعليمي', AppEnums.educationLevels, (val) => setState(() => selectedEducationLevel = val), value: selectedEducationLevel, validator: (v) => v == null ? 'مطلوب' : null),
                   const SizedBox(height: 16),
+                  
+
+                  const SizedBox(height: 16),
+                  
                   _buildSectionTitle('التفاصيل'),
                   _buildTextField(descriptionController, 'الوصف الوظيفي', maxLines: 5, validator: (v) => v!.isEmpty ? 'مطلوب' : null),
                   const SizedBox(height: 16),
@@ -301,6 +335,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                           experienceLevel: selectedExperienceLevel ?? '',
                           educationLevel: selectedEducationLevel ?? '',
                           company: selectedCompanyId!,
+                          category: selectedCategory,
                           salaryMin: int.tryParse(salaryMinController.text),
                           salaryMax: int.tryParse(salaryMaxController.text),
                           isSalaryNegotiable: salaryNegotiable,
