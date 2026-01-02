@@ -176,8 +176,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _submit() async {
-    final hasInternet = await NetworkUtils.checkInternet(context);
-    if (!hasInternet) return;
+    // final hasInternet = await NetworkUtils.checkInternet(context);
+    // if (!hasInternet) return;
     if (!_formKey.currentState!.validate()) return;
     
     if (!_acceptedTerms.value) {

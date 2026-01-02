@@ -35,8 +35,8 @@ class MessagesScreen extends GetView<ApplicationController> {
           IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: () async {
-                final hasInternet = await NetworkUtils.checkInternet(context);
-                if (!hasInternet) return;
+                // final hasInternet = await NetworkUtils.checkInternet(context);
+                // if (!hasInternet) return;
                 if (isEmployer) {
                   controller.loadJobApplications();
                 } else {

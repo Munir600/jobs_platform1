@@ -72,14 +72,14 @@ class AuthController extends GetxController {
       _apiService.setAuthToken(token);
       print('TOKEN SET IN API SERVICE After Login: $token');
       
-      final bool verified = response["data"]["user"]["is_verified"] ?? false;
-      print('the response is_verified is :${response["data"]["user"]["is_verified"]}');
-      if (!verified) {
-        isLoading.value = false;
-        AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
-        Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
-        return false;
-      }
+      // final bool verified = response["data"]["user"]["is_verified"] ?? false;
+      // print('the response is_verified is :${response["data"]["user"]["is_verified"]}');
+      // if (!verified) {
+      //   isLoading.value = false;
+      //   AppErrorHandler.showErrorSnack('يجب التحقق من رقم الهاتف اولا');
+      //   Get.toNamed(AppRoutes.verifyPhone, arguments: phone);
+      //   return false;
+      // }
       isLoggedIn.value = true;
       isLoading.value = false;
       

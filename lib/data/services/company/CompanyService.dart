@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import 'package:jobs_platform1/routes/app_routes.dart';
 
+import '../../../controllers/account/AccountController.dart';
+import '../../../core/api_service.dart';
 import '../../../core/constants.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../models/company/CompanyFollower.dart';
@@ -19,6 +23,7 @@ import '../../models/company/companies_statistics.dart';
 
 class CompanyService {
   final ApiClient _apiClient = ApiClient();
+  final ApiService _apiService = Get.find();
   final GetStorage _storage = GetStorage();
 
   Future<Map<String, String>> _getHeaders() async {
@@ -261,12 +266,10 @@ class CompanyService {
 
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
- //     print('Update Company Multipart Response A: ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-   //     print('Error updating company with multipart A: ${response.body}');
         throw Exception(response.body);
       }
     } else {
@@ -319,7 +322,14 @@ class CompanyService {
     );
     
     print('Get Employer Dashboard Stats Response: ${response.statusCode} ${response.body}');
-
+    if (response.statusCode == 401){
+      _storage.remove('user_data');
+      _apiService.removeAuthToken();
+      if (Get.isRegistered<AccountController>()) {
+        Get.find<AccountController>().clearUserData();
+      }
+      Get.offAllNamed(AppRoutes.login);
+    }
     if (response.statusCode == 200 || response.statusCode == 201) {
       return EmployerDashboard.fromJson(jsonDecode(response.body));
     } else {

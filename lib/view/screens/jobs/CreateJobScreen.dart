@@ -269,8 +269,8 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                     width: double.infinity,
                     child: Obx(() => ElevatedButton(
                       onPressed: (jobController.isLoading.value) ? null : () async {
-                        final hasInternet = await NetworkUtils.checkInternet(context);
-                        if (!hasInternet) return;
+                        // final hasInternet = await NetworkUtils.checkInternet(context);
+                        // if (!hasInternet) return;
                         if (!_formKey.currentState!.validate()) {
                           AppErrorHandler.showErrorSnack('يرجى تعبئة جميع الحقول المطلوبة');
                           return;

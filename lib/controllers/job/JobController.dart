@@ -17,6 +17,7 @@ class JobController extends GetxController {
 
   final RxList<JobList> jobs = <JobList>[].obs;
   final RxList<JobList> myJobs = <JobList>[].obs;
+  final RxList<JobList> Savedjobs = <JobList>[].obs;
   final RxList<JobCategory> categories = <JobCategory>[].obs;
   final RxList<JobAlert> alerts = <JobAlert>[].obs;
   final RxList<JobBookmark> bookmarks = <JobBookmark>[].obs;
@@ -55,7 +56,12 @@ class JobController extends GetxController {
   final RxInt currentMyJobsPage = 1.obs;
   final RxInt totalMyJobsPages = 1.obs;
   final RxInt totalMyJobsCount = 0.obs;
-  static const int pageSize = 5; // Items per page
+  
+  final RxInt currentBookmarksPage = 1.obs;
+  final RxInt totalBookmarksPages = 1.obs;
+  final RxInt totalBookmarksCount = 0.obs;
+
+  static const int pageSize = 5;
   
   // Statistics Observable
   final Rx<JobsStatistics?> jobsStats = Rx<JobsStatistics?>(null);
@@ -93,6 +99,9 @@ class JobController extends GetxController {
     currentMyJobsPage.close();
     totalMyJobsPages.close();
     totalMyJobsCount.close();
+    currentBookmarksPage.close();
+    totalBookmarksPages.close();
+    totalBookmarksCount.close();
     super.onClose();
   }
 
@@ -158,12 +167,13 @@ class JobController extends GetxController {
         myJobs.assignAll(response.results!);
         _storage.write('my_jobs_list', response.results!.map((e) => e.toJson()).toList());
       }
-      
-      // Update pagination metadata
+
       totalMyJobsCount.value = response.count ?? 0;
-      totalMyJobsPages.value = (totalMyJobsCount.value / pageSize).ceil();
-      
+    //totalMyJobsPages.value = (totalMyJobsCount.value /pageSize).ceil();
+      print('the totalMyJobsCount is ${totalMyJobsCount.value}');
+      print('the totalMyJobsPages is ${totalMyJobsPages.value}');
     } catch (e) {
+      print('error in loadMyJobs is : $e');
      // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
@@ -303,18 +313,41 @@ class JobController extends GetxController {
     }
   }
 
-  Future<void> loadBookmarks() async {
+  Future<void> loadBookmarks({int? page}) async {
     try {
       isListLoading.value = true;
-      final response = await _jobService.getJobBookmarks();
+      final response = await _jobService.getJobBookmarks(page: page ?? currentBookmarksPage.value);
       if (response.results != null) {
         bookmarks.assignAll(response.results!);
+        Savedjobs.assignAll(
+          response.results!
+              .map((e) => e.job)
+              .whereType<JobList>()
+              .toList(),
+        );
       }
+      print('the jobs bookmarks after assign is ${bookmarks.length}');
+      print('the Savedjobs count is : ${Savedjobs.length}');
+      // Update pagination metadata
+      totalBookmarksCount.value = response.count ?? 0;
+     // totalBookmarksPages.value = (totalBookmarksCount.value / pageSize).ceil();
+      if (page != null) {
+        currentBookmarksPage.value = page;
+      }
+      print('the response.count is : ${response.count}');
+      print('the response.results in controller is : ${response.results![0].job}');
     } catch (e) {
+      print('the error loadBookMarks is : $e');
      // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
+  }
+
+  void loadBookmarksPage(int page) {
+    if (page < 1 || page > totalBookmarksPages.value) return;
+    currentBookmarksPage.value = page;
+    loadBookmarks(page: page);
   }
 
   Future<void> bookmarkJob(int jobId) async {
@@ -369,7 +402,7 @@ class JobController extends GetxController {
     selectedCategory.value = '';
     isRemote.value = false;
     isUrgent.value = false;
-    currentJobsPage.value = 1; // Reset to first page when clearing filters
+    currentJobsPage.value = 1;
     loadJobs();
   }
   

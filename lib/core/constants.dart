@@ -1,7 +1,8 @@
 // lib/core/constants.dart
 class AppConstants {
   static const String appName = 'tawzif_platform';
-  static const String baseUrl = 'https://job-portal-rcxk.onrender.com';
+  //static const String baseUrl = 'https://job-portal-rcxk.onrender.com';
+  static const String baseUrl = 'http://10.149.197.34:8000';
 
 
   // users_type

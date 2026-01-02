@@ -21,6 +21,9 @@ class AppErrorHandler {
     else if (error.toString().contains('انتهت الجلسة')) {
       return "انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى";
     }
+    else if (error.toString().contains('رمز غير صحيح')) {
+      return "قم بتسجيل الدخول مرة اخرى";
+    }
     try {
       final String errorStr = error.toString();
       if (errorStr.contains('SocketException') ||
@@ -51,14 +54,14 @@ class AppErrorHandler {
           final dynamic decoded = jsonDecode(jsonStr);
           final List<String> messages = _extractMessages(decoded);
           if (messages.isNotEmpty) {
-            return messages.toSet().join('\n'); // Remove duplicates and join
+            return messages.toSet().join('\n');
           }
         } catch (e) {
           // JSON decode failed, ignore
         }
       }
     } catch (_) {
-      return "حدث خطأ غير متوقع. حاول مرة أخرى.";
+     // return "حدث خطأ غير متوقع. حاول مرة أخرى.";
     }
 
     // Fallback if no JSON or specific patterns matched, but try to clean up the string if it's the raw exception
@@ -66,7 +69,7 @@ class AppErrorHandler {
         return error.toString().replaceAll('Exception: ', '').trim();
     }
     
-    return "حدث خطأ غير متوقع. حاول مرة أخرى.";
+    return "خطاء";
   }
 
   static List<String> _extractMessages(dynamic data) {

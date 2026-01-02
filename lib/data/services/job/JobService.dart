@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../controllers/account/AccountController.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../core/api_service.dart';
 import '../../../core/constants.dart';
+import '../../../routes/app_routes.dart';
 import '../api_client.dart';
 import '../../models/job/JobDetail.dart';
 import '../../models/job/JobCreate.dart';
@@ -15,6 +18,7 @@ import '../../models/job/jobs_statistics.dart';
 
 class JobService {
   final ApiClient _apiClient = ApiClient();
+  final ApiService _apiService = Get.find();
  final GetStorage _storage = GetStorage();
   final isUserLoggedIn = Get.find<AuthController>();
   Future<Map<String, String>> _getHeaders() async {
@@ -36,12 +40,15 @@ class JobService {
   }) async {
     final headers = await _getHeaders();
     String path = '';
-    if(isUserLoggedIn.isLoggedIn.value){
+    final token2 = _storage.read(AppConstants.authTokenKey);
+    print('the token2 is: $token2');
+    if(token2 !=null){
       path = '/api/jobs/recommended/?';
     }else{
       path = '/api/jobs/?';
+      print('path in else if  : $path');
     }
-     //print('is user logged in from jobs service : ${isUserLoggedIn.isLoggedIn.value}');
+     print('is user token2 in from jobs service : $token2');
     print('path after if  : $path');
     if (page != null) path += 'page=$page&';
     if (search != null) path += 'search=$search&';
@@ -55,6 +62,14 @@ class JobService {
 
     final response = await _apiClient.get(path, headers: headers);
      print('response body jobs in services: ${response.body}');
+    if (response.statusCode == 401){
+      _storage.remove('user_data');
+      _apiService.removeAuthToken();
+      if (Get.isRegistered<AccountController>()) {
+        Get.find<AccountController>().clearUserData();
+      }
+      Get.offAllNamed(AppRoutes.login);
+    }
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {
@@ -156,14 +171,16 @@ class JobService {
 
   Future<PaginatedJobBookmarkList> getJobBookmarks({int? page}) async {
     final headers = await _getHeaders();
-    String path = '/api/jobs/bookmarks/';
+    String path = ApiEndpoints.bookmarks;
     if (page != null) {
       path += '?page=$page';
     }
     final response = await _apiClient.get(path, headers: headers);
+    print('the response in getjobbookmarks is : ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobBookmarkList.fromJson(jsonDecode(response.body));
     } else {
+      print('the response error getjobbookmarks is : ${response.body}');
       throw Exception(response.body);
     }
   }

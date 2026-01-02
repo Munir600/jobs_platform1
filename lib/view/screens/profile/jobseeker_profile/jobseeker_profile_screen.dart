@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:jobs_platform1/view/screens/profile/jobseeker_profile/saved_jobs.dart';
 import '../../../../config/app_colors.dart';
 import '../../companies/FollowedCompaniesScreen.dart';
-import '../../jobs/saved_jobs.dart';
 import '../user_profile_screen.dart';
 import 'JobSeekerProfileScreen.dart' as resume;
 import 'dashboard.dart';
@@ -72,7 +72,7 @@ class JobseekerProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> screens = [
         UserProfileScreen(),
-        SavedJobsScreen(),
+      SavedJobsScreen(),
         JobSeekerDashboard(),
     ];
     

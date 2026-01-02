@@ -289,8 +289,8 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   }
 
   Future<void> _submit() async {
-    final hasInternet = await NetworkUtils.checkInternet(context);
-    if (!hasInternet) return;
+    // final hasInternet = await NetworkUtils.checkInternet(context);
+    // if (!hasInternet) return;
     if (_formKey.currentState!.validate()) {
       // Auto-correct website URL
       String website = websiteController.text.trim();

@@ -10,9 +10,6 @@ import '../../widgets/companies/PaginationControlsEmployee.dart';
 class FollowedCompaniesScreen extends GetView<FollowedCompaniesController> {
   const FollowedCompaniesScreen({super.key});
 
-  // final FollowedCompaniesController controller = Get.put(
-  //     FollowedCompaniesController());
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +86,6 @@ class FollowedCompaniesScreen extends GetView<FollowedCompaniesController> {
                   itemCount: controller.followedCompanies.length,
                   itemBuilder: (context, index) {
                     final companyFollower = controller.followedCompanies[index];
-                    // Ensure we have a company object to display
                     if (companyFollower.company == null)
                       return const SizedBox.shrink();
 
@@ -117,154 +113,4 @@ class FollowedCompaniesScreen extends GetView<FollowedCompaniesController> {
       ),
     );
   }
-  //
-  // void _showSearchDialog(BuildContext context) {
-  //   final TextEditingController searchController = TextEditingController(
-  //     text: controller.searchQuery.value,
-  //   );
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) =>
-  //         AlertDialog(
-  //           backgroundColor: AppColors.accentColor,
-  //           shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(20)),
-  //           title: const Text(
-  //             'البحث عن شركة',
-  //             style: TextStyle(
-  //                 color: AppColors.textColor, fontWeight: FontWeight.bold),
-  //           ),
-  //           content: TextField(
-  //             controller: searchController,
-  //             autofocus: true,
-  //             decoration: InputDecoration(
-  //               hintText: 'ابحث عن شركة...',
-  //               prefixIcon: const Icon(
-  //                   Icons.search, color: AppColors.primaryColor),
-  //               filled: true,
-  //               fillColor: Colors.white,
-  //               border: OutlineInputBorder(
-  //                 borderRadius: BorderRadius.circular(15),
-  //                 borderSide: BorderSide.none,
-  //               ),
-  //               contentPadding: const EdgeInsets.symmetric(
-  //                   horizontal: 20, vertical: 15),
-  //             ),
-  //             onSubmitted: (value) {
-  //               controller.setSearchQuery(value);
-  //               Get.back();
-  //             },
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () {
-  //                 searchController.clear();
-  //                 controller.setSearchQuery('');
-  //                 Get.back();
-  //               },
-  //               child: const Text('مسح', style: TextStyle(color: Colors.grey)),
-  //             ),
-  //             ElevatedButton(
-  //               onPressed: () {
-  //                 controller.setSearchQuery(searchController.text);
-  //                 Get.back();
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 backgroundColor: AppColors.primaryColor,
-  //                 shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(10)),
-  //               ),
-  //               child: const Text('بحث', style: TextStyle(color: Colors.white)),
-  //             ),
-  //           ],
-  //         ),
-  //   );
-  // }
-
-  // void _showFilterBottomSheet(BuildContext context) {
-  //   Get.bottomSheet(
-  //     Container(
-  //       padding: const EdgeInsets.all(16),
-  //       decoration: const BoxDecoration(
-  //         color: AppColors.accentColor,
-  //         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-  //       ),
-  //       child: SingleChildScrollView(
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             const Text(
-  //               'تصفية الشركات',
-  //               style: TextStyle(fontSize: 20,
-  //                   fontWeight: FontWeight.bold,
-  //                   color: AppColors.textColor),
-  //             ),
-  //             const SizedBox(height: 16),
-  //             _buildDropdownFilter(
-  //               'المدينة',
-  //               controller.selectedCity.value,
-  //               AppEnums.cities,
-  //                   (val) => controller.setFilters(city: val),
-  //             ),
-  //             const SizedBox(height: 16),
-  //             _buildDropdownFilter(
-  //               'القطاع',
-  //               controller.selectedIndustry.value,
-  //               AppEnums.industries,
-  //                   (val) => controller.setFilters(industry: val),
-  //             ),
-  //             const SizedBox(height: 16),
-  //             _buildDropdownFilter(
-  //               'حجم الشركة',
-  //               controller.selectedSize.value,
-  //               AppEnums.companySizes,
-  //                   (val) => controller.setFilters(size: val),
-  //             ),
-  //             const SizedBox(height: 24),
-  //             SizedBox(
-  //               width: double.infinity,
-  //               child: ElevatedButton(
-  //                 onPressed: () {
-  //                   controller.clearFilters();
-  //                   Get.back();
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.grey[200],
-  //                   foregroundColor: AppColors.textColor,
-  //                 ),
-  //                 child: const Text('مسح التصفيات'),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildDropdownFilter(String label, String currentValue,
-  //     Map<String, String> items, Function(String?) onChanged) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(label, style: const TextStyle(
-  //           fontWeight: FontWeight.bold, color: AppColors.textColor)),
-  //       const SizedBox(height: 8),
-  //       DropdownButtonFormField<String>(
-  //         value: currentValue.isNotEmpty ? currentValue : null,
-  //         items: items.entries.map((e) =>
-  //             DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
-  //         onChanged: onChanged,
-  //         decoration: InputDecoration(
-  //           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-  //           contentPadding: const EdgeInsets.symmetric(
-  //               horizontal: 12, vertical: 8),
-  //         ),
-  //         hint: Text('اختر $label'),
-  //       ),
-  //     ],
-  //   );
-  // }
 }

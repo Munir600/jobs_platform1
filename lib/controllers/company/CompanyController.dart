@@ -42,7 +42,7 @@ class CompanyController extends GetxController {
   final RxInt currentMyCompaniesPage = 1.obs;
   final RxInt totalMyCompaniesPages = 1.obs;
   final RxInt totalMyCompaniesCount = 0.obs;
-  static const int pageSize = 5; // Items per page
+  static const int pageSize = 5;
   
   // Statistics Observable
   final Rx<CompaniesStatistics?> companiesStats = Rx<CompaniesStatistics?>(null);
@@ -155,7 +155,7 @@ class CompanyController extends GetxController {
       
       // Update pagination metadata
       totalMyCompaniesCount.value = response.count ?? 0;
-      totalMyCompaniesPages.value = (totalMyCompaniesCount.value / pageSize).ceil();
+      //totalMyCompaniesPages.value = (totalMyCompaniesCount.value / pageSize).ceil();
       
       print('CompanyController: Fetched ${myCompanies.length} companies');
       for( var company in myCompanies){

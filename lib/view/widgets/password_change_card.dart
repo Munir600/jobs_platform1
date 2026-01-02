@@ -32,8 +32,8 @@ class _PasswordChangeCardState extends State<PasswordChangeCard> {
   }
 
   Future<void> _submit() async {
-    final hasInternet = await NetworkUtils.checkInternet(context);
-    if (!hasInternet) return;
+    // final hasInternet = await NetworkUtils.checkInternet(context);
+    // if (!hasInternet) return;
     if (!_formKey.currentState!.validate()) return;
     final authController = Get.find<AuthController>();
     
