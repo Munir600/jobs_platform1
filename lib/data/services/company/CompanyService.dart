@@ -44,7 +44,7 @@ class CompanyService {
   }) async {
     final headers = await _getHeaders();
 
-    String path = '/api/companies/?';
+    String path = ApiEndpoints.companies;
     if (page != null) path += 'page=$page&';
     if (search != null) path += 'search=$search&';
     if (city != null) path += 'city=$city&';
@@ -65,7 +65,7 @@ class CompanyService {
 
   Future<PaginatedCompanyList> getMyCompanies({int? page}) async {
     final headers = await _getHeaders();
-    String path = '/api/companies/my-companies/';
+    String path = ApiEndpoints.myCompanies;
     if (page != null) {
       path += '?page=$page';
     }
@@ -180,7 +180,7 @@ class CompanyService {
     final headers = await _getHeaders();
 
     if (logo != null || coverImage != null) {
-      var request = http.MultipartRequest('POST', Uri.parse(AppConstants.baseUrl + '/api/companies/create/'));
+      var request = http.MultipartRequest('POST', Uri.parse('${AppConstants.baseUrl}${ApiEndpoints.createCompany}'));
       request.headers.addAll(headers);
 
       company.toJson().forEach((key, value) {
@@ -219,7 +219,7 @@ class CompanyService {
       }
     } else {
       final response = await _apiClient.post(
-        '/api/companies/create/',
+        ApiEndpoints.createCompany,
         company.toJson(),
         headers: headers,
       );
@@ -317,7 +317,7 @@ class CompanyService {
   Future<EmployerDashboard> getEmployerDashboardStats() async {
     final headers = await _getHeaders();
     final response = await _apiClient.get(
-      '/api/companies/employer-dashboard-stats/',
+      ApiEndpoints.employerDashboardStats,
       headers: headers,
     );
     

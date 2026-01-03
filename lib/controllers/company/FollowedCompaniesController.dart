@@ -52,7 +52,7 @@ class FollowedCompaniesController extends GetxController {
       }
       // Update pagination metadata
       totalCount.value = response.count ?? 0;
-     // totalPages.value = (totalCount.value / pageSize).ceil();
+      totalPages.value = (totalCount.value / pageSize).ceil();
       if (totalPages.value == 0) totalPages.value = 1;
     } catch (e) {
       print('Error loading followed companies: $e');

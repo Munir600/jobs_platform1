@@ -1,8 +1,9 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import '../../../data/services/storage_service.dart';
 import '../../../routes/app_routes.dart';
+import '../../core/api_service.dart';
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
   @override
@@ -11,7 +12,7 @@ class SplashScreen extends StatelessWidget {
       splash: Center(
         child: Lottie.asset('assets/animation/BusinessAnalysis.json'),
       ),
-      duration: 4500,
+      duration: 2000,
       splashIconSize: 1000,
       backgroundColor: const Color(0xFFACD6F7),
       splashTransition: SplashTransition.fadeTransition,
@@ -25,16 +26,18 @@ class _NextScreenDecider extends StatefulWidget {
   State<_NextScreenDecider> createState() => _NextScreenDeciderState();
 }
 class _NextScreenDeciderState extends State<_NextScreenDecider> {
+  final ApiService _apiService = Get.find();
   @override
   void initState() {
     super.initState();
-    _navigate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigate();
+    });
   }
-  Future<void> _navigate() async {
-    final token = await StorageService.getToken();
-    if (!mounted) return;
+  void _navigate() {
+    final token = _apiService.authToken;
     final route = token != null ? AppRoutes.mainScreen : AppRoutes.login;
-    Navigator.pushReplacementNamed(context, route);
+    Get.offAllNamed(route);
   }
   @override
   Widget build(BuildContext context) {

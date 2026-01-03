@@ -2,14 +2,11 @@
 class AppConstants {
   static const String appName = 'tawzif_platform';
   static const String baseUrl = 'https://job-portal-rcxk.onrender.com';
-  //static const String baseUrl = 'http://10.149.197.34:8000';
-
+  //static const String baseUrl = 'http://192.168.0.120:8000';
 
   // users_type
   static const String userTypeJobSeeker = 'job_seeker';
   static const String userTypeEmployer = 'employer';
-  static const String userTypeAdmin = 'admin';
-
   // storage_keys
   static const String authTokenKey = 'auth_token';
   static const String userDataKey = 'user_data';
@@ -49,10 +46,11 @@ class ApiEndpoints {
   static const String jobAlerts = '/api/jobs/alerts/';
   static const String jobAlertDetail = '/api/jobs/alerts/{id}/';
   // Companies
-  static const String companies = '/api/companies/';
+  static const String companies = '/api/companies/?';
   static const String myCompanies = '/api/companies/my-companies/';
   static const String createCompany = '/api/companies/create/';
   static const String followCompany = '/api/companies/{company_id}/follow/';
+  static const String employerDashboardStats = '/api/companies/employer-dashboard-stats/';
 
   static const String companyDetail = '/api/companies/'; // + {slug}
   static const String updateCompany = '/api/companies/{slug}/update/';
@@ -70,7 +68,7 @@ class ApiEndpoints {
   static const String applyJob = '/api/applications/apply/';
   static const String applicationMessages = '/api/applications/{application_id}/messages/';
 
-  static const String jobApplications = '/api/applications/job-applications/';
+  static const String jobApplications = '/api/applications/job-applications/?';
   static const String applicationDetail = '/api/applications/{id}/';
   static const String updateApplication = '/api/applications/{id}/update/';
   static const String withdrawApplication = '/api/applications/{application_id}/withdraw/';

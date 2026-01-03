@@ -131,7 +131,6 @@ class AccountService {
         }
       }
       
-      // Fallback: try to parse the root or data directly
       profile ??= EmployerProfile.fromJson(data ?? json);
       
       return {'profile': profile, 'message': message};

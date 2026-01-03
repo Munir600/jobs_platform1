@@ -10,6 +10,8 @@ import '../../controllers/application/ApplicationController.dart';
 import '../../controllers/company/CompanyController.dart';
 import '../../controllers/job/JobController.dart';
 import '../../controllers/Interview/InterviewController.dart';
+import '../../controllers/profile_navigation_controller.dart';
+
 
 class InitialBinding extends Bindings {
   @override
@@ -25,5 +27,7 @@ class InitialBinding extends Bindings {
    // Get.lazyPut<ApplyJobController>(() => ApplyJobController(), fenix: true);
     Get.lazyPut<ChatController>(() => ChatController() , fenix: true);
     Get.lazyPut<FollowedCompaniesController>(() => FollowedCompaniesController(), fenix: true);
+    Get.put<ProfileNavigationController>(ProfileNavigationController(), permanent: true);
+
   }
 }

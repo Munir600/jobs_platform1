@@ -92,7 +92,7 @@ class JobService {
   Future<bool> createJob(JobCreate job) async {
     final headers = await _getHeaders();
     final response = await _apiClient.post(
-      '/api/jobs/create/',
+      ApiEndpoints.createJob,
       job.toJson(),
       headers: headers,
     );
@@ -130,7 +130,7 @@ class JobService {
 
   Future<List<JobCategory>> getJobCategories() async {
     final headers = await _getHeaders();
-    String path = '/api/jobs/categories/';
+    String path = ApiEndpoints.jobCategories;
     final response = await _apiClient.get(path, headers: headers);
     print('the response for get Categories is : ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -144,7 +144,7 @@ class JobService {
 
   Future<PaginatedJobAlertList> getJobAlerts({int? page}) async {
     final headers = await _getHeaders();
-    String path = '/api/jobs/alerts/';
+    String path = ApiEndpoints.jobAlerts;
     if (page != null) {
       path += '?page=$page';
     }
@@ -159,7 +159,7 @@ class JobService {
   Future<JobAlert> createJobAlert(JobAlert alert) async {
     final headers = await _getHeaders();
     final response = await _apiClient.post(
-      '/api/jobs/alerts/',
+      ApiEndpoints.jobAlerts,
       alert.toJson(),
       headers: headers,
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Added
+import 'package:get/get.dart';
 import 'package:jobs_platform1/config/app_colors.dart';
+import '../../../../controllers/profile_navigation_controller.dart';
 import '../../companies/MyCompaniesScreen.dart';
 import '../employer_profile/dashboard.dart';
 import '../employer_profile/setting.dart';
@@ -11,7 +12,7 @@ import 'employer_dashboard_stats.dart';
 class CompanyProfile extends StatelessWidget {
   CompanyProfile({super.key});
 
-  final RxInt _currentIndex = 0.obs;
+  final ProfileNavigationController _navController = Get.find<ProfileNavigationController>();
 
   final List<Widget> _screens = [
     UserProfileScreen(),
@@ -58,7 +59,7 @@ class CompanyProfile extends StatelessWidget {
                 ),
                 title: Text(_titles[i]),
                 onTap: () {
-                  _currentIndex.value = i;
+                  _navController.setEmployerIndex(i);
                   Navigator.pop(context);
                 },
               ),
@@ -72,7 +73,7 @@ class CompanyProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Obx(() => _screens[_currentIndex.value]),
+      body: Obx(() => _screens[_navController.employerIndex.value]),
       floatingActionButton: FloatingActionButton(
         heroTag: null,
         onPressed: () => _openNavigationSheet(context),

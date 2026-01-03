@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'package:get/get.dart';
-import '../../../core/utils/error_handler.dart';
 import '../api_client.dart';
-import '../storage_service.dart';
 import '../../models/application/JobApplication.dart';
 import '../../models/application/JobApplicationCreate.dart';
 import '../../models/application/JobApplicationUpdate.dart';
@@ -11,7 +8,6 @@ import '../../models/application/PaginatedJobApplicationList.dart';
 import '../../models/application/PaginatedApplicationMessageList.dart';
 import '../../models/application/ApplicationStatistics.dart';
 import '../../models/Interview/Interview.dart';
-import '../../models/Interview/InterviewCreate.dart';
 import '../../models/Interview/PaginatedInterviewList.dart';
 import '../../../core/constants.dart';
 import 'package:get_storage/get_storage.dart';
@@ -27,7 +23,7 @@ class ApplicationService {
 
   Future<PaginatedJobApplicationList> getMyApplications({int? page}) async {
     final headers = await _getHeaders();
-    String path = '/api/applications/my-applications/';
+    String path = ApiEndpoints.myApplications;
     if (page != null) {
       path += '?page=$page';
     }
@@ -41,7 +37,7 @@ class ApplicationService {
 
   Future<PaginatedJobApplicationList> getJobApplications({int? page, int? jobId}) async {
     final headers = await _getHeaders();
-    String path = '/api/applications/job-applications/?';
+    String path = ApiEndpoints.jobApplications;
     if (page != null) {
       path += 'page=$page&';
     }
@@ -72,7 +68,7 @@ class ApplicationService {
   Future<JobApplicationCreate> createApplication(JobApplicationCreate application) async {
     final headers = await _getHeaders();
     final response = await _apiClient.post(
-      '/api/applications/apply/',
+      ApiEndpoints.applyJob,
       application.toJson(),
       headers: headers,
     );
@@ -165,7 +161,7 @@ class ApplicationService {
 
   Future<PaginatedInterviewList> getInterviews({int? page}) async {
     final headers = await _getHeaders();
-    String path = '/api/applications/interviews/';
+    String path = ApiEndpoints.interviews;
     if (page != null) {
       path += '?page=$page';
     }
@@ -174,42 +170,24 @@ class ApplicationService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return PaginatedInterviewList.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception('Failed to load interviews');
+        throw Exception(response.body);
       }
     } catch (e) {
-      throw Exception('Error loading interviews: $e');
+      throw Exception(e);
     }
   }
 
-  Future<Interview> getInterview(int id) async {
-    final headers = await _getHeaders();
-    try {
-      final response = await _apiClient.get('/api/applications/interviews/$id/', headers: headers);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return Interview.fromJson(jsonDecode(response.body));
-      } else {
-        throw Exception('Failed to load interview');
-      }
-    } catch (e) {
-      throw Exception('Error loading interview: $e');
-    }
-  }
-
-  // Future<Interview> createInterview(InterviewCreate interview) async {
+  // Future<Interview> getInterview(int id) async {
   //   final headers = await _getHeaders();
   //   try {
-  //     final response = await _apiClient.post(
-  //       '/api/applications/interviews/create/',
-  //       interview.toJson(),
-  //       headers: headers,
-  //     );
-  //     if (response.statusCode == 201 || response.statusCode == 200) {
+  //     final response = await _apiClient.get('/api/applications/interviews/$id/', headers: headers);
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
   //       return Interview.fromJson(jsonDecode(response.body));
   //     } else {
   //       throw Exception(response.body);
   //     }
   //   } catch (e) {
-  //     throw Exception('Error creating interview: $e');
+  //     throw Exception(e);
   //   }
   // }
 
@@ -224,10 +202,10 @@ class ApplicationService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return Interview.fromJson(jsonDecode(response.body));
       } else {
-        throw Exception('Failed to update interview');
+        throw Exception(response.body);
       }
     } catch (e) {
-      throw Exception('Error updating interview: $e');
+      throw Exception(e);
     }
   }
 
@@ -244,11 +222,11 @@ class ApplicationService {
 
   Future<ApplicationStatistics> getApplicationStatistics() async {
     final headers = await _getHeaders();
-    final response = await _apiClient.get('/api/applications/statistics/', headers: headers);
+    final response = await _apiClient.get(ApiEndpoints.applicationStatistics, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return ApplicationStatistics.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load application statistics');
+      throw Exception(response.body);
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:jobs_platform1/view/screens/profile/jobseeker_profile/saved_jobs.dart';
 import '../../../../config/app_colors.dart';
+import '../../../../controllers/profile_navigation_controller.dart';
 import '../../companies/FollowedCompaniesScreen.dart';
 import '../user_profile_screen.dart';
 import 'JobSeekerProfileScreen.dart' as resume;
@@ -12,7 +13,7 @@ import 'setting.dart';
 class JobseekerProfileScreen extends StatelessWidget {
    JobseekerProfileScreen({super.key});
 
-  final RxInt _currentIndex = 0.obs;
+  final ProfileNavigationController _navController = Get.find<ProfileNavigationController>();
 
   final List<String> _titles = [
     " تعديـل الملف الشخصي",
@@ -41,7 +42,7 @@ class JobseekerProfileScreen extends StatelessWidget {
                 ),
                 title: Text(_titles[i]),
                 onTap: () {
-                  _currentIndex.value = i;
+                  _navController.setJobseekerIndex(i);
                   Navigator.pop(context);
                 },
               ),
@@ -70,16 +71,10 @@ class JobseekerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-        UserProfileScreen(),
-      SavedJobsScreen(),
-        JobSeekerDashboard(),
-    ];
-    
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Obx(() {
-        switch(_currentIndex.value) {
+        switch(_navController.jobseekerIndex.value) {
             case 0: return UserProfileScreen();
             case 1: return SavedJobsScreen();
             case 2: return FollowedCompaniesScreen();
@@ -98,3 +93,4 @@ class JobseekerProfileScreen extends StatelessWidget {
     );
   }
 }
+

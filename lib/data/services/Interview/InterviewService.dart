@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
-import 'package:jobs_platform1/core/utils/error_handler.dart';
-
 import '../../../core/constants.dart';
 import '../api_client.dart';
 import '../../models/Interview/Interview.dart';
