@@ -144,6 +144,176 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
+  /api/accounts/profile/documents/:
+    get:
+      operationId: accounts_profile_documents_list
+      description: ViewSet للباحثين عن عمل لإدارة وثائقهم
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - accounts
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProfileDocumentList'
+          description: ''
+    post:
+      operationId: accounts_profile_documents_create
+      description: ViewSet للباحثين عن عمل لإدارة وثائقهم
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileDocumentCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProfileDocumentCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProfileDocumentCreate'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDocumentCreate'
+          description: ''
+  /api/accounts/profile/documents/{id}/:
+    get:
+      operationId: accounts_profile_documents_retrieve
+      description: ViewSet للباحثين عن عمل لإدارة وثائقهم
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+        required: true
+      tags:
+      - accounts
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDocument'
+          description: ''
+    put:
+      operationId: accounts_profile_documents_update
+      description: ViewSet للباحثين عن عمل لإدارة وثائقهم
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+        required: true
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileDocumentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProfileDocumentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProfileDocumentUpdate'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDocumentUpdate'
+          description: ''
+    patch:
+      operationId: accounts_profile_documents_partial_update
+      description: ViewSet للباحثين عن عمل لإدارة وثائقهم
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+        required: true
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileDocumentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileDocumentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileDocumentUpdate'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDocumentUpdate'
+          description: ''
+    delete:
+      operationId: accounts_profile_documents_destroy
+      description: ViewSet للباحثين عن عمل لإدارة وثائقهم
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+        required: true
+      tags:
+      - accounts
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/accounts/profile/employer/:
     put:
       operationId: accounts_profile_employer_update
@@ -484,7 +654,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JobApplication'
+                $ref: '#/components/schemas/JobApplicationDetail'
           description: ''
   /api/applications/{id}/update/:
     put:
@@ -579,6 +749,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/JobApplicationCreate'
           description: ''
+  /api/applications/documents/{document_id}/log-view/:
+    post:
+      operationId: applications_documents_log_view_create
+      description: تسجيل مشاهدة وثيقة بواسطة صاحب عمل
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - applications
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/applications/interviews/:
     get:
       operationId: applications_interviews_list
@@ -2493,6 +2681,22 @@ components:
       - reviewer
       - reviewer_name
       - title
+    DocumentTypeEnum:
+      enum:
+      - certificate
+      - training
+      - project
+      - recommendation
+      - award
+      - other
+      type: string
+      description: |-
+        * `certificate` - شهادة أكاديمية
+        * `training` - شهادة دورة تدريبية
+        * `project` - مشروع
+        * `recommendation` - خطاب توصية
+        * `award` - جائزة أو تكريم
+        * `other` - أخرى
     EducationLevel28dEnum:
       enum:
       - high_school
@@ -2904,9 +3108,13 @@ components:
           format: date-time
           readOnly: true
           title: تاريخ التحديث
+        documents_count:
+          type: string
+          readOnly: true
       required:
       - applicant
       - applied_at
+      - documents_count
       - employer_notes
       - id
       - is_viewed
@@ -2953,6 +3161,107 @@ components:
           title: ملاحظات
       required:
       - job
+    JobApplicationDetail:
+      type: object
+      description: Serializer مفصل لطلب التوظيف يتضمن المرفقات
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        job:
+          allOf:
+          - $ref: '#/components/schemas/JobList'
+          readOnly: true
+        applicant:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        cover_letter:
+          type: string
+          nullable: true
+          title: خطاب التقديم
+        resume:
+          type: string
+          format: uri
+          nullable: true
+          title: السيرة الذاتية
+        portfolio_url:
+          type: string
+          format: uri
+          nullable: true
+          title: رابط الأعمال
+          maxLength: 200
+        expected_salary:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: الراتب المتوقع
+        availability_date:
+          type: string
+          format: date
+          nullable: true
+          title: تاريخ التوفر
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status749Enum'
+          title: الحالة
+        status_display:
+          type: string
+          readOnly: true
+        notes:
+          type: string
+          nullable: true
+          title: ملاحظات
+        employer_notes:
+          type: string
+          readOnly: true
+          nullable: true
+          title: ملاحظات صاحب العمل
+        rating:
+          type: integer
+          readOnly: true
+          nullable: true
+          title: التقييم
+        is_viewed:
+          type: boolean
+          readOnly: true
+          title: تمت المشاهدة
+        viewed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: تاريخ المشاهدة
+        applied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: تاريخ التقديم
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: تاريخ التحديث
+        documents_count:
+          type: string
+          readOnly: true
+        documents:
+          type: string
+          readOnly: true
+      required:
+      - applicant
+      - applied_at
+      - documents
+      - documents_count
+      - employer_notes
+      - id
+      - is_viewed
+      - job
+      - rating
+      - status_display
+      - updated_at
+      - viewed_at
     JobApplicationUpdate:
       type: object
       properties:
@@ -3659,6 +3968,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/JobList'
+    PaginatedProfileDocumentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileDocument'
     PaginatedUserList:
       type: object
       required:
@@ -4010,6 +4342,40 @@ components:
         is_active:
           type: boolean
           title: نشط
+    PatchedProfileDocumentUpdate:
+      type: object
+      description: Serializer لتحديث وثيقة موجودة
+      properties:
+        document_type:
+          allOf:
+          - $ref: '#/components/schemas/DocumentTypeEnum'
+          title: نوع الوثيقة
+        title:
+          type: string
+          title: العنوان
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          title: الوصف
+        file:
+          type: string
+          format: uri
+          title: الملف
+        issued_by:
+          type: string
+          nullable: true
+          title: الجهة المصدرة
+          maxLength: 200
+        issue_date:
+          type: string
+          format: date
+          nullable: true
+          title: تاريخ الإصدار
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          title: مستوى الخصوصية
     PhoneVerification:
       type: object
       properties:
@@ -4022,6 +4388,153 @@ components:
       required:
       - phone
       - verification_code
+    ProfileDocument:
+      type: object
+      description: Serializer لعرض وإنشاء وثائق الملف الشخصي
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        document_type:
+          allOf:
+          - $ref: '#/components/schemas/DocumentTypeEnum'
+          title: نوع الوثيقة
+        title:
+          type: string
+          title: العنوان
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          title: الوصف
+        file:
+          type: string
+          format: uri
+          title: الملف
+        file_url:
+          type: string
+          readOnly: true
+        file_size:
+          type: string
+          readOnly: true
+        file_name:
+          type: string
+          readOnly: true
+        issued_by:
+          type: string
+          nullable: true
+          title: الجهة المصدرة
+          maxLength: 200
+        issue_date:
+          type: string
+          format: date
+          nullable: true
+          title: تاريخ الإصدار
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          title: مستوى الخصوصية
+        views_count:
+          type: integer
+          readOnly: true
+          title: عدد المشاهدات
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: تاريخ الإنشاء
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: تاريخ التحديث
+      required:
+      - created_at
+      - document_type
+      - file
+      - file_name
+      - file_size
+      - file_url
+      - id
+      - title
+      - updated_at
+      - views_count
+    ProfileDocumentCreate:
+      type: object
+      description: Serializer لإنشاء وثيقة جديدة
+      properties:
+        document_type:
+          allOf:
+          - $ref: '#/components/schemas/DocumentTypeEnum'
+          title: نوع الوثيقة
+        title:
+          type: string
+          title: العنوان
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          title: الوصف
+        file:
+          type: string
+          format: uri
+          title: الملف
+        issued_by:
+          type: string
+          nullable: true
+          title: الجهة المصدرة
+          maxLength: 200
+        issue_date:
+          type: string
+          format: date
+          nullable: true
+          title: تاريخ الإصدار
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          title: مستوى الخصوصية
+      required:
+      - document_type
+      - file
+      - title
+    ProfileDocumentUpdate:
+      type: object
+      description: Serializer لتحديث وثيقة موجودة
+      properties:
+        document_type:
+          allOf:
+          - $ref: '#/components/schemas/DocumentTypeEnum'
+          title: نوع الوثيقة
+        title:
+          type: string
+          title: العنوان
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          title: الوصف
+        file:
+          type: string
+          format: uri
+          title: الملف
+        issued_by:
+          type: string
+          nullable: true
+          title: الجهة المصدرة
+          maxLength: 200
+        issue_date:
+          type: string
+          format: date
+          nullable: true
+          title: تاريخ الإصدار
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          title: مستوى الخصوصية
+      required:
+      - document_type
+      - file
+      - title
     RatingEnum:
       enum:
       - 1
@@ -4268,6 +4781,16 @@ components:
         * `job_seeker` - باحث عن عمل
         * `employer` - صاحب عمل
         * `admin` - مدير
+    VisibilityEnum:
+      enum:
+      - public
+      - private
+      - employers_only
+      type: string
+      description: |-
+        * `public` - عام - يمكن لأي صاحب عمل المشاهدة
+        * `private` - خاص - فقط أنا
+        * `employers_only` - أصحاب العمل فقط - عند التقديم
   securitySchemes:
     cookieAuth:
       type: apiKey

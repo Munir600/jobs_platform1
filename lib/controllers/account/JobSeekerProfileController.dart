@@ -129,3 +129,4 @@ class JobSeekerProfileController extends GetxController {
     super.onClose();
   }
 }
+

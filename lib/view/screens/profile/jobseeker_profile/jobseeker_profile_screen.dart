@@ -7,7 +7,9 @@ import '../../companies/FollowedCompaniesScreen.dart';
 import '../user_profile_screen.dart';
 import 'JobSeekerProfileScreen.dart' as resume;
 import 'dashboard.dart';
+import 'dashboard.dart';
 import 'setting.dart';
+import 'JobseekerDocumentsScreen.dart';
 
 
 class JobseekerProfileScreen extends StatelessWidget {
@@ -19,6 +21,7 @@ class JobseekerProfileScreen extends StatelessWidget {
     " تعديـل الملف الشخصي",
     " الوظائف المحفوظة",
     "الشركات المتابعة",
+    "الوثائق",
     " لوحة التحكم",
     "الإعدادات",
   ];
@@ -61,8 +64,10 @@ class JobseekerProfileScreen extends StatelessWidget {
       case 2:
         return Icons.business;
       case 3:
-        return Icons.dashboard_outlined;
+        return Icons.description_outlined;
       case 4:
+        return Icons.dashboard_outlined;
+      case 5:
         return Icons.settings_outlined;
       default:
         return Icons.circle;
@@ -78,8 +83,9 @@ class JobseekerProfileScreen extends StatelessWidget {
             case 0: return UserProfileScreen();
             case 1: return SavedJobsScreen();
             case 2: return FollowedCompaniesScreen();
-            case 3: return JobSeekerDashboard();
-            case 4: return SettingScreen();
+            case 3: return JobseekerDocumentsScreen();
+            case 4: return JobSeekerDashboard();
+            case 5: return SettingScreen();
             default:
                  return resume.JobSeekerProfileScreen();
         }

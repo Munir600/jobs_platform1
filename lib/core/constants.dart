@@ -42,9 +42,11 @@ class ApiEndpoints {
   static const String similarJobs = '/api/jobs/{job_id}/similar/';
   static const String jobCategories = '/api/jobs/categories/';
   static const String jobStatistics = '/api/jobs/statistics/';
+
   //jobs_alerts
   static const String jobAlerts = '/api/jobs/alerts/';
   static const String jobAlertDetail = '/api/jobs/alerts/{id}/';
+
   // Companies
   static const String companies = '/api/companies/?';
   static const String myCompanies = '/api/companies/my-companies/';
@@ -75,13 +77,16 @@ class ApiEndpoints {
   static const String markApplicationViewed = '/api/applications/{application_id}/mark-viewed/';
   static const String sendApplicationMessage = '/api/applications/{application_id}/messages/create/';
   static const String applicationStatistics = '/api/applications/statistics/';
+
   // interviews
   static const String interviews = '/api/applications/interviews/';
   static const String createInterview = '/api/applications/interviews/create/';
   static const String interviewDetail = '/api/applications/interviews/{id}/';
 
+  // Documents
+  static const String documents = '/api/accounts/profile/documents/';
+  static const String documentDetail = '/api/accounts/profile/documents/{id}/';
 }
-
 class AppEnums {
   // المدن
   static const Map<String, String> cities = {
@@ -158,5 +163,18 @@ class AppEnums {
     'master': 'ماجستير',
     'phd': 'دكتوراه',
     'any': 'غير محدد',
+  };
+  static const Map<String, String> documentType = {
+    'certificate': 'شهادة أكاديمية',
+    'training': 'شهادة دورة تدريبية',
+    'project': 'مشروع',
+    'recommendation': ' خطاب توصية',
+    'award': 'جائزة أو تكريم',
+    'other': 'أخرى',
+  };
+  static const Map<String, String> visibility = {
+    'public': 'عام',
+    'private': 'خاص',
+    'employers_only': 'أصحاب العمل فقط',
   };
 }
