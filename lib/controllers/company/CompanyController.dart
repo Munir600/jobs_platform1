@@ -155,7 +155,7 @@ class CompanyController extends GetxController {
       
       // Update pagination metadata
       totalMyCompaniesCount.value = response.count ?? 0;
-      totalMyCompaniesPages.value = (totalMyCompaniesCount.value / pageSize).ceil();
+      //totalMyCompaniesPages.value = (totalMyCompaniesCount.value / pageSize).ceil();
       
       print('CompanyController: Fetched ${myCompanies.length} companies');
       for( var company in myCompanies){

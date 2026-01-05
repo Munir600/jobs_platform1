@@ -24,8 +24,9 @@ class JobseekerDocumentService {
     final response = await _apiClient.get(url, headers: headers);
     print('the response load listDocuments status: ${response.statusCode}');
     print('the response load listDocuments body: ${response.body}');
-    if (response.statusCode == 500){
-
+    if (response.statusCode == 500 && response.body.contains('FileNotFoundError')) {
+      print('Handling FileNotFoundError 500 as empty list');
+      return DocumentsList(results: []);
     }
     if (response.statusCode == 200 || response.statusCode == 201) {
       try {
@@ -90,10 +91,11 @@ class JobseekerDocumentService {
         };
       } catch (e) {
         print('Error parsing createDocument response: $e');
-        throw Exception('عذراً، حدث خطأ في معالجة بيانات الوثيقة المضافة.');
+        throw Exception(response.body);
       }
     } else {
-      throw Exception(_handleErrorResponse(response));
+      print('the error createDocument bodyaaaaaaaa: ${response.body}');
+      throw Exception(response.body);
     }
   }
 
@@ -157,51 +159,13 @@ class JobseekerDocumentService {
         };
       } catch (e) {
         print('Error parsing update response: $e');
-        throw Exception('عذراً، حدث خطأ في معالجة البيانات المحدثة.');
+        throw Exception(response.body);
       }
     } else {
-      throw Exception(_handleErrorResponse(response));
+      print('the error _update body ssss: ${response.body}');
+      throw Exception(response.body);
     }
   }
-
-
-  String _handleErrorResponse(http.Response response) {
-    try {
-      if (response.statusCode == 500) {
-        return 'عذراً، حدث خطأ في الخادم (500). يرجى المحاولة لاحقاً.';
-      }
-
-      final dynamic decoded = jsonDecode(response.body);
-
-      if (response.statusCode == 404) {
-        if (decoded is Map && decoded.containsKey('detail')) {
-          if (decoded['detail'] == 'No ProfileDocument matches the given query.') {
-            return 'عذراً، الوثيقة المطلوبة غير موجودة.';
-          }
-          return decoded['detail'].toString();
-        }
-        return 'عذراً، المورد المطلوب غير موجود (404).';
-      }
-
-      if (decoded is Map && decoded.isNotEmpty) {
-        if (decoded.containsKey('detail')) return decoded['detail'].toString();
-        if (decoded.containsKey('message')) return decoded['message'].toString();
-        
-        final firstValue = decoded.values.first;
-        if (firstValue is List && firstValue.isNotEmpty) {
-           return firstValue[0].toString();
-        }
-        return firstValue.toString();
-      }
-      
-      if (decoded is List && decoded.isNotEmpty) {
-        return decoded[0].toString();
-      }
-    } catch (_) {}
-    return 'حدث خطأ غير متوقع: ${response.statusCode}';
-  }
-
-
 
 
   Future<bool> deleteDocument(int id) async {

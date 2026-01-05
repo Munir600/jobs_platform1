@@ -7,7 +7,6 @@ import '../../companies/FollowedCompaniesScreen.dart';
 import '../user_profile_screen.dart';
 import 'JobSeekerProfileScreen.dart' as resume;
 import 'dashboard.dart';
-import 'dashboard.dart';
 import 'setting.dart';
 import 'JobseekerDocumentsScreen.dart';
 
@@ -19,10 +18,10 @@ class JobseekerProfileScreen extends StatelessWidget {
 
   final List<String> _titles = [
     " تعديـل الملف الشخصي",
-    " الوظائف المحفوظة",
-    "الشركات المتابعة",
-    "الوثائق",
     " لوحة التحكم",
+    "الوثائق",
+    "الشركات المتابعة",
+    " الوظائف المحفوظة",
     "الإعدادات",
   ];
 
@@ -81,10 +80,10 @@ class JobseekerProfileScreen extends StatelessWidget {
       body: Obx(() {
         switch(_navController.jobseekerIndex.value) {
             case 0: return UserProfileScreen();
-            case 1: return SavedJobsScreen();
-            case 2: return FollowedCompaniesScreen();
-            case 3: return JobseekerDocumentsScreen();
-            case 4: return JobSeekerDashboard();
+            case 1: return JobSeekerDashboard();
+            case 2: return JobseekerDocumentsScreen();
+            case 3: return FollowedCompaniesScreen();
+            case 4: return SavedJobsScreen();
             case 5: return SettingScreen();
             default:
                  return resume.JobSeekerProfileScreen();

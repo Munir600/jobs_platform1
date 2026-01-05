@@ -40,19 +40,3 @@ enum DocumentVisibility {
   }
 }
 
-// class AppEnums {
-//   static const Map<String, String> documentType = {
-//     'certificate': 'شهادة أكاديمية',
-//     'training': 'شهادة دورة تدريبية',
-//     'project': 'مشروع',
-//     'recommendation': 'خطاب توصية',
-//     'award': 'جائزة أو تكريم',
-//     'other': 'أخرى',
-//   };
-//
-//   static const Map<String, String> visibility = {
-//     'public': 'عام',
-//     'private': 'خاص',
-//     'employers_only': 'أصحاب العمل فقط',
-//   };
-// }

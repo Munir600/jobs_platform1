@@ -113,7 +113,7 @@ class DocumentController extends GetxController {
 
     } catch (e) {
       print('Error adding document: $e');
-      AppErrorHandler.showErrorSnack(e.toString().replaceAll('Exception: ', ''));
+      AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -151,11 +151,14 @@ class DocumentController extends GetxController {
         documents[index] = updatedDoc;
       }
       AppErrorHandler.showSuccessSnack(serverMessage);
+      loadDocuments();
       return true;
 
     } catch (e) {
-      print('Error updating document: $e');
-      AppErrorHandler.showErrorSnack(e.toString().replaceAll('Exception: ', ''));
+      print('Error updating document 55555: $e');
+      final errorMessage = e.toString().replaceAll('Exception: ', '');
+      print('Error message errorMessage is : $errorMessage');
+      AppErrorHandler.showErrorSnack(errorMessage);
       return false;
     } finally {
       isLoading.value = false;

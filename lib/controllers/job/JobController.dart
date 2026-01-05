@@ -80,6 +80,7 @@ class JobController extends GetxController {
     super.onReady();
     loadJobs();
     loadMyJobs();
+    loadBookmarks();
   }
 
   @override
@@ -332,7 +333,7 @@ class JobController extends GetxController {
       print('the Savedjobs count is : ${Savedjobs.length}');
       // Update pagination metadata
       totalBookmarksCount.value = response.count ?? 0;
-      totalBookmarksPages.value = (totalBookmarksCount.value / pageSize).ceil();
+     // totalBookmarksPages.value = (totalBookmarksCount.value / pageSize).ceil();
       if (page != null) {
         currentBookmarksPage.value = page;
       }

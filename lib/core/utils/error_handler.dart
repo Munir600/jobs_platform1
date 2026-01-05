@@ -24,6 +24,9 @@ class AppErrorHandler {
     else if (error.toString().contains('رمز غير صحيح')) {
       return "قم بتسجيل الدخول مرة اخرى";
     }
+    else if (error.toString().contains('الوثيقة المطلوبة غير موجودة')) {
+      return "عذراً، الوثيقة المطلوبة غير موجودة.";
+    }
     try {
       final String errorStr = error.toString();
       if (errorStr.contains('SocketException') ||
@@ -89,8 +92,8 @@ class AppErrorHandler {
         messages.addAll(_extractMessages(data['detail']));
       } else if (data.containsKey('message')) {
          messages.addAll(_extractMessages(data['message']));
-      } else if (data.containsKey('error')) {
-         messages.addAll(_extractMessages(data['error']));
+      } else if (data.containsKey('file')) {
+         messages.addAll(_extractMessages(data['file']));
       } else if (data.containsKey('data')) {
          // Often APIs wrap errors in a 'data' field
          messages.addAll(_extractMessages(data['data']));

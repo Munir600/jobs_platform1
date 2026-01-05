@@ -51,15 +51,15 @@ class DocumentDetail {
       title: data["title"] ?? '',
       description: data["description"],
       file: data["file"] ?? '',
-      fileUrl: data["file_url"] ?? '',
+      fileUrl: data["file_url"] ?? data["file"] ?? '',
       fileSize: data["file_size"]?.toString() ?? '0 B',
-      fileName: data["file_name"] ?? '',
+      fileName: data["file_name"] ?? (data["file"] != null ? data["file"].toString().split('/').last : ''),
       issuedBy: data["issued_by"],
-      issueDate: data["issue_date"] == null ? null : DateTime.parse(data["issue_date"]),
+      issueDate: data["issue_date"] == null ? null : DateTime.tryParse(data["issue_date"] ?? ''),
       visibility: data["visibility"],
       viewsCount: data["views_count"] ?? 0,
-      createdAt: data["created_at"] == null ? null : DateTime.parse(data["created_at"]),
-      updatedAt: data["updated_at"] == null ? null : DateTime.parse(data["updated_at"]),
+      createdAt: data["created_at"] == null ? null : DateTime.tryParse(data["created_at"] ?? ''),
+      updatedAt: data["updated_at"] == null ? null : DateTime.tryParse(data["updated_at"] ?? ''),
     );
   }
 

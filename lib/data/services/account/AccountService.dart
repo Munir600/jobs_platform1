@@ -23,11 +23,12 @@ class AccountService {
   Future<ProfileResponse> getProfile() async {
     final headers = await _getHeaders();
     final response = await _apiClient.get(ApiEndpoints.profile, headers: headers);
-
+    print('Get Profile Response in services: ${response.statusCode} : ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final json = jsonDecode(response.body);
       return ProfileResponse.fromJson(json['data']);
     } else {
+      print('Error fetching profile: ${response.statusCode} : ${response.body}');
       throw Exception(response.body);
     }
   }
