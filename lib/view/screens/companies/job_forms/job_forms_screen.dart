@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../controllers/job_forms_controller.dart';
+import '../../../../controllers/company/job_forms_controller.dart';
 import '../../../../data/models/company/job_form.dart';
 import '../../../../config/app_colors.dart';
 import '../../../widgets/common/PaginationControls.dart';
@@ -132,7 +132,7 @@ class JobFormsScreen extends GetView<JobFormsController> {
               ],
             ),
           ),
-          
+
           // List
           Expanded(
             child: Obx(() {
@@ -166,10 +166,10 @@ class JobFormsScreen extends GetView<JobFormsController> {
               );
             }),
           ),
-          
+
           Obx(() => PaginationControls(
             currentPage: controller.currentPage.value,
-            totalPages: (controller.totalCount.value / 10).ceil(), 
+            totalPages: (controller.totalCount.value / 10).ceil(),
             onPageChanged: (page) => controller.fetchJobForms(page: page),
             isLoading: controller.isLoading.value,
           )),

@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import 'package:jobs_platform1/config/app_colors.dart';
 import '../../../../controllers/profile_navigation_controller.dart';
 import '../../companies/MyCompaniesScreen.dart';
+import '../../companies/job_forms/job_forms_screen.dart';
 import '../employer_profile/dashboard.dart';
 import '../employer_profile/setting.dart';
 import '../user_profile_screen.dart';
 import 'EmployerJobManagementScreen.dart';
 import 'employer_dashboard_stats.dart';
-import '../../companies/job_forms/job_forms_screen.dart';
 
 class CompanyProfile extends StatelessWidget {
   CompanyProfile({super.key});

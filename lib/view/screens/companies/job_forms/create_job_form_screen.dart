@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../config/app_colors.dart';
-import '../../../../controllers/job_forms_controller.dart';
+import '../../../../controllers/company/job_forms_controller.dart';
 import '../../../../data/models/company/job_form.dart';
 import '../../../../core/constants.dart';
 
@@ -10,20 +10,11 @@ class CreateJobFormScreen extends GetView<JobFormsController> {
 
   @override
   Widget build(BuildContext context) {
-    // Controller is initialized by the previous screen (JobFormsScreen)
-    
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        // We can determine title by checking if we are editing (internal controller state check logic omitted or just generic)
-        // Or updated controller to expose a property "isEditing"
-        // For simplicity: "نموذج التقديم" or check if nameController has text? 
-        // Better: allow title determination. But distinct "Create"/"Edit" is nice.
-        // Let's rely on if initialForm was passed to initForm inside controller? 
-        // We can't access it easily without public property. 
-        // I'll stick to generic or check nameController.text.isNotEmpty for now as a heuristic, or assume "إدارة النموذج".
         title: const Text('إدارة النموذج', style: TextStyle(color: AppColors.textColor)),
-        backgroundColor: AppColors.accentColor,
+        backgroundColor: AppColors.primaryColor,
         iconTheme: const IconThemeData(color: AppColors.textColor),
         centerTitle: true,
         elevation: 0,
@@ -47,6 +38,30 @@ class CreateJobFormScreen extends GetView<JobFormsController> {
               _buildSectionCard(
                 title: 'معلومات النموذج',
                 children: [
+                  Obx(() {
+                    if (controller.companyController.myCompanies.isEmpty) {
+                       return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: DropdownButtonFormField<int>(
+                        value: controller.selectedCompanyId.value,
+                        decoration: _inputDecoration('اختر الشركة'),
+                        items: controller.companyController.myCompanies.map((company) {
+                          return DropdownMenuItem(
+                            value: company.id,
+                            child: Text(company.name ?? 'شركة غير معروفة'),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            controller.selectedCompanyId.value = val;
+                          }
+                        },
+                        validator: (val) => val == null ? 'يرجى اختيار الشركة' : null,
+                      ),
+                    );
+                  }),
                   TextFormField(
                     controller: controller.nameController,
                     decoration: _inputDecoration('اسم النموذج'),

@@ -40,10 +40,13 @@ class JobFormsService {
   Future<JobForm> getJobForm(int id) async {
     final headers = await _getHeaders();
     final response = await _apiClient.get('${ApiEndpoints.customForm}$id/', headers: headers);
-    
+    print('the response for get forms form is : ${response.body}');
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return JobForm.fromJson(jsonDecode(response.body));
     } else {
+      print('the error for get forms form is : ${response.body}');
+
       throw Exception(response.body);
     }
   }
@@ -55,14 +58,15 @@ class JobFormsService {
       form.toJson(),
       headers: headers,
     );
-
+    print('the response for create form is : ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
       return {
         'data': JobForm.fromJson(data),
-        'message': data['message'] // Extract message if exists
+        'message': data['message']
       };
     } else {
+      print('the error for create form is : ${response.body}');
       throw Exception(jsonDecode(response.body)['detail'] ?? response.body);
     }
   }
@@ -74,6 +78,7 @@ class JobFormsService {
       form.toJson(),
       headers: headers,
     );
+    print('the response for update form is : ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
@@ -82,6 +87,7 @@ class JobFormsService {
         'message': data['message']
       };
     } else {
+      print('the error for update form is : ${response.body}');
       throw Exception(jsonDecode(response.body)['detail'] ?? response.body);
     }
   }
@@ -92,6 +98,7 @@ class JobFormsService {
       '${ApiEndpoints.customForm}$id/',
       headers: headers,
     );
+    print('the response for delete form is : ${response.body}');
 
     if (response.statusCode == 204 || response.statusCode == 200) {
       if (response.body.isNotEmpty) {
@@ -100,6 +107,7 @@ class JobFormsService {
       }
       return null;
     } else {
+      print('the error for delete form is : ${response.body}');
       throw Exception(jsonDecode(response.body)['detail'] ?? response.body);
     }
   }
