@@ -8,6 +8,7 @@ import '../employer_profile/setting.dart';
 import '../user_profile_screen.dart';
 import 'EmployerJobManagementScreen.dart';
 import 'employer_dashboard_stats.dart';
+import '../../companies/job_forms/job_forms_screen.dart';
 
 class CompanyProfile extends StatelessWidget {
   CompanyProfile({super.key});
@@ -20,6 +21,7 @@ class CompanyProfile extends StatelessWidget {
     MyCompaniesScreen(),
     EmployerJobManagementScreen(),
     EmployerDashboard(),
+    JobFormsScreen(),
     SettingScreen(),
   ];
 
@@ -29,6 +31,7 @@ class CompanyProfile extends StatelessWidget {
     " ادارة شركاتي",
     " ادارة الوظائف",
     " ادارة الطلبات والمقابلات ",
+    "ادارة نماذج التقديم",
     " الإعدادات",
   ];
 
@@ -54,6 +57,10 @@ class CompanyProfile extends StatelessWidget {
                       ? Icons.bookmark
                       : i == 3
                       ? Icons.person
+                      : i == 4
+                      ? Icons.folder_shared
+                      : i == 5 
+                      ? Icons.description 
                       : Icons.settings,
                   color: AppColors.primaryColor,
                 ),
