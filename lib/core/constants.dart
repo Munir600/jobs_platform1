@@ -64,6 +64,10 @@ class ApiEndpoints {
   static const String topCompanies = '/api/companies/top/';
   static const String companyStatistics = '/api/companies/statistics/';
 
+  //custom_form
+  static const String customForm = '/api/job-forms/forms/';
+  //static const String customFormDetail = '/api/job-forms/forms/{id}/';
+
 //  Applications
   static const String applications = '/api/applications/';
   static const String myApplications = '/api/applications/my-applications/';
@@ -177,4 +181,33 @@ class AppEnums {
     'private': 'خاص',
     'employers_only': 'أصحاب العمل فقط',
   };
+  static const Map<String, String> status = {
+  'pending' :'قيد المراجعة',
+  'reviewed' :' تمت المراجعة',
+  'shortlisted' :'في القائمة المختصرة',
+  'interview_scheduled' :'تم تحديد موعد المقابلة',
+  'interview_completed' : 'تمت المقابلة',
+  'accepted' :' مقبول',
+  'rejected' : 'مرفوض',
+  'withdrawn' : 'منسحب',
+  'external_redirect' : 'تم التوجيه لتقديم خارجي'
+  };
+  static const Map<String, String> applicationMethod = {
+  'platform':'النظام الافتراضي للمنصة',
+  'custom_form' : 'استبيان مخصص',
+  'template_file': 'قالب ملف',
+  'external_link' : 'رابط خارجي',
+  'email' :'بريد الشركة'
+  };
+  static const Map<String, String> questionType = {
+  'text' : 'نص قصير',
+  'textarea' : 'نص طويل',
+  'number' :'رقم',
+  'select' : 'خيار من متعدد',
+  'checkbox' : 'خانة اختيار',
+  'file' : 'ملف مرفق',
+  'date' : 'تاريخ'
+  };
+
+
 }

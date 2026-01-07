@@ -66,7 +66,7 @@ class _EmployerApplicationsScreenState extends State<EmployerApplicationsScreen>
       }
 
       return RefreshIndicator(
-        onRefresh: controller.loadJobApplications, // defaults to jobId=null -> load all
+        onRefresh: controller.loadJobApplications,
         color: AppColors.primaryColor,
         child: ListView.builder(
           controller: _scrollController,

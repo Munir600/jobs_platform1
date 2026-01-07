@@ -59,13 +59,13 @@ class JobseekerProfileScreen extends StatelessWidget {
       case 0:
         return Icons.person_outline;
       case 1:
-        return Icons.bookmark_border;
-      case 2:
-        return Icons.business;
-      case 3:
-        return Icons.description_outlined;
-      case 4:
         return Icons.dashboard_outlined;
+      case 2:
+        return Icons.description_outlined;
+      case 3:
+        return Icons.business;
+      case 4:
+        return Icons.bookmark_border;
       case 5:
         return Icons.settings_outlined;
       default:

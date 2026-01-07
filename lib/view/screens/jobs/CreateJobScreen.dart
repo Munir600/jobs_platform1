@@ -63,12 +63,9 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
   }
 
   Future<void> _loadMyCompanies() async {
-    // Only load if empty to avoid redundant calls, or force refresh if needed
     if (companyController.myCompanies.isEmpty) {
       await companyController.getMyCompanies(showLoading: false);
     }
-    
-    // Set initial company if creating new job and companies exist
     if (widget.job == null && companyController.myCompanies.isNotEmpty) {
       if (mounted && selectedCompanyId == null) {
         setState(() {

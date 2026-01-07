@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../../../config/app_colors.dart';
 import '../../../../controllers/application/ApplicationController.dart';
 import '../../../../controllers/job/JobController.dart';
-import '../../applications/MyApplicationsScreen.dart';
 import '../../interview/InterviewListScreen.dart';
 import 'EmployerApplicationsScreen.dart';
 

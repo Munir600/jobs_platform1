@@ -64,7 +64,6 @@ class MessagesScreen extends GetView<ApplicationController> {
         return RefreshIndicator(
           onRefresh: () async {
             if (isEmployer) {
-              await controller.loadJobApplications();
             } else {
               await controller.loadMyApplications();
             }

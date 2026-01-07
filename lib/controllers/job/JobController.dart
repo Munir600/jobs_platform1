@@ -182,17 +182,19 @@ class JobController extends GetxController {
   }
 
   Future<JobDetail?> getJob(String slug, {bool showLoading = true}) async {
-   try {
-      if (showLoading) isLoading.value = true;
+     try {
+          if (showLoading) isLoading.value = true;
 
-      final job = await _jobService.getJob(slug);
-      return job;
-    } catch (e) {
-    // AppErrorHandler.showErrorSnack(e);
-      return null;
-    } finally {
-      if (showLoading) isLoading.value = false;
-    }
+        final job = await _jobService.getJob(slug);
+        return job;
+     }
+     catch (e) {
+         // AppErrorHandler.showErrorSnack(e);
+         return null;
+     }
+     finally {
+         if (showLoading) isLoading.value = false;
+     }
   }
 
   Future<void> loadJobDetail(String slug) async {

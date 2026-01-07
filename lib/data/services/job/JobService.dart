@@ -12,7 +12,6 @@ import '../../models/job/JobDetail.dart';
 import '../../models/job/JobCreate.dart';
 import '../../models/job/JobAlert.dart';
 import '../../models/job/PaginatedJobListList.dart';
-import '../../models/job/PaginatedJobCategoryList.dart';
 import '../../models/job/PaginatedJobAlertList.dart';
 import '../../models/job/PaginatedJobBookmarkList.dart';
 import '../../models/job/jobs_statistics.dart';

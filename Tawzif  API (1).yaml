@@ -801,6 +801,12 @@ paths:
         description: رقم الصفحة ضمن النتائج المقسمة.
         schema:
           type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
       - in: query
         name: status
         schema:
@@ -968,6 +974,12 @@ paths:
         description: رقم الصفحة ضمن النتائج المقسمة.
         schema:
           type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
       - name: search
         required: false
         in: query
@@ -981,6 +993,7 @@ paths:
           title: الحالة
           enum:
           - accepted
+          - external_redirect
           - interview_completed
           - interview_scheduled
           - pending
@@ -997,6 +1010,7 @@ paths:
           * `accepted` - مقبول
           * `rejected` - مرفوض
           * `withdrawn` - منسحب
+          * `external_redirect` - تم التوجيه لتقديم خارجي
       tags:
       - applications
       security:
@@ -1099,6 +1113,7 @@ paths:
           title: الحالة
           enum:
           - accepted
+          - external_redirect
           - interview_completed
           - interview_scheduled
           - pending
@@ -1115,6 +1130,7 @@ paths:
           * `accepted` - مقبول
           * `rejected` - مرفوض
           * `withdrawn` - منسحب
+          * `external_redirect` - تم التوجيه لتقديم خارجي
       tags:
       - applications
       security:
@@ -1595,6 +1611,170 @@ paths:
       - {}
       responses:
         '200':
+          description: No response body
+  /api/job-forms/forms/:
+    get:
+      operationId: job_forms_forms_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - job-forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobFormList'
+          description: ''
+    post:
+      operationId: job_forms_forms_create
+      tags:
+      - job-forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobForm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JobForm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobForm'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobForm'
+          description: ''
+  /api/job-forms/forms/{id}/:
+    get:
+      operationId: job_forms_forms_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+        required: true
+      tags:
+      - job-forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobForm'
+          description: ''
+    put:
+      operationId: job_forms_forms_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+        required: true
+      tags:
+      - job-forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobForm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JobForm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobForm'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobForm'
+          description: ''
+    patch:
+      operationId: job_forms_forms_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+        required: true
+      tags:
+      - job-forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedJobForm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedJobForm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedJobForm'
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobForm'
+          description: ''
+    delete:
+      operationId: job_forms_forms_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+        required: true
+      tags:
+      - job-forms
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
           description: No response body
   /api/jobs/:
     get:
@@ -2139,6 +2319,105 @@ paths:
       operationId: jobs_my_jobs_list
       description: وظائفي المنشورة
       parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: city
+        schema:
+          type: string
+          title: المدينة
+          enum:
+          - abyan
+          - aden
+          - al_bayda
+          - al_hudaydah
+          - al_jawf
+          - al_maharah
+          - al_mahwit
+          - amran
+          - dhamar
+          - hadhramaut
+          - hajjah
+          - ibb
+          - lahij
+          - marib
+          - raymah
+          - remote
+          - saada
+          - sanaa
+          - shabwah
+          - socotra
+          - taiz
+        description: |-
+          * `sanaa` - صنعاء
+          * `aden` - عدن
+          * `abyan` - أبين
+          * `amran` - عمران
+          * `al_bayda` - البيضاء
+          * `al_hudaydah` - الحديدة
+          * `al_jawf` - الجوف
+          * `al_maharah` - المهرة
+          * `al_mahwit` - المحويت
+          * `dhamar` - ذمار
+          * `hadhramaut` - حضرموت
+          * `hajjah` - حجة
+          * `ibb` - إب
+          * `lahij` - لحج
+          * `marib` - مأرب
+          * `raymah` - ريمة
+          * `saada` - صعدة
+          * `shabwah` - شبوة
+          * `socotra` - سقطرى
+          * `taiz` - تعز
+          * `remote` - عمل عن بُعد
+      - in: query
+        name: experience_level
+        schema:
+          type: string
+          title: مستوى الخبرة
+          enum:
+          - entry
+          - expert
+          - junior
+          - mid
+          - senior
+        description: |-
+          * `entry` - مبتدئ (0-2 سنة)
+          * `junior` - مبتدئ متقدم (2-4 سنوات)
+          * `mid` - متوسط (4-7 سنوات)
+          * `senior` - خبير (7-10 سنوات)
+          * `expert` - خبير متقدم (10+ سنوات)
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_featured
+        schema:
+          type: boolean
+      - in: query
+        name: is_urgent
+        schema:
+          type: boolean
+      - in: query
+        name: job_type
+        schema:
+          type: string
+          title: نوع الوظيفة
+          enum:
+          - contract
+          - freelance
+          - full_time
+          - internship
+          - part_time
+        description: |-
+          * `full_time` - دوام كامل
+          * `part_time` - دوام جزئي
+          * `contract` - عقد مؤقت
+          * `freelance` - عمل حر
+          * `internship` - تدريب
       - name: ordering
         required: false
         in: query
@@ -2149,6 +2428,12 @@ paths:
         required: false
         in: query
         description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
         schema:
           type: integer
       - name: search
@@ -2361,6 +2646,46 @@ components:
       - sender
       - sender_name
       - sent_at
+    ApplicationMethodEnum:
+      enum:
+      - platform
+      - custom_form
+      - template_file
+      - external_link
+      - email
+      type: string
+      description: |-
+        * `platform` - النظام الافتراضي للمنصة
+        * `custom_form` - استبيان مخصص
+        * `template_file` - قالب ملف
+        * `external_link` - رابط خارجي
+        * `email` - بريد الشركة
+    ApplicationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question:
+          type: integer
+          title: السؤال
+        question_details:
+          allOf:
+          - $ref: '#/components/schemas/JobFormQuestion'
+          readOnly: true
+        answer_text:
+          type: string
+          nullable: true
+          title: الإجابة النصية
+        answer_file:
+          type: string
+          format: uri
+          nullable: true
+          title: الملف المرفق
+      required:
+      - id
+      - question
+      - question_details
     BlankEnum:
       enum:
       - ''
@@ -3069,7 +3394,7 @@ components:
           title: تاريخ التوفر
         status:
           allOf:
-          - $ref: '#/components/schemas/Status749Enum'
+          - $ref: '#/components/schemas/Status61cEnum'
           title: الحالة
         status_display:
           type: string
@@ -3111,6 +3436,11 @@ components:
         documents_count:
           type: string
           readOnly: true
+        filled_template:
+          type: string
+          format: uri
+          nullable: true
+          title: الملف المعبأ
       required:
       - applicant
       - applied_at
@@ -3159,11 +3489,20 @@ components:
           type: string
           nullable: true
           title: ملاحظات
+        filled_template:
+          type: string
+          format: uri
+          nullable: true
+          title: الملف المعبأ
+        responses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationResponse'
       required:
       - job
     JobApplicationDetail:
       type: object
-      description: Serializer مفصل لطلب التوظيف يتضمن المرفقات
+      description: Serializer مفصل لطلب التوظيف يتضمن المرفقات والإجابات المخصصة
       properties:
         id:
           type: integer
@@ -3204,7 +3543,7 @@ components:
           title: تاريخ التوفر
         status:
           allOf:
-          - $ref: '#/components/schemas/Status749Enum'
+          - $ref: '#/components/schemas/Status61cEnum'
           title: الحالة
         status_display:
           type: string
@@ -3246,8 +3585,18 @@ components:
         documents_count:
           type: string
           readOnly: true
+        filled_template:
+          type: string
+          format: uri
+          nullable: true
+          title: الملف المعبأ
         documents:
           type: string
+          readOnly: true
+        responses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationResponse'
           readOnly: true
       required:
       - applicant
@@ -3259,6 +3608,7 @@ components:
       - is_viewed
       - job
       - rating
+      - responses
       - status_display
       - updated_at
       - viewed_at
@@ -3267,7 +3617,7 @@ components:
       properties:
         status:
           allOf:
-          - $ref: '#/components/schemas/Status749Enum'
+          - $ref: '#/components/schemas/Status61cEnum'
           title: الحالة
         employer_notes:
           type: string
@@ -3421,7 +3771,41 @@ components:
         is_active:
           type: boolean
           title: نشط
+        application_method:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationMethodEnum'
+          title: طريقة التقديم
+        custom_form:
+          type: integer
+          nullable: true
+          title: الاستبيان المخصص
+        application_template:
+          type: string
+          format: uri
+          nullable: true
+          title: قالب طلب التوظيف
+        external_application_url:
+          type: string
+          format: uri
+          nullable: true
+          title: رابط التقديم الخارجي
+          maxLength: 200
+        application_email:
+          type: string
+          format: email
+          nullable: true
+          title: بريد التقديم
+          maxLength: 254
+        is_ai_summary_enabled:
+          type: boolean
+          title: تفعيل تلخيص الذكاء الاصطناعي
+        ai_summary:
+          type: string
+          readOnly: true
+          nullable: true
+          title: ملخص الذكاء الاصطناعي
       required:
+      - ai_summary
       - city
       - company
       - description
@@ -3442,6 +3826,10 @@ components:
         category:
           allOf:
           - $ref: '#/components/schemas/JobCategory'
+          readOnly: true
+        custom_form:
+          allOf:
+          - $ref: '#/components/schemas/JobForm'
           readOnly: true
         is_bookmarked:
           type: string
@@ -3526,9 +3914,37 @@ components:
           nullable: true
           title: هاتف التواصل
           maxLength: 20
+        application_method:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationMethodEnum'
+          title: طريقة التقديم
+        application_template:
+          type: string
+          format: uri
+          nullable: true
+          title: قالب طلب التوظيف
+        external_application_url:
+          type: string
+          format: uri
+          nullable: true
+          title: رابط التقديم الخارجي
+          maxLength: 200
+        application_email:
+          type: string
+          format: email
+          nullable: true
+          title: بريد التقديم
+          maxLength: 254
         is_active:
           type: boolean
           title: نشط
+        is_ai_summary_enabled:
+          type: boolean
+          title: تفعيل تلخيص الذكاء الاصطناعي
+        ai_summary:
+          type: string
+          nullable: true
+          title: ملخص الذكاء الاصطناعي
         is_featured:
           type: boolean
           title: مميز
@@ -3559,6 +3975,7 @@ components:
       - city
       - company
       - created_at
+      - custom_form
       - description
       - experience_level
       - id
@@ -3570,6 +3987,78 @@ components:
       - slug
       - title
       - updated_at
+    JobForm:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        company:
+          type: integer
+          title: الشركة
+        name:
+          type: string
+          title: اسم النموذج
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          title: وصف النموذج
+        is_active:
+          type: boolean
+          title: نشط
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobFormQuestion'
+        questions_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: تاريخ الإنشاء
+      required:
+      - created_at
+      - id
+      - name
+      - questions_count
+    JobFormQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        label:
+          type: string
+          title: نص السؤال
+          maxLength: 255
+        help_text:
+          type: string
+          nullable: true
+          title: نص مساعد
+          maxLength: 255
+        question_type:
+          allOf:
+          - $ref: '#/components/schemas/QuestionTypeEnum'
+          title: نوع السؤال
+        required:
+          type: boolean
+          title: مطلوب
+        options:
+          type: string
+          nullable: true
+          title: الخيارات
+          description: أدخل الخيارات مفصولة بفاصلة (فقط لنوع "خيار من متعدد")
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: الترتيب
+      required:
+      - id
+      - label
     JobList:
       type: object
       properties:
@@ -3656,12 +4145,45 @@ components:
           format: date-time
           readOnly: true
           title: تاريخ الإنشاء
+        application_method:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationMethodEnum'
+          title: طريقة التقديم
+        custom_form:
+          allOf:
+          - $ref: '#/components/schemas/JobForm'
+          readOnly: true
+        application_template:
+          type: string
+          format: uri
+          nullable: true
+          title: قالب طلب التوظيف
+        external_application_url:
+          type: string
+          format: uri
+          nullable: true
+          title: رابط التقديم الخارجي
+          maxLength: 200
+        application_email:
+          type: string
+          format: email
+          nullable: true
+          title: بريد التقديم
+          maxLength: 254
+        is_ai_summary_enabled:
+          type: boolean
+          title: تفعيل تلخيص الذكاء الاصطناعي
+        ai_summary:
+          type: string
+          nullable: true
+          title: ملخص الذكاء الاصطناعي
       required:
       - applications_count
       - category
       - city
       - company
       - created_at
+      - custom_form
       - description
       - experience_level
       - id
@@ -3945,6 +4467,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/JobBookmark'
+    PaginatedJobFormList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobForm'
     PaginatedJobListList:
       type: object
       required:
@@ -4242,7 +4787,7 @@ components:
       properties:
         status:
           allOf:
-          - $ref: '#/components/schemas/Status749Enum'
+          - $ref: '#/components/schemas/Status61cEnum'
           title: الحالة
         employer_notes:
           type: string
@@ -4342,6 +4887,71 @@ components:
         is_active:
           type: boolean
           title: نشط
+        application_method:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationMethodEnum'
+          title: طريقة التقديم
+        custom_form:
+          type: integer
+          nullable: true
+          title: الاستبيان المخصص
+        application_template:
+          type: string
+          format: uri
+          nullable: true
+          title: قالب طلب التوظيف
+        external_application_url:
+          type: string
+          format: uri
+          nullable: true
+          title: رابط التقديم الخارجي
+          maxLength: 200
+        application_email:
+          type: string
+          format: email
+          nullable: true
+          title: بريد التقديم
+          maxLength: 254
+        is_ai_summary_enabled:
+          type: boolean
+          title: تفعيل تلخيص الذكاء الاصطناعي
+        ai_summary:
+          type: string
+          readOnly: true
+          nullable: true
+          title: ملخص الذكاء الاصطناعي
+    PatchedJobForm:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        company:
+          type: integer
+          title: الشركة
+        name:
+          type: string
+          title: اسم النموذج
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+          title: وصف النموذج
+        is_active:
+          type: boolean
+          title: نشط
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobFormQuestion'
+        questions_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: تاريخ الإنشاء
     PatchedProfileDocumentUpdate:
       type: object
       description: Serializer لتحديث وثيقة موجودة
@@ -4535,6 +5145,24 @@ components:
       - document_type
       - file
       - title
+    QuestionTypeEnum:
+      enum:
+      - text
+      - textarea
+      - number
+      - select
+      - checkbox
+      - file
+      - date
+      type: string
+      description: |-
+        * `text` - نص قصير
+        * `textarea` - نص طويل
+        * `number` - رقم
+        * `select` - خيار من متعدد
+        * `checkbox` - خانة اختيار
+        * `file` - ملف مرفق
+        * `date` - تاريخ
     RatingEnum:
       enum:
       - 1
@@ -4596,7 +5224,7 @@ components:
         * `medium` - متوسطة (51-200 موظف)
         * `large` - كبيرة (201-1000 موظف)
         * `enterprise` - مؤسسة (1000+ موظف)
-    Status749Enum:
+    Status61cEnum:
       enum:
       - pending
       - reviewed
@@ -4606,6 +5234,7 @@ components:
       - accepted
       - rejected
       - withdrawn
+      - external_redirect
       type: string
       description: |-
         * `pending` - قيد المراجعة
@@ -4616,6 +5245,7 @@ components:
         * `accepted` - مقبول
         * `rejected` - مرفوض
         * `withdrawn` - منسحب
+        * `external_redirect` - تم التوجيه لتقديم خارجي
     User:
       type: object
       properties:
