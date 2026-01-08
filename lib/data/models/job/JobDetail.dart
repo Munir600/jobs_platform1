@@ -1,4 +1,5 @@
 import '../company/Company.dart';
+import '../company/job_form.dart';
 import 'JobCategory.dart';
 
 class JobDetail {
@@ -32,6 +33,13 @@ class JobDetail {
   final String? createdAt;
   final String? updatedAt;
   final int postedBy;
+  final String? applicationMethod;
+  final JobForm? customForm;
+  final String? applicationTemplate;
+  final String? externalApplicationUrl;
+  final String? applicationEmail;
+  final bool? isAiSummaryEnabled;
+  final String? aiSummary;
 
   JobDetail({
     this.id,
@@ -64,6 +72,13 @@ class JobDetail {
     this.createdAt,
     this.updatedAt,
     required this.postedBy,
+    this.applicationMethod,
+    this.customForm,
+    this.applicationTemplate,
+    this.externalApplicationUrl,
+    this.applicationEmail,
+    this.isAiSummaryEnabled,
+    this.aiSummary,
   });
 
   factory JobDetail.fromJson(Map<String, dynamic> json) {
@@ -98,6 +113,13 @@ class JobDetail {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       postedBy: json['posted_by'],
+      applicationMethod: json['application_method'],
+      customForm: json['custom_form'] != null ? JobForm.fromJson(json['custom_form']) : null,
+      applicationTemplate: json['application_template'],
+      externalApplicationUrl: json['external_application_url'],
+      applicationEmail: json['application_email'],
+      isAiSummaryEnabled: json['is_ai_summary_enabled'],
+      aiSummary: json['ai_summary'],
     );
   }
 
@@ -133,6 +155,13 @@ class JobDetail {
       'created_at': createdAt,
       'updated_at': updatedAt,
       'posted_by': postedBy,
+      'application_method': applicationMethod,
+      'custom_form': customForm?.toJson(),
+      'application_template': applicationTemplate,
+      'external_application_url': externalApplicationUrl,
+      'application_email': applicationEmail,
+      'is_ai_summary_enabled': isAiSummaryEnabled,
+      'ai_summary': aiSummary,
     };
   }
 }

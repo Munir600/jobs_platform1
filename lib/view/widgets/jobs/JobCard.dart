@@ -153,12 +153,51 @@ class JobCard extends StatelessWidget {
               const SizedBox(height: 8),
 
               // Description preview
-              if (job.description != null && job.description!.isNotEmpty)
-                Text(
-                  job.description!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.black54),
+              if ((job.isAiSummaryEnabled == true && job.aiSummary != null && job.aiSummary!.isNotEmpty) || (job.description != null && job.description!.isNotEmpty))
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: (job.isAiSummaryEnabled == true && job.aiSummary != null) 
+                        ? Colors.blue.withOpacity(0.05) 
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: (job.isAiSummaryEnabled == true && job.aiSummary != null)
+                        ? Border.all(color: Colors.blue.withOpacity(0.1))
+                        : null,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (job.isAiSummaryEnabled == true && job.aiSummary != null)
+                        Row(
+                          children: [
+                            Icon(Icons.auto_awesome, size: 14, color: Colors.blue[700]),
+                            const SizedBox(width: 4),
+                            Text(
+                              'ملخص الذكاء الاصطناعي',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 4),
+                      Text(
+                        (job.isAiSummaryEnabled == true && job.aiSummary != null)
+                            ? job.aiSummary!
+                            : job.description!,
+                        style: TextStyle(
+                          color: (job.isAiSummaryEnabled == true && job.aiSummary != null) 
+                              ? Colors.blue[900] 
+                              : Colors.black54,
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               const SizedBox(height: 8),
               if (job.requirements != null && job.requirements!.isNotEmpty)
@@ -183,7 +222,11 @@ class JobCard extends StatelessWidget {
                           ? null
                           : (onApply ?? () {
                         if (job.id != null) {
-                          Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
+                          if (job.applicationMethod != null && job.applicationMethod != 'platform') {
+                             Get.toNamed(AppRoutes.jobDetails, arguments: job.slug);
+                          } else {
+                             Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
+                          }
                         }
                       }),
                       style: ElevatedButton.styleFrom(

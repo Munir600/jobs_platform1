@@ -11,8 +11,7 @@ paths:
       operationId: root_retrieve
       description: API Root - معلومات عن API
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -35,8 +34,7 @@ paths:
               $ref: '#/components/schemas/PasswordChange'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: تم تغيير كلمة المرور بنجاح — new token returned
@@ -60,8 +58,7 @@ paths:
               $ref: '#/components/schemas/UserLogin'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -76,8 +73,7 @@ paths:
       tags:
       - accounts
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: Logout successful
@@ -99,8 +95,7 @@ paths:
               $ref: '#/components/schemas/ResetPasswordConfirm'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -123,8 +118,7 @@ paths:
               $ref: '#/components/schemas/RequestPasswordReset'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -135,8 +129,7 @@ paths:
       tags:
       - accounts
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -170,8 +163,7 @@ paths:
       tags:
       - accounts
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -197,8 +189,7 @@ paths:
               $ref: '#/components/schemas/ProfileDocumentCreate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -214,14 +205,12 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+          type: string
         required: true
       tags:
       - accounts
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -236,8 +225,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+          type: string
         required: true
       tags:
       - accounts
@@ -254,8 +242,7 @@ paths:
               $ref: '#/components/schemas/ProfileDocumentUpdate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -270,8 +257,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+          type: string
         required: true
       tags:
       - accounts
@@ -287,8 +273,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedProfileDocumentUpdate'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -303,14 +288,12 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا وثيقة ملف شخصي.
+          type: string
         required: true
       tags:
       - accounts
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '204':
           description: No response body
@@ -332,8 +315,7 @@ paths:
               $ref: '#/components/schemas/EmployerProfile'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -358,8 +340,7 @@ paths:
             schema:
               $ref: '#/components/schemas/JobSeekerProfile'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -384,8 +365,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UserProfileUpdate'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -411,8 +391,7 @@ paths:
               $ref: '#/components/schemas/UserRegistration'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '201':
@@ -439,8 +418,7 @@ paths:
               $ref: '#/components/schemas/ResendVerificationCode'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -470,8 +448,7 @@ paths:
       tags:
       - accounts
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -491,8 +468,7 @@ paths:
       tags:
       - accounts
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -518,8 +494,7 @@ paths:
               $ref: '#/components/schemas/PhoneVerification'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -537,8 +512,7 @@ paths:
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: No response body
@@ -573,8 +547,7 @@ paths:
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -607,8 +580,7 @@ paths:
               $ref: '#/components/schemas/ApplicationMessage'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -629,8 +601,7 @@ paths:
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: No response body
@@ -647,8 +618,7 @@ paths:
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -680,8 +650,7 @@ paths:
             schema:
               $ref: '#/components/schemas/JobApplicationUpdate'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -712,8 +681,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedJobApplicationUpdate'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -740,8 +708,7 @@ paths:
               $ref: '#/components/schemas/JobApplicationCreate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -762,8 +729,7 @@ paths:
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: No response body
@@ -772,23 +738,6 @@ paths:
       operationId: applications_interviews_list
       description: قائمة المقابلات
       parameters:
-      - in: query
-        name: interview_type
-        schema:
-          type: string
-          title: نوع المقابلة
-          enum:
-          - hr
-          - in_person
-          - phone
-          - technical
-          - video
-        description: |-
-          * `phone` - مقابلة هاتفية
-          * `video` - مقابلة فيديو
-          * `in_person` - مقابلة شخصية
-          * `technical` - مقابلة تقنية
-          * `hr` - مقابلة موارد بشرية
       - name: ordering
         required: false
         in: query
@@ -807,26 +756,10 @@ paths:
         description: عدد النتائج التي يجب إرجاعها في كل صفحة.
         schema:
           type: integer
-      - in: query
-        name: status
-        schema:
-          type: string
-          title: الحالة
-          enum:
-          - cancelled
-          - completed
-          - rescheduled
-          - scheduled
-        description: |-
-          * `scheduled` - مجدولة
-          * `completed` - مكتملة
-          * `cancelled` - ملغية
-          * `rescheduled` - معاد جدولتها
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -847,8 +780,7 @@ paths:
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -880,8 +812,7 @@ paths:
               $ref: '#/components/schemas/Interview'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -912,8 +843,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedInterview'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -940,8 +870,7 @@ paths:
               $ref: '#/components/schemas/InterviewCreate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -954,14 +883,6 @@ paths:
       operationId: applications_job_applications_list
       description: طلبات التوظيف للوظائف التي أنشرها
       parameters:
-      - in: query
-        name: is_viewed
-        schema:
-          type: boolean
-      - in: query
-        name: job
-        schema:
-          type: integer
       - name: ordering
         required: false
         in: query
@@ -986,36 +907,10 @@ paths:
         description: مصطلح البحث.
         schema:
           type: string
-      - in: query
-        name: status
-        schema:
-          type: string
-          title: الحالة
-          enum:
-          - accepted
-          - external_redirect
-          - interview_completed
-          - interview_scheduled
-          - pending
-          - rejected
-          - reviewed
-          - shortlisted
-          - withdrawn
-        description: |-
-          * `pending` - قيد المراجعة
-          * `reviewed` - تمت المراجعة
-          * `shortlisted` - في القائمة المختصرة
-          * `interview_scheduled` - تم تحديد موعد المقابلة
-          * `interview_completed` - تمت المقابلة
-          * `accepted` - مقبول
-          * `rejected` - مرفوض
-          * `withdrawn` - منسحب
-          * `external_redirect` - تم التوجيه لتقديم خارجي
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1028,72 +923,6 @@ paths:
       operationId: applications_my_applications_list
       description: طلبات التوظيف الخاصة بي
       parameters:
-      - in: query
-        name: job__city
-        schema:
-          type: string
-          title: المدينة
-          enum:
-          - abyan
-          - aden
-          - al_bayda
-          - al_hudaydah
-          - al_jawf
-          - al_maharah
-          - al_mahwit
-          - amran
-          - dhamar
-          - hadhramaut
-          - hajjah
-          - ibb
-          - lahij
-          - marib
-          - raymah
-          - remote
-          - saada
-          - sanaa
-          - shabwah
-          - socotra
-          - taiz
-        description: |-
-          * `sanaa` - صنعاء
-          * `aden` - عدن
-          * `abyan` - أبين
-          * `amran` - عمران
-          * `al_bayda` - البيضاء
-          * `al_hudaydah` - الحديدة
-          * `al_jawf` - الجوف
-          * `al_maharah` - المهرة
-          * `al_mahwit` - المحويت
-          * `dhamar` - ذمار
-          * `hadhramaut` - حضرموت
-          * `hajjah` - حجة
-          * `ibb` - إب
-          * `lahij` - لحج
-          * `marib` - مأرب
-          * `raymah` - ريمة
-          * `saada` - صعدة
-          * `shabwah` - شبوة
-          * `socotra` - سقطرى
-          * `taiz` - تعز
-          * `remote` - عمل عن بُعد
-      - in: query
-        name: job__job_type
-        schema:
-          type: string
-          title: نوع الوظيفة
-          enum:
-          - contract
-          - freelance
-          - full_time
-          - internship
-          - part_time
-        description: |-
-          * `full_time` - دوام كامل
-          * `part_time` - دوام جزئي
-          * `contract` - عقد مؤقت
-          * `freelance` - عمل حر
-          * `internship` - تدريب
       - name: ordering
         required: false
         in: query
@@ -1106,36 +935,10 @@ paths:
         description: رقم الصفحة ضمن النتائج المقسمة.
         schema:
           type: integer
-      - in: query
-        name: status
-        schema:
-          type: string
-          title: الحالة
-          enum:
-          - accepted
-          - external_redirect
-          - interview_completed
-          - interview_scheduled
-          - pending
-          - rejected
-          - reviewed
-          - shortlisted
-          - withdrawn
-        description: |-
-          * `pending` - قيد المراجعة
-          * `reviewed` - تمت المراجعة
-          * `shortlisted` - في القائمة المختصرة
-          * `interview_scheduled` - تم تحديد موعد المقابلة
-          * `interview_completed` - تمت المقابلة
-          * `accepted` - مقبول
-          * `rejected` - مرفوض
-          * `withdrawn` - منسحب
-          * `external_redirect` - تم التوجيه لتقديم خارجي
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1150,8 +953,7 @@ paths:
       tags:
       - applications
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: No response body
@@ -1241,8 +1043,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1264,8 +1065,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: No response body
@@ -1282,8 +1082,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1319,8 +1118,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1354,8 +1152,7 @@ paths:
               $ref: '#/components/schemas/CompanyReview'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -1376,8 +1173,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1399,8 +1195,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '204':
           description: No response body
@@ -1429,8 +1224,7 @@ paths:
               $ref: '#/components/schemas/CompanyCreate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1461,8 +1255,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCompanyCreate'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1489,8 +1282,7 @@ paths:
               $ref: '#/components/schemas/CompanyCreate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -1505,8 +1297,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: No response body
@@ -1536,8 +1327,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1577,8 +1367,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1593,8 +1382,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1606,8 +1394,7 @@ paths:
       tags:
       - companies
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1637,8 +1424,7 @@ paths:
       tags:
       - job-forms
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1663,8 +1449,7 @@ paths:
               $ref: '#/components/schemas/JobForm'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -1679,14 +1464,12 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+          type: string
         required: true
       tags:
       - job-forms
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1700,8 +1483,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+          type: string
         required: true
       tags:
       - job-forms
@@ -1718,8 +1500,7 @@ paths:
               $ref: '#/components/schemas/JobForm'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1733,8 +1514,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+          type: string
         required: true
       tags:
       - job-forms
@@ -1750,8 +1530,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedJobForm'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -1765,14 +1544,12 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: نوع رقم صحيح فريد يحدد هذا نموذج تقديم مخصص.
+          type: string
         required: true
       tags:
       - job-forms
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '204':
           description: No response body
@@ -1899,8 +1676,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1922,8 +1698,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           description: No response body
@@ -1940,8 +1715,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1959,8 +1733,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -1982,8 +1755,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '204':
           description: No response body
@@ -2012,8 +1784,7 @@ paths:
               $ref: '#/components/schemas/JobCreate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2044,8 +1815,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedJobCreate'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2079,8 +1849,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2106,8 +1875,7 @@ paths:
               $ref: '#/components/schemas/JobAlert'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -2128,8 +1896,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2161,8 +1928,7 @@ paths:
               $ref: '#/components/schemas/JobAlert'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2193,8 +1959,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedJobAlert'
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2214,8 +1979,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '204':
           description: No response body
@@ -2245,8 +2009,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2274,8 +2037,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
@@ -2305,8 +2067,7 @@ paths:
               $ref: '#/components/schemas/JobCreate'
         required: true
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '201':
           content:
@@ -2319,105 +2080,6 @@ paths:
       operationId: jobs_my_jobs_list
       description: وظائفي المنشورة
       parameters:
-      - in: query
-        name: category
-        schema:
-          type: integer
-      - in: query
-        name: city
-        schema:
-          type: string
-          title: المدينة
-          enum:
-          - abyan
-          - aden
-          - al_bayda
-          - al_hudaydah
-          - al_jawf
-          - al_maharah
-          - al_mahwit
-          - amran
-          - dhamar
-          - hadhramaut
-          - hajjah
-          - ibb
-          - lahij
-          - marib
-          - raymah
-          - remote
-          - saada
-          - sanaa
-          - shabwah
-          - socotra
-          - taiz
-        description: |-
-          * `sanaa` - صنعاء
-          * `aden` - عدن
-          * `abyan` - أبين
-          * `amran` - عمران
-          * `al_bayda` - البيضاء
-          * `al_hudaydah` - الحديدة
-          * `al_jawf` - الجوف
-          * `al_maharah` - المهرة
-          * `al_mahwit` - المحويت
-          * `dhamar` - ذمار
-          * `hadhramaut` - حضرموت
-          * `hajjah` - حجة
-          * `ibb` - إب
-          * `lahij` - لحج
-          * `marib` - مأرب
-          * `raymah` - ريمة
-          * `saada` - صعدة
-          * `shabwah` - شبوة
-          * `socotra` - سقطرى
-          * `taiz` - تعز
-          * `remote` - عمل عن بُعد
-      - in: query
-        name: experience_level
-        schema:
-          type: string
-          title: مستوى الخبرة
-          enum:
-          - entry
-          - expert
-          - junior
-          - mid
-          - senior
-        description: |-
-          * `entry` - مبتدئ (0-2 سنة)
-          * `junior` - مبتدئ متقدم (2-4 سنوات)
-          * `mid` - متوسط (4-7 سنوات)
-          * `senior` - خبير (7-10 سنوات)
-          * `expert` - خبير متقدم (10+ سنوات)
-      - in: query
-        name: is_active
-        schema:
-          type: boolean
-      - in: query
-        name: is_featured
-        schema:
-          type: boolean
-      - in: query
-        name: is_urgent
-        schema:
-          type: boolean
-      - in: query
-        name: job_type
-        schema:
-          type: string
-          title: نوع الوظيفة
-          enum:
-          - contract
-          - freelance
-          - full_time
-          - internship
-          - part_time
-        description: |-
-          * `full_time` - دوام كامل
-          * `part_time` - دوام جزئي
-          * `contract` - عقد مؤقت
-          * `freelance` - عمل حر
-          * `internship` - تدريب
       - name: ordering
         required: false
         in: query
@@ -2445,8 +2107,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2465,97 +2126,6 @@ paths:
         3. المشابهة للوظائف التي تقدم لها سابقاً (نفس الفئة)
         مع استبعاد الوظائف التي تقدم لها بالفعل
       parameters:
-      - in: query
-        name: category
-        schema:
-          type: integer
-      - in: query
-        name: city
-        schema:
-          type: string
-          title: المدينة
-          enum:
-          - abyan
-          - aden
-          - al_bayda
-          - al_hudaydah
-          - al_jawf
-          - al_maharah
-          - al_mahwit
-          - amran
-          - dhamar
-          - hadhramaut
-          - hajjah
-          - ibb
-          - lahij
-          - marib
-          - raymah
-          - remote
-          - saada
-          - sanaa
-          - shabwah
-          - socotra
-          - taiz
-        description: |-
-          * `sanaa` - صنعاء
-          * `aden` - عدن
-          * `abyan` - أبين
-          * `amran` - عمران
-          * `al_bayda` - البيضاء
-          * `al_hudaydah` - الحديدة
-          * `al_jawf` - الجوف
-          * `al_maharah` - المهرة
-          * `al_mahwit` - المحويت
-          * `dhamar` - ذمار
-          * `hadhramaut` - حضرموت
-          * `hajjah` - حجة
-          * `ibb` - إب
-          * `lahij` - لحج
-          * `marib` - مأرب
-          * `raymah` - ريمة
-          * `saada` - صعدة
-          * `shabwah` - شبوة
-          * `socotra` - سقطرى
-          * `taiz` - تعز
-          * `remote` - عمل عن بُعد
-      - in: query
-        name: company
-        schema:
-          type: integer
-      - in: query
-        name: experience_level
-        schema:
-          type: string
-          title: مستوى الخبرة
-          enum:
-          - entry
-          - expert
-          - junior
-          - mid
-          - senior
-        description: |-
-          * `entry` - مبتدئ (0-2 سنة)
-          * `junior` - مبتدئ متقدم (2-4 سنوات)
-          * `mid` - متوسط (4-7 سنوات)
-          * `senior` - خبير (7-10 سنوات)
-          * `expert` - خبير متقدم (10+ سنوات)
-      - in: query
-        name: job_type
-        schema:
-          type: string
-          title: نوع الوظيفة
-          enum:
-          - contract
-          - freelance
-          - full_time
-          - internship
-          - part_time
-        description: |-
-          * `full_time` - دوام كامل
-          * `part_time` - دوام جزئي
-          * `contract` - عقد مؤقت
-          * `freelance` - عمل حر
-          * `internship` - تدريب
       - name: ordering
         required: false
         in: query
@@ -2583,8 +2153,7 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -2599,12 +2168,65 @@ paths:
       tags:
       - jobs
       security:
-      - tokenAuth: []
-      - cookieAuth: []
+      - jwtAuth: []
       - {}
       responses:
         '200':
           description: No response body
+  /api/token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
 components:
   schemas:
     ApplicationMessage:
@@ -5246,6 +4868,37 @@ components:
         * `rejected` - مرفوض
         * `withdrawn` - منسحب
         * `external_redirect` - تم التوجيه لتقديم خارجي
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
     User:
       type: object
       properties:
@@ -5422,12 +5075,7 @@ components:
         * `private` - خاص - فقط أنا
         * `employers_only` - أصحاب العمل فقط - عند التقديم
   securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: sessionid
-    tokenAuth:
-      type: apiKey
-      in: header
-      name: Authorization
-      description: Token-based authentication with required prefix "Token"
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

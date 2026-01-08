@@ -10,9 +10,12 @@ import '../../data/models/job/JobAlert.dart';
 import '../../data/models/job/JobList.dart';
 import '../../data/models/job/JobCategory.dart';
 import '../../data/models/job/JobBookmark.dart';
+import '../../data/models/company/job_form.dart';
+import '../../data/services/job_forms_service.dart';
 
 class JobController extends GetxController {
   final JobService _jobService = JobService();
+  final JobFormsService _formService = JobFormsService(); // Assuming this service exists and is exported
   final GetStorage _storage = GetStorage();
 
   final RxList<JobList> jobs = <JobList>[].obs;
@@ -21,6 +24,7 @@ class JobController extends GetxController {
   final RxList<JobCategory> categories = <JobCategory>[].obs;
   final RxList<JobAlert> alerts = <JobAlert>[].obs;
   final RxList<JobBookmark> bookmarks = <JobBookmark>[].obs;
+  final RxList<JobForm> customForms = <JobForm>[].obs; // Add this
   final RxBool isLoading = false.obs;
   final RxBool isListLoading = false.obs;
   final Rx<JobDetail?> currentJob = Rx<JobDetail?>(null);
@@ -251,6 +255,7 @@ class JobController extends GetxController {
       AppErrorHandler.showSuccessSnack('تم تحديث الوظيفة بنجاح');
       return true;
     } catch (e) {
+      print('the error in update job is :$e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {
@@ -271,6 +276,7 @@ class JobController extends GetxController {
       
       return true;
     } catch (e) {
+      print('the error in delete job is : $e');
       AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {
@@ -464,7 +470,17 @@ class JobController extends GetxController {
       jobsStats.value = stats;
     } catch (e) {
       print('Error loading job statistics: $e');
-      // Don't show error to user, just log it
+    }
+  }
+
+  Future<void> loadCustomForms(int companyId) async {
+    try {
+      final response = await _formService.getJobForms(isActive: true); 
+      if (response.results != null) {
+         customForms.assignAll(response.results!.where((f) => f.company == companyId).toList());
+      }
+    } catch (e) {
+      print('Error loading custom forms: $e');
     }
   }
 }

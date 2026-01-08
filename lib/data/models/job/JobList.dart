@@ -23,6 +23,9 @@ class JobList {
   final int? applicationsCount;
   final bool? isBookmarked;
   final String? createdAt;
+  final String? aiSummary;
+  final bool? isAiSummaryEnabled;
+  final String? applicationMethod;
 
   JobList({
     this.id,
@@ -46,6 +49,9 @@ class JobList {
     this.applicationsCount,
     this.isBookmarked,
     this.createdAt,
+    this.aiSummary,
+    this.isAiSummaryEnabled,
+    this.applicationMethod,
   });
 
   factory JobList.fromJson(Map<String, dynamic> json) {
@@ -71,6 +77,9 @@ class JobList {
       applicationsCount: json['applications_count'],
       isBookmarked: json['is_bookmarked'],
       createdAt: json['created_at'],
+      aiSummary: json['ai_summary'],
+      isAiSummaryEnabled: json['is_ai_summary_enabled'],
+      applicationMethod: json['application_method'],
     );
   }
 
@@ -97,6 +106,9 @@ class JobList {
       'applications_count': applicationsCount,
       'is_bookmarked': isBookmarked,
       'created_at': createdAt,
+      'ai_summary': aiSummary,
+      'is_ai_summary_enabled': isAiSummaryEnabled,
+      'application_method': applicationMethod,
     };
   }
 }

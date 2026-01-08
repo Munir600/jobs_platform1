@@ -12,7 +12,7 @@ class JobFormsService {
 
   Future<Map<String, String>> _getHeaders() async {
     final token = _storage.read(AppConstants.authTokenKey);
-    return token != null ? {'Authorization': 'Token $token'} : {};
+    return token != null ? {'Authorization': 'Bearer $token'} : {};
   }
 
   Future<PaginatedJobFormList> getJobForms({int? page, String? search, bool? isActive}) async {

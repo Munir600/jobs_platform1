@@ -107,6 +107,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     const SizedBox(height: 12),
                     _buildDetailsGrid(job),
                     const SizedBox(height: 24),
+
+                    if (job.isAiSummaryEnabled == true && job.aiSummary != null && job.aiSummary!.isNotEmpty) ...[
+                      _buildAiSummarySection(job.aiSummary!),
+                      const SizedBox(height: 24),
+                    ],
+
                     if (job.description != null && job.description.isNotEmpty) ...[
                       _buildSectionTitle('نبذة عن الوظيفة'),
                       Text(job.description!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
@@ -120,6 +126,16 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                     if (job.responsibilities != null && job.responsibilities!.isNotEmpty) ...[
                       _buildSectionTitle('المسؤوليات'),
                       Text(job.responsibilities!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
+                      const SizedBox(height: 24),
+                    ],
+                    if (job.skills != null && job.skills!.isNotEmpty) ...[
+                      _buildSectionTitle('المهارات المطلوبة'),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: job.skills!.split(RegExp(r'[،,.\n]')).map((s) => _buildSkillChip(s.trim())).where((w) => (w as Chip).label is Text && ((w as Chip).label as Text).data!.isNotEmpty).toList(),
+                      ),
                       const SizedBox(height: 24),
                     ],
                     if (job.benefits != null && job.benefits!.isNotEmpty) ...[
@@ -139,12 +155,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: (isEmployer || isDeadlinePassed) ? null : () {
-                            if (job.id != null) {
-                              Get.toNamed(AppRoutes.applyJob, arguments: {
-                                'jobId': job.id,
-                                'jobTitle': job.title,
-                              });
-                            }
+                             _handleApplication(job);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
@@ -153,7 +164,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                             disabledBackgroundColor: Colors.grey[350],
                             disabledForegroundColor: Colors.black38,
                           ),
-                          child: Text(isDeadlinePassed ? 'انتهى التقديم' : 'التقديم الآن', style: const TextStyle(color: Colors.white, fontSize: 18)),
+                          child: Text(_getButtonText(job, isDeadlinePassed), style: const TextStyle(color: Colors.white, fontSize: 18)),
                         ),
                       );
                     }),
@@ -428,4 +439,126 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   //     ],
   //   );
   // }
+
+  Widget _buildAiSummarySection(String summary) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.blue.withOpacity(0.05),
+            Colors.purple.withOpacity(0.02),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blue.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.auto_awesome, size: 20, color: Colors.blue[700]),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'ملخص الوظيفة بالذكاء الاصطناعي',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[900],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            summary,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.blue[800],
+              height: 1.7,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkillChip(String skill) {
+    if (skill.isEmpty) return const SizedBox.shrink();
+    return Chip(
+      label: Text(
+        skill,
+        style: const TextStyle(fontSize: 13, color: AppColors.primaryColor),
+      ),
+      backgroundColor: AppColors.primaryColor.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: AppColors.primaryColor.withValues(alpha: 0.2)),
+      ),
+    );
+  }
+
+  String _getButtonText(JobDetail job, bool isDeadlinePassed) {
+    if (isDeadlinePassed) return 'انتهى التقديم';
+    
+    switch (job.applicationMethod) {
+      case 'external_link':
+        return 'التقديم عبر رابط خارجي';
+      case 'email':
+        return 'التقديم عبر البريد';
+      case 'template_file':
+        return 'تحميل ملف التقديم';
+      case 'custom_form':
+        return 'بدء الاستبيان';
+      default:
+        return 'التقديم الآن';
+    }
+  }
+
+  void _handleApplication(JobDetail job) async {
+    switch (job.applicationMethod) {
+      case 'external_link':
+        if (job.externalApplicationUrl != null) {
+          print('Opening external link: ${job.externalApplicationUrl}');
+          Get.snackbar('رابط خارجي', 'سيتم فتح: ${job.externalApplicationUrl}');
+        }
+        break;
+      case 'email':
+        if (job.applicationEmail != null) {
+          final email = job.applicationEmail!;
+          print('Sending email to: $email');
+           Get.snackbar('بريد إلكتروني', 'سيتم إرسال بريد إلى: $email');
+        }
+        break;
+      case 'custom_form':
+         Get.snackbar('استبيان مخصص', 'سيتم فتح الاستبيان الخاص بالشركة');
+        break;
+      default:
+        if (job.id != null) {
+          Get.toNamed(AppRoutes.applyJob, arguments: {
+            'jobId': job.id,
+            'jobTitle': job.title,
+          });
+        }
+    }
+  }
 }

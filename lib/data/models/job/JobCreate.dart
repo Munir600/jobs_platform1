@@ -20,6 +20,12 @@ class JobCreate {
   final bool? isFeatured;
   final bool? isUrgent;
   final bool? isActive;
+  final String? applicationMethod;
+  final int? customForm;
+  final String? applicationTemplate;
+  final String? externalApplicationUrl;
+  final String? applicationEmail;
+  final bool? isAiSummaryEnabled;
 
   JobCreate({
     required this.title,
@@ -43,6 +49,12 @@ class JobCreate {
     this.isFeatured,
     this.isUrgent,
     this.isActive,
+    this.applicationMethod,
+    this.customForm,
+    this.applicationTemplate,
+    this.externalApplicationUrl,
+    this.applicationEmail,
+    this.isAiSummaryEnabled,
   });
 
   factory JobCreate.fromJson(Map<String, dynamic> json) {
@@ -67,7 +79,13 @@ class JobCreate {
       contactPhone: json['contact_phone'],
       isFeatured: json['is_featured'],
       isUrgent: json['is_urgent'],
-      isActive: json['is_active']
+      isActive: json['is_active'],
+      applicationMethod: json['application_method'],
+      customForm: json['custom_form'],
+      applicationTemplate: json['application_template'],
+      externalApplicationUrl: json['external_application_url'],
+      applicationEmail: json['application_email'],
+      isAiSummaryEnabled: json['is_ai_summary_enabled'],
     );
   }
 
@@ -94,6 +112,12 @@ class JobCreate {
       'is_featured': isFeatured,
       'is_urgent': isUrgent,
       'is_active': isActive,
+      'application_method': applicationMethod,
+      'custom_form': customForm,
+      'application_template': applicationTemplate,
+      'external_application_url': externalApplicationUrl,
+      'application_email': applicationEmail,
+      'is_ai_summary_enabled': isAiSummaryEnabled,
     };
   }
 }

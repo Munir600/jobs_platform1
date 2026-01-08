@@ -24,7 +24,7 @@ class JobService {
   Future<Map<String, String>> _getHeaders() async {
     final token = _storage.read(AppConstants.authTokenKey);
     print('Token from jobs  is : $token');
-    return token != null ? {'Authorization': 'Token $token'} : {};
+    return token != null ? {'Authorization': 'Bearer $token'} : {};
   }
 
   Future<PaginatedJobListList> getJobs({
@@ -62,14 +62,6 @@ class JobService {
 
     final response = await _apiClient.get(path, headers: headers);
      print('response body jobs in services: ${response.body}');
-    if (response.statusCode == 401){
-      _storage.remove('user_data');
-      _apiService.removeAuthToken();
-      if (Get.isRegistered<AccountController>()) {
-        Get.find<AccountController>().clearUserData();
-      }
-      Get.offAllNamed(AppRoutes.login);
-    }
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {
