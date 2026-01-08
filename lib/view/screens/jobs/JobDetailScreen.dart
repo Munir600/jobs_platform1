@@ -5,6 +5,9 @@ import 'package:jobs_platform1/routes/app_routes.dart';
 import '../../../controllers/job/JobController.dart';
 import '../../../controllers/account/AccountController.dart';
 import '../../../config/app_colors.dart';
+import '../../../core/utils/contact_utils.dart';
+import '../../../controllers/application/ApplyJobController.dart';
+import '../../../data/models/application/JobApplicationCreate.dart';
 import '../../../data/models/job/JobCreate.dart';
 import '../../../data/models/job/JobDetail.dart';
 import '../../../data/models/job/JobList.dart';
@@ -23,6 +26,7 @@ class JobDetailScreen extends StatefulWidget {
 class _JobDetailScreenState extends State<JobDetailScreen> {
   final controller = Get.find<JobController>();
   final accountController = Get.find<AccountController>();
+  final applyController = Get.put(ApplyJobController());
   late String slug;
 
   @override
@@ -369,14 +373,25 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       case 'external_link':
         if (job.externalApplicationUrl != null) {
           print('Opening external link: ${job.externalApplicationUrl}');
-          Get.snackbar('رابط خارجي', 'سيتم فتح: ${job.externalApplicationUrl}');
+          ContactUtils.handleContactAction(job.externalApplicationUrl!);
+          if (job.id != null) {
+            applyController.jobId = job.id!;
+            applyController.jobDetail.value = job;
+            applyController.submitApplication(shouldPop: false);
+          }
         }
         break;
       case 'email':
         if (job.applicationEmail != null) {
-          final email = job.applicationEmail!;
-          print('Sending email to: $email');
-          Get.snackbar('بريد إلكتروني', 'سيتم إرسال بريد إلى: $email');
+          if (job.applicationEmail != null) {
+            print('Sending email to: ${job.applicationEmail!}');
+            ContactUtils.handleContactAction(job.applicationEmail!);
+            if (job.id != null) {
+              applyController.jobId = job.id!;
+              applyController.jobDetail.value = job;
+              applyController.submitApplication(shouldPop: false);
+            }
+          }
         }
         break;
       case 'custom_form':

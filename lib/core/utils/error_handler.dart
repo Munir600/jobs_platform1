@@ -67,12 +67,11 @@ class AppErrorHandler {
      // return "حدث خطأ غير متوقع. حاول مرة أخرى.";
     }
 
-    // Fallback if no JSON or specific patterns matched, but try to clean up the string if it's the raw exception
     if (error.toString().contains('Exception: ')) {
         return error.toString().replaceAll('Exception: ', '').trim();
     }
     
-    return "خطاء";
+    return "خطأ";
   }
 
   static List<String> _extractMessages(dynamic data) {

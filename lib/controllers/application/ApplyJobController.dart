@@ -18,8 +18,8 @@ class ApplyJobController extends GetxController {
   final RxMap<int, TextEditingController> surveyControllers = <int, TextEditingController>{}.obs;
 
   final RxBool isLoading = false.obs;
-  late final int jobId;
-  late final String? jobTitle;
+  int jobId = 0;
+  String? jobTitle;
   final Rx<JobDetail?> jobDetail = Rx<JobDetail?>(null);
 
   @override
@@ -76,19 +76,43 @@ class ApplyJobController extends GetxController {
     super.onClose();
   }
 
-  Future<void> submitApplication() async {
+  Future<void> submitApplication({bool shouldPop = true}) async {
     try {
       isLoading.value = true;
 
       final List<JobApplicationResponse> responses = [];
-      surveyControllers.forEach((questionId, controller) {
-        if (controller.text.isNotEmpty) {
-          responses.add(JobApplicationResponse(
-            question: questionId,
-            answerText: controller.text,
-          ));
+      final questions = jobDetail.value?.customForm?.questions;
+
+      if (questions != null) {
+        for (var question in questions) {
+          final controller = surveyControllers[question.id];
+          final answer = controller?.text.trim() ?? "";
+
+          if (question.required == true && answer.isEmpty) {
+           // AppErrorHandler.showErrorSnack('يرجى الإجابة على السؤال: ${question.label}');
+            Get.snackbar(
+              'تنبيه',
+              'يرجى الإجابة على السؤال: \n ${question.label} ',
+              backgroundColor: Colors.black87,
+              colorText: Colors.white,
+              snackPosition: SnackPosition.TOP,
+              margin: const EdgeInsets.all(16),
+              borderRadius: 12,
+              duration: const Duration(seconds: 4),
+              isDismissible: true,
+            );
+            isLoading.value = false;
+            return;
+          }
+
+          if (answer.isNotEmpty) {
+            responses.add(JobApplicationResponse(
+              question: question.id!,
+              answerText: answer,
+            ));
+          }
         }
-      });
+      }
 
       final application = JobApplicationCreate(
         job: jobId,
@@ -97,11 +121,11 @@ class ApplyJobController extends GetxController {
         expectedSalary: int.tryParse(salaryController.text),
         availabilityDate: availabilityController.text.isNotEmpty ? availabilityController.text : null,
         notes: notesController.text.isNotEmpty ? notesController.text : null,
-         responses: responses.isNotEmpty ? responses : null,
+        responses: responses.isNotEmpty ? responses : null,
       );
 
       await _applicationService.createApplication(application);
-      Get.back();
+      if (shouldPop) Get.back();
       AppErrorHandler.showSuccessSnack('تم تقديم الطلب بنجاح');
 
     } catch (e) {

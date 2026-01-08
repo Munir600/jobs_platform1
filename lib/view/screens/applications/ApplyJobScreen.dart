@@ -89,7 +89,7 @@ class ApplyJobScreen extends GetView<ApplyJobController> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionTitle('${question.label}${question.required == true ? ' *' : ''}'),
+                      _buildSectionTitle('${question.label}${question.required == true ? ' * ' : ''}'),
                       if (question.helpText != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),

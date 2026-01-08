@@ -40,7 +40,7 @@ class JobApplicationCreate {
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       'job': job,
       'cover_letter': coverLetter,
       'resume': resume,
@@ -49,8 +49,13 @@ class JobApplicationCreate {
       'availability_date': availabilityDate,
       'notes': notes,
       'filled_template': filledTemplate,
-      'responses': responses?.map((e) => e.toJson()).toList(),
     };
+
+    if (responses != null && responses!.isNotEmpty) {
+      data['responses'] = responses!.map((e) => e.toJson()).toList();
+    }
+
+    return data;
   }
 }
 
