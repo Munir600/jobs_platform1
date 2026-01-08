@@ -7,7 +7,7 @@ import '../../../core/constants.dart';
 import '../../../data/models/job/JobList.dart';
 import '../../../controllers/account/AccountController.dart';
 import '../../../routes/app_routes.dart';
-import '../../screens/applications/ApplyJobScreen.dart';
+// import '../../screens/applications/ApplyJobScreen.dart';
 import '../../screens/jobs/JobDetailScreen.dart';
 
 class JobCard extends StatelessWidget {
@@ -110,8 +110,6 @@ class JobCard extends StatelessWidget {
                   Wrap(
                     spacing: 8,
                     children: [
-                     // Icon(Icons.visibility_outlined, size: 14, color: Colors.grey[600]),
-
                       if ( job.viewsCount! > 0)
                         Text('${job.viewsCount} مشاهدة',
                             style: const TextStyle(fontSize: 13,color: Colors.blue),
@@ -225,7 +223,7 @@ class JobCard extends StatelessWidget {
                           if (job.applicationMethod != null && job.applicationMethod != 'platform') {
                              Get.toNamed(AppRoutes.jobDetails, arguments: job.slug);
                           } else {
-                             Get.to(() => ApplyJobScreen(jobId: job.id!, jobTitle: job.title ?? ''));
+                              Get.toNamed(AppRoutes.applyJob, arguments: {'jobId': job.id, 'jobTitle': job.title});
                           }
                         }
                       }),

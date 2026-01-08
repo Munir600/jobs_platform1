@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../controllers/application/ApplyJobController.dart';
 import '../controllers/auth/forgot_password_controller.dart';
 import '../controllers/auth/reset_password_controller.dart';
 import '../view/screens/auth/login_screen.dart';
@@ -89,13 +90,12 @@ class AppRoutes {
     GetPage(name: myApplications, page: () => const MyApplicationsScreen(), middlewares: [AuthMiddleware()]),
     GetPage(name: jobApplications, page: () => const JobApplicationsScreen(), middlewares: [AuthMiddleware()]),
 
-    GetPage(name: applyJob, page: () {
-      final args = Get.arguments as Map<String, dynamic>;
-      return ApplyJobScreen(
-        jobId: args['jobId'],
-        jobTitle: args['jobTitle'],
-      );
-    }, middlewares: [AuthMiddleware()]),
+    GetPage(
+      name: applyJob,
+      page: () => const ApplyJobScreen(),
+      binding: BindingsBuilder(() => Get.lazyPut(() => ApplyJobController())),
+      middlewares: [AuthMiddleware()],
+    ),
     
     // Interviews
     GetPage(name: interviews, page: () => const InterviewListScreen(), middlewares: [AuthMiddleware()]),

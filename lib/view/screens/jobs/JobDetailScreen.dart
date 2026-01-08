@@ -29,7 +29,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   void initState() {
     super.initState();
     slug = widget.jobSlug;
-    
+
     if (slug.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.loadJobDetail(slug);
@@ -58,7 +58,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             Obx(() {
               final job = controller.currentJob.value;
               if (job == null) return const SizedBox.shrink();
-              
+
               final isBookmarked = controller.bookmarks.any((b) => b.job?.id == job.id);
               return IconButton(
                 icon: Icon(
@@ -78,10 +78,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         if (controller.isJobDetailLoading.value && controller.currentJob.value == null) {
           return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
         }
-        
+
         final job = controller.currentJob.value;
         if (job == null) {
-           return const Center(child: Text('لم يتم العثور على الوظيفة'));
+          return const Center(child: Text('لم يتم العثور على الوظيفة'));
         }
 
         // Safe parsing of date
@@ -96,82 +96,87 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         }
 
         return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(job, formattedDate),
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('تفاصيل الوظيفة'),
-                    const SizedBox(height: 12),
-                    _buildDetailsGrid(job),
-                    const SizedBox(height: 24),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(job, formattedDate),
+                const SizedBox(height: 24),
+                _buildSectionTitle('تفاصيل الوظيفة'),
+                const SizedBox(height: 12),
+                _buildDetailsGrid(job),
+                const SizedBox(height: 24),
 
-                    if (job.isAiSummaryEnabled == true && job.aiSummary != null && job.aiSummary!.isNotEmpty) ...[
-                      _buildAiSummarySection(job.aiSummary!),
-                      const SizedBox(height: 24),
-                    ],
+                if (job.isAiSummaryEnabled == true && job.aiSummary != null && job.aiSummary!.isNotEmpty) ...[
+                  _buildAiSummarySection(job.aiSummary!),
+                  const SizedBox(height: 24),
+                ],
 
-                    if (job.description != null && job.description.isNotEmpty) ...[
-                      _buildSectionTitle('نبذة عن الوظيفة'),
-                      Text(job.description!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
-                      const SizedBox(height: 24),
-                    ],
-                    if (job.requirements.isNotEmpty) ...[
-                      _buildSectionTitle('المتطلبات'),
-                      Text(job.requirements, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
-                      const SizedBox(height: 24),
-                    ],
-                    if (job.responsibilities != null && job.responsibilities!.isNotEmpty) ...[
-                      _buildSectionTitle('المسؤوليات'),
-                      Text(job.responsibilities!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
-                      const SizedBox(height: 24),
-                    ],
-                    if (job.skills != null && job.skills!.isNotEmpty) ...[
-                      _buildSectionTitle('المهارات المطلوبة'),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: job.skills!.split(RegExp(r'[،,.\n]')).map((s) => _buildSkillChip(s.trim())).where((w) => (w as Chip).label is Text && ((w as Chip).label as Text).data!.isNotEmpty).toList(),
+                if (job.description != null && job.description.isNotEmpty) ...[
+                  _buildSectionTitle('نبذة عن الوظيفة'),
+                  Text(job.description!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
+                  const SizedBox(height: 24),
+                ],
+                if (job.requirements.isNotEmpty) ...[
+                  _buildSectionTitle('المتطلبات'),
+                  Text(job.requirements, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
+                  const SizedBox(height: 24),
+                ],
+                if (job.responsibilities != null && job.responsibilities!.isNotEmpty) ...[
+                  _buildSectionTitle('المسؤوليات'),
+                  Text(job.responsibilities!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
+                  const SizedBox(height: 24),
+                ],
+                if (job.skills != null && job.skills!.isNotEmpty) ...[
+                  _buildSectionTitle('المهارات المطلوبة'),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: job.skills!
+                        .split(RegExp(r'[،,.\n]'))
+                        .map((s) => s.trim())
+                        .where((s) => s.isNotEmpty)
+                        .map((s) => _buildSkillChip(s))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+                if (job.benefits != null && job.benefits!.isNotEmpty) ...[
+                  _buildSectionTitle('المزايا'),
+                  Text(job.benefits!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
+                  const SizedBox(height: 24),
+                ],
+                // const SizedBox(height: 16),
+                // if (widget.isEmployer)
+                //    _buildEmployerActions(job),
+                // SizedBox(height: widget.isEmployer ? 16 : 0),
+                Obx(() {
+                  final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
+                  final isDeadlinePassed = job.applicationDeadline != null && DateTime.tryParse(job.applicationDeadline!)!.isBefore(DateTime.now());
+
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: (isEmployer || isDeadlinePassed) ? null : () {
+                        _handleApplication(job);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        disabledBackgroundColor: Colors.grey[350],
+                        disabledForegroundColor: Colors.black38,
                       ),
-                      const SizedBox(height: 24),
-                    ],
-                    if (job.benefits != null && job.benefits!.isNotEmpty) ...[
-                      _buildSectionTitle('المزايا'),
-                      Text(job.benefits!, style: const TextStyle(fontSize: 14, color: AppColors.textColor, height: 1.6)),
-                      const SizedBox(height: 24),
-                    ],
-                    // const SizedBox(height: 16),
-                    // if (widget.isEmployer)
-                    //    _buildEmployerActions(job),
-                    // SizedBox(height: widget.isEmployer ? 16 : 0),
-                    Obx(() {
-                      final isEmployer = accountController.currentUser.value?.isEmployer ?? false;
-                      final isDeadlinePassed = job.applicationDeadline != null && DateTime.tryParse(job.applicationDeadline!)!.isBefore(DateTime.now());
-
-                      return SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: (isEmployer || isDeadlinePassed) ? null : () {
-                             _handleApplication(job);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryColor,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            disabledBackgroundColor: Colors.grey[350],
-                            disabledForegroundColor: Colors.black38,
-                          ),
-                          child: Text(_getButtonText(job, isDeadlinePassed), style: const TextStyle(color: Colors.white, fontSize: 18)),
-                        ),
-                      );
-                    }),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
+                      child: Text(_getButtonText(job, isDeadlinePassed), style: const TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
+                  );
+                }),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
         );
       }),
     );
@@ -195,9 +200,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         InkWell(
           onTap: () {
 
-             if (job.company?.slug != null) {
-             // Get.to(() => CompanyDetailScreen(company: company));
-             }
+            if (job.company?.slug != null) {
+              // Get.to(() => CompanyDetailScreen(company: company));
+            }
 
           },
           child: Text(
@@ -205,8 +210,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             style: const TextStyle(fontSize: 18, color: AppColors.primaryColor, fontWeight: FontWeight.bold),
           ),
         ),
-         const SizedBox(height: 4),
-         Text('تاريخ النشر: $date', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+        const SizedBox(height: 4),
+        Text('تاريخ النشر: $date', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
@@ -264,181 +269,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
     );
   }
-
-  // Widget _buildEmployerStats(JobDetail job) {
-  //   return Container(
-  //     padding: const EdgeInsets.all(16),
-  //     decoration: BoxDecoration(
-  //       color: Colors.blue[50],
-  //       borderRadius: BorderRadius.circular(12),
-  //       border: Border.all(color: Colors.blue[100]!),
-  //     ),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //       children: [
-  //         _buildStatItem('المشاهدات', '${job.viewsCount ?? 0}', Icons.visibility),
-  //         _buildStatItem('المتقدمين', '${job.applicationsCount ?? 0}', Icons.people),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget _buildStatItem(String label, String value, IconData icon, {bool isLink = false}) {
-    return Column(
-      children: [
-        Icon(icon, color: isLink ? Colors.blue : AppColors.primaryColor),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: isLink ? Colors.blue : AppColors.primaryColor,
-            decoration: isLink ? TextDecoration.underline : null,
-          ),
-        ),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
-    );
-  }
-
-  Widget _buildStatusBadges(JobDetail job) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Wrap(
-          spacing: 8,
-          children: [
-            _buildBadge(
-              job.isActive == true ? 'نشط' : 'غير نشط',
-              job.isActive == true ? Colors.green : Colors.red,
-            ),
-            if (job.isFeatured == true)
-              _buildBadge('مميز', Colors.orange),
-            if (job.isUrgent == true)
-              _buildBadge('عاجل', Colors.redAccent),
-          ],
-        ),
-        // if (widget.isEmployer)
-        //   Transform.scale(
-        //     scale: 0.8,
-        //     child: Switch(
-        //       value: job.isActive ?? false,
-        //       activeColor: Colors.green,
-        //       onChanged: (value) {
-        //         _toggleJobStatus(job, value);
-        //       },
-        //     ),
-        //   ),
-      ],
-    );
-  }
-
-  void _toggleJobStatus(JobDetail job, bool isActive) {
-     if (job.slug.isEmpty) return;
-
-    final jobCreate = JobCreate(
-      title: job.title,
-      description: job.description,
-      requirements: job.requirements,
-      responsibilities: job.responsibilities,
-      benefits: job.benefits,
-      skills: job.skills,
-      company: job.company?.id ?? 0,
-      category: job.category?.id,
-      jobType: job.jobType,
-      experienceLevel: job.experienceLevel,
-      educationLevel: job.educationLevel,
-      city: job.city,
-      salaryMin: job.salaryMin,
-      salaryMax: job.salaryMax,
-      isSalaryNegotiable: job.isSalaryNegotiable,
-      applicationDeadline: job.applicationDeadline,
-      contactEmail: job.contactEmail,
-      contactPhone: job.contactPhone,
-      isFeatured: job.isFeatured,
-      isUrgent: job.isUrgent,
-    );
-
-    controller.updateJob(job.slug, jobCreate).then((success) {
-      if (success) {
-        controller.loadJobDetail(slug);
-      }
-    });
-  }
-
-  Widget _buildBadge(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
-      ),
-    );
-  }
-
-  // Widget _buildEmployerActions(JobDetail job) {
-  //   return Row(
-  //     children: [
-  //       Expanded(
-  //         child: ElevatedButton.icon(
-  //           onPressed: () {
-  //              final jobList = JobList(
-  //               id: job.id,
-  //               title: job.title,
-  //               slug: job.slug,
-  //               jobType: job.jobType,
-  //               experienceLevel: job.experienceLevel,
-  //               city: job.city,
-  //             );
-  //             Get.to(() => CreateJobScreen(job: jobList));
-  //           },
-  //           icon: const Icon(Icons.edit, color: Colors.white),
-  //           label: const Text('تعديل', style: TextStyle(color: Colors.white)),
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: Colors.blue,
-  //             padding: const EdgeInsets.symmetric(vertical: 12),
-  //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-  //           ),
-  //         ),
-  //       ),
-  //       const SizedBox(width: 16),
-  //       Expanded(
-  //         child: ElevatedButton.icon(
-  //           onPressed: () {
-  //              Get.defaultDialog(
-  //               title: 'حذف الوظيفة',
-  //               middleText: 'هل أنت متأكد من رغبتك في حذف هذه الوظيفة؟',
-  //               textConfirm: 'حذف',
-  //               textCancel: 'إلغاء',
-  //               confirmTextColor: Colors.white,
-  //               buttonColor: Colors.red,
-  //               onConfirm: () {
-  //                 if (job.slug.isNotEmpty) {
-  //                   controller.deleteJob(job.slug);
-  //                   Get.back(); // Close dialog
-  //                   Get.back(); // Go back to list
-  //                 }
-  //               },
-  //             );
-  //           },
-  //           icon: const Icon(Icons.delete, color: Colors.white),
-  //           label: const Text('حذف', style: TextStyle(color: Colors.white)),
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: Colors.red,
-  //             padding: const EdgeInsets.symmetric(vertical: 12),
-  //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildAiSummarySection(String summary) {
     return Container(
@@ -519,7 +349,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   String _getButtonText(JobDetail job, bool isDeadlinePassed) {
     if (isDeadlinePassed) return 'انتهى التقديم';
-    
+
     switch (job.applicationMethod) {
       case 'external_link':
         return 'التقديم عبر رابط خارجي';
@@ -546,17 +376,24 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         if (job.applicationEmail != null) {
           final email = job.applicationEmail!;
           print('Sending email to: $email');
-           Get.snackbar('بريد إلكتروني', 'سيتم إرسال بريد إلى: $email');
+          Get.snackbar('بريد إلكتروني', 'سيتم إرسال بريد إلى: $email');
         }
         break;
       case 'custom_form':
-         Get.snackbar('استبيان مخصص', 'سيتم فتح الاستبيان الخاص بالشركة');
+        if (job.id != null) {
+          Get.toNamed(AppRoutes.applyJob, arguments: {
+            'jobId': job.id,
+            'jobTitle': job.title,
+            'jobSlug': job.slug,
+          });
+        }
         break;
       default:
         if (job.id != null) {
           Get.toNamed(AppRoutes.applyJob, arguments: {
             'jobId': job.id,
             'jobTitle': job.title,
+            'jobSlug': job.slug,
           });
         }
     }

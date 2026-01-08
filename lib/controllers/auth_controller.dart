@@ -171,6 +171,7 @@ class AuthController extends GetxController {
       userType.value = user.userType;
       isVerified.value = user.isVerified;
       createdAt.value = user.createdAt.toIso8601String();
+      isLoggedIn.value = true;
     }
   }
 

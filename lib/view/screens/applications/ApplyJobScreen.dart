@@ -4,50 +4,34 @@ import 'package:get/get.dart';
 import '../../../controllers/application/ApplyJobController.dart';
 import '../../../config/app_colors.dart';
 
-class ApplyJobScreen extends StatefulWidget {
-  final int jobId;
-  final String? jobTitle;
-
-  const ApplyJobScreen({super.key, required this.jobId, this.jobTitle});
-
-  @override
-  State<ApplyJobScreen> createState() => _ApplyJobScreenState();
-}
-
-class _ApplyJobScreenState extends State<ApplyJobScreen> {
-  late final ApplyJobController controller;
-  
-  @override
-  void initState() {
-    super.initState();
-    controller = Get.put(ApplyJobController());
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+class ApplyJobScreen extends GetView<ApplyJobController> {
+  const ApplyJobScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final int validJobId = widget.jobId ?? 0;
-
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: Text('التقديم على: ${widget.jobTitle ?? ""}', style: const TextStyle(color: AppColors.textColor)),
+        title: Text('التقديم على: ${controller.jobTitle ?? ""}', style: const TextStyle(color: AppColors.textColor)),
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+      body: Obx(() {
+        final job = controller.jobDetail.value;
+        if (job == null) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+        }
+
+        final hasCustomForm = job.customForm != null && job.customForm!.questions != null && job.customForm!.questions!.isNotEmpty;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!hasCustomForm) ...[
                 _buildSectionTitle('خطاب التقديم'),
                 TextField(
                   controller: controller.coverLetterController,
@@ -93,32 +77,60 @@ class _ApplyJobScreenState extends State<ApplyJobScreen> {
                   maxLines: 3,
                   decoration: _inputDecoration('أي ملاحظات أخرى...'),
                 ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  child: Obx(() => ElevatedButton(
-                    onPressed: controller.isLoading.value 
-                        ? null 
-                        : () => controller.submitApplication(validJobId),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: controller.isLoading.value 
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                          )
-                        : const Text('إرسال الطلب', style: TextStyle(color: Colors.white, fontSize: 18)),
-                  )),
-                ),
               ],
-            ),
+
+              if (hasCustomForm) ...[
+                Text(
+                  job.customForm!.description ?? 'يرجى الإجابة على الأسئلة التالية للتقديم على هذه الوظيفة:',
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+                ...job.customForm!.questions!.map((question) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle('${question.label}${question.required == true ? ' *' : ''}'),
+                      if (question.helpText != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(question.helpText!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        ),
+                      TextField(
+                        controller: controller.surveyControllers[question.id] ?? TextEditingController(),
+                        maxLines: question.questionType == 'text' ? 1 : 3,
+                        decoration: _inputDecoration(question.questionType == 'text' ? 'إجابتك...' : 'اكتب بالتفصيل...'),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  );
+                }),
+              ],
+
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: Obx(() => ElevatedButton(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () => controller.submitApplication(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: controller.isLoading.value
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                      : const Text('إرسال الطلب', style: TextStyle(color: Colors.white, fontSize: 18)),
+                )),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
 
