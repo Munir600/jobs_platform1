@@ -66,10 +66,14 @@ class AuthController extends GetxController {
       _currentUser.value = User.fromJson(response["data"]["user"]
       );
       _storage.write('user_data', response["data"]["user"]);
+     // final token = '';
       final token = response["data"]["token"];
+      final refreshToken=response["data"]["refresh"];
+      print('the refresh token is : $refreshToken');
       final ms=response["data"]["message"];
       print('MESSAGES login  FROM API is : $ms');
       _apiService.setAuthToken(token);
+      _apiService.setRefreshToken(refreshToken);
       print('TOKEN SET IN API SERVICE After Login: $token');
       
       // final bool verified = response["data"]["user"]["is_verified"] ?? false;

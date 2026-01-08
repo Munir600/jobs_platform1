@@ -1,14 +1,15 @@
 // lib/core/constants.dart
 class AppConstants {
   static const String appName = 'tawzif_platform';
-  static const String baseUrl = 'https://job-portal-rcxk.onrender.com';
-  //static const String baseUrl = 'http://192.168.0.120:8000';
+ // static const String baseUrl = 'https://job-portal-rcxk.onrender.com';
+  static const String baseUrl = 'http://192.168.0.120:8000';
 
   // users_type
   static const String userTypeJobSeeker = 'job_seeker';
   static const String userTypeEmployer = 'employer';
   // storage_keys
   static const String authTokenKey = 'auth_token';
+  static const String RefreshToken = 'Refresh_token';
   static const String userDataKey = 'user_data';
   static const String isFirstTimeKey = 'is_first_time';
 }
@@ -16,6 +17,7 @@ class AppConstants {
 class ApiEndpoints {
   //auth constant
   static const String login = '/api/accounts/login/';
+  static const String refreshToken = '/api/token/refresh/';
   static const String register = '/api/accounts/register/';
   static const String logout = '/api/accounts/logout/';
   static const String profile = '/api/accounts/profile/';

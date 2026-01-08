@@ -30,7 +30,7 @@ class CompanyService {
     final token = _storage.read(AppConstants.authTokenKey);
     print('Token from CompanyService  is : $token');
 
-    return token != null ? {'Authorization': 'Token $token'} : {};
+    return token != null ? {'Authorization': 'Bearer $token'} : {};
   }
 
   Future<PaginatedCompanyList> getCompanies({

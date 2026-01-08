@@ -39,17 +39,28 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
   final TextEditingController benefitsController = TextEditingController();
   final TextEditingController deadlineController = TextEditingController();
 
+  // New Controllers
+  final TextEditingController templateController = TextEditingController();
+  final TextEditingController externalUrlController = TextEditingController();
+  final TextEditingController applicationEmailController = TextEditingController();
+
   String? selectedCity;
   String? selectedJobType;
   String? selectedExperienceLevel;
   String? selectedEducationLevel;
   int? selectedCompanyId;
   int? selectedCategory;
+
+  // New State Variables
+  String? selectedApplicationMethod = 'platform';
+  int? selectedCustomFormId;
+  bool isAiSummaryEnabled = false;
+
   bool isUrgent = false;
   bool isFeatured = false;
   bool salaryNegotiable = false;
   bool isActive = true;
-  
+
   bool isLoadingJobDetails = false;
 
   @override
@@ -71,6 +82,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
         setState(() {
           selectedCompanyId = companyController.myCompanies.first.id;
         });
+        jobController.loadCustomForms(selectedCompanyId!);
       }
     }
   }
@@ -99,15 +111,29 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
     salaryMaxController.text = job.salaryMax?.toString() ?? '';
     benefitsController.text = job.benefits ?? '';
     deadlineController.text = job.applicationDeadline?.split('T')[0] ?? '';
-    
+
+    // Prefill new fields
+    templateController.text = job.applicationTemplate ?? '';
+    externalUrlController.text = job.externalApplicationUrl ?? '';
+    applicationEmailController.text = job.applicationEmail ?? '';
+
     setState(() {
       selectedCity = job.city;
       selectedJobType = job.jobType;
       selectedExperienceLevel = job.experienceLevel;
       selectedEducationLevel = job.educationLevel;
-      selectedCompanyId = job.company?.id; 
+      selectedCompanyId = job.company?.id;
       selectedCategory = job.category?.id;
-      
+
+      // Prefill state
+      selectedApplicationMethod = job.applicationMethod ?? 'platform';
+      selectedCustomFormId = job.customForm?.id;
+      isAiSummaryEnabled = job.isAiSummaryEnabled ?? false;
+
+      if (selectedCompanyId != null) {
+        jobController.loadCustomForms(selectedCompanyId!);
+      }
+
       isUrgent = job.isUrgent ?? false;
       isFeatured = job.isFeatured ?? false;
       salaryNegotiable = job.isSalaryNegotiable ?? false;
@@ -128,250 +154,323 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       ),
       body: Stack(
         children: [
-        //  const PatternBackground(),
+          //  const PatternBackground(),
           if (isLoadingJobDetails)
-             const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
+            const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
           else
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('معلومات الوظيفة'),
-                  
-                  // Company Selection
-                  Obx(() {
-                    if (companyController.isLoading.value && companyController.myCompanies.isEmpty) {
-                      return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
-                    }
-                    if (companyController.myCompanies.isEmpty) {
-                      return Card(
-                        color: Colors.orange[50],
-                        child: const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                            'يجب أن يكون لديك شركة مسجلة لنشر وظيفة. قم بإنشاء شركة أولاً.',
-                            style: TextStyle(color: Colors.orange),
-                          ),
-                        ),
-                      );
-                    }
-                    
-                    return DropdownButtonFormField<int>(
-                      value: selectedCompanyId,
-                      items: companyController.myCompanies.map((company) {
-                        return DropdownMenuItem(
-                          value: company.id,
-                          child: Text(company.name ?? 'شركة غير معروفة'),
-                        );
-                      }).toList(),
-                      onChanged: (val) => setState(() => selectedCompanyId = val),
-                      validator: (val) => val == null ? 'يرجى اختيار الشركة' : null,
-                      decoration: InputDecoration(
-                        labelText: 'اختر الشركة',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.all(16),
-                      ),
-                    );
-                  }),
-                  const SizedBox(height: 16),
-                  // Category Selection
-                  Obx(() {
-                    if (jobController.categories.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionTitle('معلومات الوظيفة'),
 
-                    return DropdownButtonFormField<int>(
-                      value: selectedCategory,
-                      items: jobController.categories.map((category) {
-                        return DropdownMenuItem(
-                          value: category.id,
-                          child: Text(category.name),
-                        );
-                      }).toList(),
-                      onChanged: (val) => setState(() => selectedCategory = val),
-                      validator: (val) => val == null ? 'يرجى اختيار الفئة' : null,
-                      decoration: InputDecoration(
-                        labelText: 'الفئة',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.all(16),
-                      ),
-                    );
-                  }),
-                  const SizedBox(height: 16),
-                  _buildTextField(titleController, 'عنوان الوظيفة', validator: (v) => v!.isEmpty ? 'مطلوب' : null, inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[\u0600-\u06FFa-zA-Z\s]')),
-                  ]),
-                  const SizedBox(height: 16),
-                  _buildDropdown('المدينة', AppEnums.cities, (val) => setState(() => selectedCity = val), value: selectedCity, validator: (v) => v == null ? 'مطلوب' : null),
-                  const SizedBox(height: 16),
-                  _buildDropdown('نوع الوظيفة', AppEnums.jobTypes, (val) => setState(() => selectedJobType = val), value: selectedJobType, validator: (v) => v == null ? 'مطلوب' : null),
-                  const SizedBox(height: 16),
-                  _buildDropdown('مستوى الخبرة', AppEnums.experienceLevels, (val) => setState(() => selectedExperienceLevel = val), value: selectedExperienceLevel, validator: (v) => v == null ? 'مطلوب' : null),
-                  const SizedBox(height: 16),
-                  _buildDropdown('المستوى التعليمي', AppEnums.educationLevels, (val) => setState(() => selectedEducationLevel = val), value: selectedEducationLevel, validator: (v) => v == null ? 'مطلوب' : null),
-                  const SizedBox(height: 16),
-                  
-
-                  const SizedBox(height: 16),
-                  
-                  _buildSectionTitle('التفاصيل'),
-                  _buildTextField(descriptionController, 'الوصف الوظيفي', maxLines: 5, validator: (v) => v!.isEmpty ? 'مطلوب' : null),
-                  const SizedBox(height: 16),
-                  _buildTextField(requirementsController, 'المتطلبات', maxLines: 3, validator: (v) => v!.isEmpty ? 'مطلوب' : null),
-                  const SizedBox(height: 16),
-                  _buildTextField(responsibilitiesController, 'المسؤوليات', maxLines: 3),
-                  const SizedBox(height: 16),
-                  _buildSectionTitle('الراتب والمزايا'),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildTextField(salaryMinController, 'الحد الأدنى', keyboardType: TextInputType.number),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildTextField(salaryMaxController, 'الحد الأعلى', keyboardType: TextInputType.number),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  CheckboxListTile(
-                    title: const Text('راتب قابل للتفاوض'),
-                    value: salaryNegotiable,
-                    onChanged: (val) => setState(() => salaryNegotiable = val!),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildTextField(benefitsController, 'المزايا (اختياري)', maxLines: 2),
-                  const SizedBox(height: 16),
-                  _buildSectionTitle('إعدادات إضافية'),
-                  CheckboxListTile(
-                    title: const Text('نشط'),
-                    subtitle: const Text('إظهار الوظيفة للباحثين عن عمل'),
-                    value: isActive,
-                    onChanged: (val) =>(),// setState(() => isActive = val!),
-                  ),
-                  CheckboxListTile(
-                    title: const Text('توظيف عاجل'),
-                    value: isUrgent,
-                    onChanged: (val) => setState(() => isUrgent = val!),
-                  ),
-                  CheckboxListTile(
-                    title: const Text('إعلان مميز'),
-                    value: isFeatured,
-                    onChanged: (val) => setState(() => isFeatured = val!),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: deadlineController,
-                    decoration: InputDecoration(
-                      labelText: 'تاريخ انتهاء التقديم (YYYY-MM-DD)', 
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                    readOnly: true,
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now().add(const Duration(days: 30)),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2100),
-                      );
-                      if (pickedDate != null) {
-                        deadlineController.text = pickedDate.toString().split(' ')[0];
+                    // Company Selection
+                    Obx(() {
+                      if (companyController.isLoading.value && companyController.myCompanies.isEmpty) {
+                        return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
                       }
-                    },
-                  ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Obx(() => ElevatedButton(
-                      onPressed: (jobController.isLoading.value) ? null : () async {
-                        // final hasInternet = await NetworkUtils.checkInternet(context);
-                        // if (!hasInternet) return;
-                        if (!_formKey.currentState!.validate()) {
-                          AppErrorHandler.showErrorSnack('يرجى تعبئة جميع الحقول المطلوبة');
-                          return;
-                        }
-                        
-                       // Check if company is verified
-                        final selectedCompany = companyController.myCompanies.firstWhereOrNull((c) => c.id == selectedCompanyId);
-                        if (selectedCompany != null && (selectedCompany.isVerified == false || selectedCompany.isVerified == null)) {
-                          Get.snackbar('خطاء', 'عذراً، يجب توثيق الشركة أولاً لتتمكن من نشر وظيفة جديدة',
-                            backgroundColor: Colors.black87,
-                            colorText: Colors.white,
-                            snackPosition: SnackPosition.TOP,
-                            margin: const EdgeInsets.all(16),
-                            borderRadius: 12,
-                            duration: const Duration(seconds: 4),
-                            isDismissible: true,
-                          );
-                          return;
-                        }
-                        
-                        final jobData = JobCreate(
-                          title: titleController.text,
-                          description: descriptionController.text,
-                          requirements: requirementsController.text,
-                          responsibilities: responsibilitiesController.text,
-                          city: selectedCity ?? '',
-                          jobType: selectedJobType ?? '',
-                          experienceLevel: selectedExperienceLevel ?? '',
-                          educationLevel: selectedEducationLevel ?? '',
-                          company: selectedCompanyId!,
-                          category: selectedCategory,
-                          salaryMin: int.tryParse(salaryMinController.text),
-                          salaryMax: int.tryParse(salaryMaxController.text),
-                          isSalaryNegotiable: salaryNegotiable,
-                          benefits: benefitsController.text,
-                          isUrgent: isUrgent,
-                          isFeatured: isFeatured,
-                          applicationDeadline: deadlineController.text.isNotEmpty ? deadlineController.text : null,
-                          isActive: isActive,
+                      if (companyController.myCompanies.isEmpty) {
+                        return Card(
+                          color: Colors.orange[50],
+                          child: const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              'يجب أن يكون لديك شركة مسجلة لنشر وظيفة. قم بإنشاء شركة أولاً.',
+                              style: TextStyle(color: Colors.orange),
+                            ),
+                          ),
                         );
-                        
-                        bool success;
-                        if (isEditing) {
-                          success = await jobController.updateJob(widget.job!.slug, jobData);
-                        } else {
-                          success = await jobController.createJob(jobData);
-                        }
+                      }
 
-                        // if (success) {
-                        //    Get.back(result: true); 
-                        // }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      return DropdownButtonFormField<int>(
+                        value: selectedCompanyId,
+                        items: companyController.myCompanies.map((company) {
+                          return DropdownMenuItem(
+                            value: company.id,
+                            child: Text(company.name ?? 'شركة غير معروفة'),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          setState(() {
+                            selectedCompanyId = val;
+                            selectedCustomFormId = null;
+                          });
+                          if (val != null) {
+                            jobController.loadCustomForms(val);
+                          }
+                        },
+                        validator: (val) => val == null ? 'يرجى اختيار الشركة' : null,
+                        decoration: InputDecoration(
+                          labelText: 'اختر الشركة',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 16),
+                    // Category Selection
+                    Obx(() {
+                      if (jobController.categories.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return DropdownButtonFormField<int>(
+                        value: selectedCategory,
+                        items: jobController.categories.map((category) {
+                          return DropdownMenuItem(
+                            value: category.id,
+                            child: Text(category.name),
+                          );
+                        }).toList(),
+                        onChanged: (val) => setState(() => selectedCategory = val),
+                        validator: (val) => val == null ? 'يرجى اختيار الفئة' : null,
+                        decoration: InputDecoration(
+                          labelText: 'الفئة',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 16),
+                    _buildTextField(titleController, 'عنوان الوظيفة', validator: (v) => v!.isEmpty ? 'مطلوب' : null, inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[\u0600-\u06FFa-zA-Z\s]')),
+                    ]),
+                    const SizedBox(height: 16),
+                    _buildDropdown('المدينة', AppEnums.cities, (val) => setState(() => selectedCity = val), value: selectedCity, validator: (v) => v == null ? 'مطلوب' : null),
+                    const SizedBox(height: 16),
+                    _buildDropdown('نوع الوظيفة', AppEnums.jobTypes, (val) => setState(() => selectedJobType = val), value: selectedJobType, validator: (v) => v == null ? 'مطلوب' : null),
+                    const SizedBox(height: 16),
+                    _buildDropdown('مستوى الخبرة', AppEnums.experienceLevels, (val) => setState(() => selectedExperienceLevel = val), value: selectedExperienceLevel, validator: (v) => v == null ? 'مطلوب' : null),
+                    const SizedBox(height: 16),
+                    _buildDropdown('المستوى التعليمي', AppEnums.educationLevels, (val) => setState(() => selectedEducationLevel = val), value: selectedEducationLevel, validator: (v) => v == null ? 'مطلوب' : null),
+                    const SizedBox(height: 16),
+
+
+                    const SizedBox(height: 16),
+                    _buildDropdown('طريقة التقديم', AppEnums.applicationMethod, (val) {
+                      setState(() {
+                        selectedApplicationMethod = val;
+                        selectedCustomFormId = null;
+                      });
+                    }, value: selectedApplicationMethod ?? 'platform', validator: (v) => v == null ? 'مطلوب' : null),
+
+                    // Custom Form Selection
+                    if (selectedApplicationMethod == 'custom_form') ...[
+                      const SizedBox(height: 16),
+                      Obx(() {
+                        if (jobController.customForms.isEmpty) {
+                          return const Text('لا توجد نماذج مخصصة لهذه الشركة', style: TextStyle(color: Colors.red));
+                        }
+                        return DropdownButtonFormField<int>(
+                          value: selectedCustomFormId,
+                          items: jobController.customForms.map((form) {
+                            return DropdownMenuItem(
+                              value: form.id,
+                              child: Text(form.name ?? 'نموذج بدون اسم'),
+                            );
+                          }).toList(),
+                          onChanged: (val) => setState(() => selectedCustomFormId = val),
+                          validator: (val) => val == null ? 'يرجى اختيار النموذج' : null,
+                          decoration: InputDecoration(
+                            labelText: 'اختر النموذج',
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                            contentPadding: const EdgeInsets.all(16),
+                          ),
+                        );
+                      }),
+                    ],
+
+                    // Template File
+                    if (selectedApplicationMethod == 'template_file') ...[
+                      const SizedBox(height: 16),
+                      // For now, simple text field for URL or file name as placeholder for file upload
+                      _buildTextField(templateController, 'رابط ملف القالب', validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+                    ],
+
+                    // External Link
+                    if (selectedApplicationMethod == 'external_link') ...[
+                      const SizedBox(height: 16),
+                      _buildTextField(externalUrlController, 'رابط التقديم الخارجي', validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+                    ],
+
+                    // Email
+                    if (selectedApplicationMethod == 'email') ...[
+                      const SizedBox(height: 16),
+                      _buildTextField(applicationEmailController, 'البريد الإلكتروني للتقديم', validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+                    ],
+
+                    const SizedBox(height: 16),
+
+                    _buildSectionTitle('التفاصيل'),
+                    _buildTextField(descriptionController, 'الوصف الوظيفي', maxLines: 5, validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+                    const SizedBox(height: 16),
+                    _buildTextField(requirementsController, 'المتطلبات', maxLines: 3, validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+                    const SizedBox(height: 16),
+                    _buildTextField(responsibilitiesController, 'المسؤوليات', maxLines: 3),
+                    const SizedBox(height: 16),
+                    _buildSectionTitle('الراتب والمزايا'),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTextField(salaryMinController, 'الحد الأدنى', keyboardType: TextInputType.number),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildTextField(salaryMaxController, 'الحد الأعلى', keyboardType: TextInputType.number),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    CheckboxListTile(
+                      title: const Text('راتب قابل للتفاوض'),
+                      value: salaryNegotiable,
+                      onChanged: (val) => setState(() => salaryNegotiable = val!),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildTextField(benefitsController, 'المزايا (اختياري)', maxLines: 2),
+                    const SizedBox(height: 16),
+                    _buildSectionTitle('إعدادات إضافية'),
+                    CheckboxListTile(
+                      title: const Text('إظهار الوظيفة للباحثين عن عمل (نشط)'),
+                      value: isActive,
+                      onChanged: (val) => setState(() => isActive = val!), // Corrected setState
+                    ),
+                    CheckboxListTile(
+                      title: const Text('تفعيل ملخص الذكاء الاصطناعي'),
+                      value: isAiSummaryEnabled,
+                      onChanged: (val) => setState(() => isAiSummaryEnabled = val!),
+                    ),
+                    CheckboxListTile(
+                      title: const Text('توظيف عاجل'),
+                      value: isUrgent,
+                      onChanged: (val) => setState(() => isUrgent = val!),
+                    ),
+                    CheckboxListTile(
+                      title: const Text('إعلان مميز'),
+                      value: isFeatured,
+                      onChanged: (val) => setState(() => isFeatured = val!),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: deadlineController,
+                      decoration: InputDecoration(
+                        labelText: 'تاريخ انتهاء التقديم (YYYY-MM-DD)',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        contentPadding: const EdgeInsets.all(16),
                       ),
-                      child: jobController.isLoading.value
-                          ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                            )
-                          : Text(isEditing ? 'حفظ التعديلات' : 'نشر الوظيفة', style: const TextStyle(color: Colors.white, fontSize: 18)),
-                    )),
-                  ),
-                ],
+                      readOnly: true,
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now().add(const Duration(days: 30)),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          deadlineController.text = pickedDate.toString().split(' ')[0];
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Obx(() => ElevatedButton(
+                        onPressed: (jobController.isLoading.value) ? null : () async {
+                          // final hasInternet = await NetworkUtils.checkInternet(context);
+                          // if (!hasInternet) return;
+                          if (!_formKey.currentState!.validate()) {
+                            AppErrorHandler.showErrorSnack('يرجى تعبئة جميع الحقول المطلوبة');
+                            return;
+                          }
+
+                          // Check if company is verified
+                          final selectedCompany = companyController.myCompanies.firstWhereOrNull((c) => c.id == selectedCompanyId);
+                          if (selectedCompany != null && (selectedCompany.isVerified == false || selectedCompany.isVerified == null)) {
+                            Get.snackbar('خطاء', 'عذراً، يجب توثيق الشركة أولاً لتتمكن من نشر وظيفة جديدة',
+                              backgroundColor: Colors.black87,
+                              colorText: Colors.white,
+                              snackPosition: SnackPosition.TOP,
+                              margin: const EdgeInsets.all(16),
+                              borderRadius: 12,
+                              duration: const Duration(seconds: 4),
+                              isDismissible: true,
+                            );
+                            return;
+                          }
+
+                          final jobData = JobCreate(
+                            title: titleController.text,
+                            description: descriptionController.text,
+                            requirements: requirementsController.text,
+                            responsibilities: responsibilitiesController.text,
+                            city: selectedCity ?? '',
+                            jobType: selectedJobType ?? '',
+                            experienceLevel: selectedExperienceLevel ?? '',
+                            educationLevel: selectedEducationLevel ?? '',
+                            company: selectedCompanyId!,
+                            category: selectedCategory,
+                            salaryMin: int.tryParse(salaryMinController.text),
+                            salaryMax: int.tryParse(salaryMaxController.text),
+                            isSalaryNegotiable: salaryNegotiable,
+                            benefits: benefitsController.text,
+                            isUrgent: isUrgent,
+                            isFeatured: isFeatured,
+                            applicationDeadline: deadlineController.text.isNotEmpty ? deadlineController.text : null,
+                            isActive: isActive,
+                            applicationMethod: selectedApplicationMethod,
+                            customForm: selectedApplicationMethod == 'custom_form' ? selectedCustomFormId : null,
+                            applicationTemplate: selectedApplicationMethod == 'template_file' ? templateController.text : null,
+                            externalApplicationUrl: selectedApplicationMethod == 'external_link' ? externalUrlController.text : null,
+                            applicationEmail: selectedApplicationMethod == 'email' ? applicationEmailController.text : null,
+                            isAiSummaryEnabled: isAiSummaryEnabled,
+                          );
+
+                          bool success;
+                          if (isEditing) {
+                            success = await jobController.updateJob(widget.job!.slug, jobData);
+                          } else {
+                            success = await jobController.createJob(jobData);
+                          }
+
+                          // if (success) {
+                          //    Get.back(result: true);
+                          // }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: jobController.isLoading.value
+                            ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                            : Text(isEditing ? 'حفظ التعديلات' : 'نشر الوظيفة', style: const TextStyle(color: Colors.white, fontSize: 18)),
+                      )),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

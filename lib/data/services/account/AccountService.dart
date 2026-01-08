@@ -17,7 +17,7 @@ class AccountService {
   Future<Map<String, String>> _getHeaders() async {
     final token = _storage.read(AppConstants.authTokenKey);
     print('Token from AccountService  is : $token');
-    return token != null ? {'Authorization': 'Token $token'} : {};
+    return token != null ? {'Authorization': 'Bearer $token'} : {};
   }
 
   Future<ProfileResponse> getProfile() async {

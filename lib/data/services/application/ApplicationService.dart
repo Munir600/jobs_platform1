@@ -18,7 +18,7 @@ class ApplicationService {
   Future<Map<String, String>> _getHeaders() async {
     final token = _storage.read(AppConstants.authTokenKey);
     print('Token from ApplicationService  is : $token');
-    return token != null ? {'Authorization': 'Token $token'} : {};
+    return token != null ? {'Authorization': 'Bearer $token'} : {};
   }
 
   Future<PaginatedJobApplicationList> getMyApplications({int? page}) async {

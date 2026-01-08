@@ -13,7 +13,7 @@ class InterviewService {
     final token = _storage.read(AppConstants.authTokenKey);
     print('Token from InterviewService  is : $token');
 
-    return token != null ? {'Authorization': 'Token $token'} : {};
+    return token != null ? {'Authorization': 'Bearer $token'} : {};
   }
 
   Future<PaginatedInterviewList> getInterviews({int? page}) async {
