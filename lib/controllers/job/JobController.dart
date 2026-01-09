@@ -177,7 +177,7 @@ class JobController extends GetxController {
       }
 
       totalMyJobsCount.value = response.count ?? 0;
-      //totalMyJobsPages.value = (totalMyJobsCount.value /pageSize).ceil();
+      totalMyJobsPages.value = (totalMyJobsCount.value /5).ceil();
       print('the totalMyJobsCount is ${totalMyJobsCount.value}');
       print('the totalMyJobsPages is ${totalMyJobsPages.value}');
     } catch (e) {
