@@ -4,7 +4,8 @@ import '../../../config/app_colors.dart';
 import '../../../controllers/account/AccountController.dart';
 import '../../../controllers/application/ApplicationController.dart';
 import '../../../core/utils/network_utils.dart';
-import '../application/ApplicationDetailScreen.dart';
+import '../profile/employer_profile/EmployerApplicationsScreen.dart';
+
 
 class MessagesScreen extends GetView<ApplicationController> {
   const MessagesScreen({super.key});
@@ -94,7 +95,7 @@ class MessagesScreen extends GetView<ApplicationController> {
                   ),
                   trailing: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
                   onTap: () {
-                    Get.to(() => ApplicationDetailScreen(application: app));
+                    Get.to(() => EmployerApplicationsScreen());
                   },
                 ),
               );

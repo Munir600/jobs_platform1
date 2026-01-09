@@ -14,6 +14,9 @@ import '../../models/Interview/PaginatedInterviewList.dart';
 import '../../../core/constants.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../models/application/EmployerApplicationsModel.dart';
+import '../../models/application/JobseekerApplicationsModel.dart';
+
 class ApplicationService {
   final ApiClient _apiClient = ApiClient();
   final GetStorage _storage = GetStorage();
@@ -23,7 +26,7 @@ class ApplicationService {
     return token != null ? {'Authorization': 'Bearer $token'} : {};
   }
 
-  Future<PaginatedJobApplicationList> getMyApplications({int? page}) async {
+  Future<JobseekerApplicationsModel> getMyApplications({int? page}) async {
     final headers = await _getHeaders();
     String path = ApiEndpoints.myApplications;
     if (page != null) {
@@ -31,13 +34,13 @@ class ApplicationService {
     }
     final response = await _apiClient.get(path, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return PaginatedJobApplicationList.fromJson(jsonDecode(response.body));
+      return JobseekerApplicationsModel.fromJson(jsonDecode(response.body));
     } else {
       throw Exception(response.body);
     }
   }
 
-  Future<PaginatedJobApplicationList> getJobApplications({int? page, int? jobId}) async {
+  Future<EmployerApplicationsModel> getJobApplications({int? page, int? jobId}) async {
     final headers = await _getHeaders();
     String path = ApiEndpoints.jobApplications;
     if (page != null) {
@@ -48,7 +51,7 @@ class ApplicationService {
     }
     final response = await _apiClient.get(path, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return PaginatedJobApplicationList.fromJson(jsonDecode(response.body));
+      return EmployerApplicationsModel.fromJson(jsonDecode(response.body));
     } else {
       print('Error fetching job applicationssss: ${response.body}');
       throw Exception(response.body);

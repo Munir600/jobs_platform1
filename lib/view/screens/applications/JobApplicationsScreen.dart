@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../../../controllers/application/ApplicationController.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/models/application/JobApplication.dart';
-import '../../screens/application/ApplicationDetailScreen.dart'; 
+import '../../screens/application/EmployerApplicationDetailScreen.dart'; 
 import 'package:intl/intl.dart';
 
 class JobApplicationsScreen extends StatefulWidget {
@@ -72,10 +72,12 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
 
   Widget _buildApplicationCard(JobApplication application) {
     final statusColor = _getStatusColor(application.status);
-    final date = DateTime.parse(application.appliedAt ?? DateTime.now().toString());
-    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-
-    return Card(
+        final String appliedAtStr = application.appliedAt is String
+        ? application.appliedAt as String
+        : application.appliedAt?.toString() ?? DateTime.now().toIso8601String();
+         final DateTime date = DateTime.tryParse(appliedAtStr) ?? DateTime.now();
+         final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+         return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -103,7 +105,7 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
                         application.job?.title ?? 'وظيفة غير معروفة',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textColor.withOpacity(0.7),
+                          color: AppColors.textColor.withAlpha(200),
                         ),
                       ),
                     ],
@@ -112,7 +114,7 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withAlpha(30),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: statusColor),
                   ),
@@ -126,7 +128,7 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
             const SizedBox(height: 8),
             Text(
               'تاريخ التقديم: $formattedDate',
-              style: TextStyle(color: AppColors.textColor.withOpacity(0.6), fontSize: 14),
+              style: TextStyle(color: AppColors.textColor.withAlpha(30), fontSize: 14),
             ),
             const SizedBox(height: 16),
             Row(
@@ -135,7 +137,7 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
                 ElevatedButton(
                   onPressed: () {
                     // Navigate to details
-                    Get.to(() => ApplicationDetailScreen(application: application));
+                    Get.to(() => EmployerApplicationDetailScreen(application: application));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,

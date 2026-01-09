@@ -5,7 +5,7 @@ import '../../../config/app_colors.dart';
 import '../../../data/models/application/JobApplication.dart';
 import '../../../data/models/application/ApplicationStatistics.dart';
 import 'package:intl/intl.dart';
-import '../application/ApplicationDetailScreen.dart';
+import '../application/JobseekerApplicationDetailScreen.dart';
 import '../../widgets/common/CompactStatisticsBar.dart';
 import '../../widgets/common/DetailedStatisticsSheet.dart';
 
@@ -194,9 +194,8 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
 
   Widget _buildApplicationCard(JobApplication application) {
     final statusColor = _getStatusColor(application.status);
-    final date = DateTime.parse(application.appliedAt ?? DateTime.now().toString());
+    final date = DateTime.tryParse(application.appliedAt?.toString() ?? DateTime.now().toIso8601String()) ?? DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-
     return Card(
       color: AppColors.accentColor,
       margin: const EdgeInsets.only(bottom: 16),
@@ -223,7 +222,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withAlpha(30),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: statusColor),
                   ),
@@ -237,7 +236,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
             const SizedBox(height: 8),
             Text(
               'تاريخ التقديم: $formattedDate',
-              style: TextStyle(color: AppColors.textColor.withOpacity(0.6), fontSize: 14),
+              style: TextStyle(color: AppColors.textColor.withAlpha(30), fontSize: 14),
             ),
             const SizedBox(height: 16),
             Row(
@@ -253,7 +252,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                         textCancel: 'إلغاء',
                         confirmTextColor: Colors.white,
                         onConfirm: () {
-                          controller.withdrawApplication(application.id!);
+                          controller.withdrawApplication(application.id);
                           Get.back();
                         },
                       );
@@ -264,7 +263,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
                 const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () {
-                       Get.to(() => ApplicationDetailScreen(application: application));
+                       Get.to(() => JobseekerApplicationDetailScreen(application: application));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,

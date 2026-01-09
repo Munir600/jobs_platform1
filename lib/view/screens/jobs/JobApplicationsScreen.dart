@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../../../config/app_colors.dart';
 import '../../../controllers/application/ApplicationController.dart';
 import '../../../routes/app_routes.dart';
-import '../application/ApplicationDetailScreen.dart';
+import '../application/EmployerApplicationDetailScreen.dart';
 
 class JobApplicationsScreen extends StatefulWidget {
   final int jobId;
@@ -50,10 +50,10 @@ class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
                 title: Text(app.applicantName ?? 'متقدم غير معروف'),
-                subtitle: Text('تاريخ التقديم: ${app.appliedAt?.split('T')[0] ?? '-'}'),
+                subtitle: Text("تاريخ التقديم: ${app.appliedAt != null ? app.appliedAt!.toLocal().toIso8601String().split('T')[0] : '-'}"),
                 trailing: _buildStatusBadge(app.status ?? 'pending'),
                 onTap: () {
-                 Get.to(() => ApplicationDetailScreen(application: app));
+                 Get.to(() => EmployerApplicationDetailScreen(application: app));
               //    Get.toNamed(AppRoutes.applicationDetails, arguments: app);
                 },
               ),

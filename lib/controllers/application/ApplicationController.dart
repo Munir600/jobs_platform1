@@ -18,10 +18,10 @@ class ApplicationController extends GetxController {
   final ApplicationService _applicationService = ApplicationService();
   final _accountController = Get.find<AccountController>();
   final GetStorage _storage = GetStorage();
-  
+
   // Scroll Controller for Employer Job Applications
   final ScrollController jobApplicationsScrollController = ScrollController();
-  
+
   Rx<User?> get currentUser => _accountController.currentUser;
   final RxList<JobApplication> myApplications = <JobApplication>[].obs;
   final RxList<JobApplication> jobApplications = <JobApplication>[].obs;
@@ -48,13 +48,13 @@ class ApplicationController extends GetxController {
     super.onInit();
     //loadCachedData();
     loadMyApplications();
-    
+
     // Setup scroll listener for employer applications
     jobApplicationsScrollController.addListener(_onJobApplicationsScroll);
   }
 
   void _onJobApplicationsScroll() {
-    if (jobApplicationsScrollController.position.pixels >= 
+    if (jobApplicationsScrollController.position.pixels >=
         jobApplicationsScrollController.position.maxScrollExtent - 200) {
       if (hasMoreJobApplications.value && !isLoadingMoreJobApplications.value) {
         loadMoreJobApplications();
@@ -68,7 +68,7 @@ class ApplicationController extends GetxController {
       if (cachedMyApps != null && cachedMyApps is List) {
         myApplications.assignAll(cachedMyApps.map((e) => JobApplication.fromJson(e)).toList());
       }
-      
+
       final cachedInterviews = _storage.read('my_interviews');
       if (cachedInterviews != null && cachedInterviews is List) {
         interviews.assignAll(cachedInterviews.map((e) => Interview.fromJson(e)).toList());
@@ -99,9 +99,6 @@ class ApplicationController extends GetxController {
       isListLoading.value = true;
       myApplicationsPage.value = 1;
 
-      // Load statistics alongside list
-      loadStatistics();
-      
       final response = await _applicationService.getMyApplications(page: 1);
       if (response.results != null) {
         myApplications.assignAll(response.results!);
@@ -109,7 +106,7 @@ class ApplicationController extends GetxController {
         _storage.write('my_applications', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-     // AppErrorHandler.showErrorSnack(e);
+      // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -121,7 +118,7 @@ class ApplicationController extends GetxController {
     try {
       isLoadingMoreMyApplications.value = true;
       final nextPage = myApplicationsPage.value + 1;
-      
+
       final response = await _applicationService.getMyApplications(page: nextPage);
       if (response.results != null && response.results!.isNotEmpty) {
         myApplications.addAll(response.results!);
@@ -141,27 +138,25 @@ class ApplicationController extends GetxController {
     try {
       isListLoading.value = true;
       jobApplicationsPage.value = 1; // Reset to page 1
-      
-      // Load statistics alongside list
-      loadStatistics();
-
-      if (jobId != null) {
-         final cachedJobApps = _storage.read('job_applications_$jobId');
-         if(cachedJobApps != null && cachedJobApps is List) {
-            jobApplications.assignAll(cachedJobApps.map((e) => JobApplication.fromJson(e)).toList());
-         }
-      }
 
       final response = await _applicationService.getJobApplications(page: 1, jobId: jobId);
       if (response.results != null) {
         jobApplications.assignAll(response.results!);
         hasMoreJobApplications.value = response.next != null;
-        if (jobId != null) {
-           _storage.write('job_applications_$jobId', response.results!.map((e) => e.toJson()).toList());
+
+        // Extract and update statistics from response
+        if (response.statusCounts != null) {
+          statistics.value = ApplicationStatistics.fromModelStatusCounts(
+              response.statusCounts,
+              response.count ?? response.results!.length
+          );
         }
+
+        final cacheKey = jobId != null ? 'job_applications_$jobId' : 'job_applications';
+        _storage.write(cacheKey, response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-    //  AppErrorHandler.showErrorSnack(e);
+      print('Error loading job applications: $e');
     } finally {
       isListLoading.value = false;
     }
@@ -180,7 +175,7 @@ class ApplicationController extends GetxController {
         jobApplicationsPage.value = nextPage;
         hasMoreJobApplications.value = response.next != null;
       } else {
-         hasMoreJobApplications.value = false;
+        hasMoreJobApplications.value = false;
       }
     } catch (e) {
       print('Error loading more job applications: $e');
@@ -198,7 +193,7 @@ class ApplicationController extends GetxController {
         _storage.write('my_interviews', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-     // AppErrorHandler.showErrorSnack(e);
+      // AppErrorHandler.showErrorSnack(e);
     } finally {
       isListLoading.value = false;
     }
@@ -234,7 +229,7 @@ class ApplicationController extends GetxController {
   Future<void> loadMessages(int applicationId) async {
     try {
       isMessageLoading.value = true;
-      
+
       // Load cached messages
       final cachedMsgs = _storage.read('application_messages_$applicationId');
       if (cachedMsgs != null && cachedMsgs is List) {
@@ -247,7 +242,7 @@ class ApplicationController extends GetxController {
         _storage.write('application_messages_$applicationId', response.results!.map((e) => e.toJson()).toList());
       }
     } catch (e) {
-    //  AppErrorHandler.showErrorSnack(e);
+      //  AppErrorHandler.showErrorSnack(e);
     } finally {
       isMessageLoading.value = false;
     }
@@ -259,7 +254,7 @@ class ApplicationController extends GetxController {
       await _applicationService.createApplicationMessage(applicationId, message);
       await loadMessages(applicationId); // Refresh messages
     } catch (e) {
-     // AppErrorHandler.showErrorSnack(e);
+      // AppErrorHandler.showErrorSnack(e);
     }
   }
 
@@ -283,12 +278,12 @@ class ApplicationController extends GetxController {
       isLoading.value = true;
       await _applicationService.updateApplication(id, update);
       await loadJobApplications();
-     await loadMyApplications();
+      await loadMyApplications();
       //AppErrorHandler.showSuccessSnack('تم تحديث الطلب بنجاح');
       return true;
     } catch (e) {
       print('Error updating application: $e');
-     // AppErrorHandler.showErrorSnack(e);
+      // AppErrorHandler.showErrorSnack(e);
       return false;
     } finally {
       isLoading.value = false;
@@ -317,7 +312,7 @@ class ApplicationController extends GetxController {
       _storage.write('application_statistics', stats.toJson());
     } catch (e) {
       print('Failed to load statistics: $e');
-     // AppErrorHandler.showErrorSnack(e);
+      // AppErrorHandler.showErrorSnack(e);
 
     }
   }

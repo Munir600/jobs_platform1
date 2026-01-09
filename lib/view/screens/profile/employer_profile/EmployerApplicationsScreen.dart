@@ -5,7 +5,7 @@ import '../../../../controllers/application/ApplicationController.dart';
 import '../../../../data/models/application/ApplicationStatistics.dart';
 import '../../../widgets/common/CompactStatisticsBar.dart';
 import '../../../widgets/common/DetailedStatisticsSheet.dart';
-import '../../application/ApplicationDetailScreen.dart';
+import '../../application/EmployerApplicationDetailScreen.dart';
 
 class EmployerApplicationsScreen extends GetView<ApplicationController> {
   const EmployerApplicationsScreen({super.key});
@@ -56,7 +56,7 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
             controller: controller.jobApplicationsScrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: controller.jobApplications.length + 2, // Header + Footer
+            itemCount: controller.jobApplications.length + 2, 
             itemBuilder: (context, index) {
               // Statistics Header
               if (index == 0) {
@@ -93,7 +93,7 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
                       Text('الوظيفة: ${application.jobTitle ?? '-'}'),
                       const SizedBox(height: 4),
                       Text(
-                        'تاريخ التقديم: ${application.appliedAt?.split('T')[0] ?? '-'}',
+                        'تاريخ التقديم: ${application.appliedAt != null ? application.appliedAt!.toString().split(' ')[0] : '-'}',
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
@@ -114,7 +114,7 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
                     ),
                   ),
                   onTap: () {
-                    Get.to(() => ApplicationDetailScreen(application: application));
+                    Get.to(() => EmployerApplicationDetailScreen(application: application));
                   },
                 ),
               );
@@ -144,18 +144,41 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
             label: 'انتظار',
             color: Colors.orange,
           ),
-          StatisticItem(
-            icon: Icons.check_circle,
-            value: stats.acceptedApplications,
-            label: 'مقبول',
-            color: Colors.green,
-          ),
-          StatisticItem(
-            icon: Icons.cancel,
-            value: stats.rejectedApplications,
-            label: 'مرفوض',
-            color: Colors.red,
-          ),
+          if (stats.interviewScheduledCount > 0)
+            StatisticItem(
+              icon: Icons.event,
+              value: stats.interviewScheduledCount,
+              label: 'مقابلات',
+              color: Colors.blue,
+            ),
+          if (stats.externalRedirectCount > 0)
+            StatisticItem(
+              icon: Icons.open_in_new,
+              value: stats.externalRedirectCount,
+              label: 'خارجي',
+              color: Colors.teal,
+            ),
+          if (stats.withdrawnCount > 0)
+            StatisticItem(
+              icon: Icons.person_off,
+              value: stats.withdrawnCount,
+              label: 'منسحب',
+              color: Colors.grey,
+            ),
+          if (stats.acceptedApplications > 0)
+            StatisticItem(
+              icon: Icons.check_circle,
+              value: stats.acceptedApplications,
+              label: 'مقبول',
+              color: Colors.green,
+            ),
+          if (stats.rejectedApplications > 0)
+            StatisticItem(
+              icon: Icons.cancel,
+              value: stats.rejectedApplications,
+              label: 'مرفوض',
+              color: Colors.red,
+            ),
         ],
         onShowDetails: () => _showDetailedStats(context, stats),
       );
@@ -167,10 +190,10 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
       Colors.orange,
       Colors.green,
       Colors.red,
-      Colors.purple,
+      Colors.blue,
       Colors.blue,
       Colors.grey,
-      Colors.teal,
+      Colors.blue,
     ];
 
     if (stats.applicationsByStatus.isEmpty) return;
@@ -197,7 +220,7 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
 
   Widget _buildLoadingFooter() {
     return Obx(() {
-       if (!controller.isLoadingMoreJobApplications.value) {
+      if (!controller.isLoadingMoreJobApplications.value) {
         return const SizedBox.shrink();
       }
       return const Padding(
@@ -217,6 +240,10 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
         return Colors.green;
       case 'rejected':
         return Colors.red;
+      case 'withdrawn':
+        return Colors.grey;
+      case 'external_redirect':
+        return Colors.blue;
       case 'interview':
       case 'interview_scheduled':
         return Colors.blue;
@@ -239,9 +266,11 @@ class EmployerApplicationsScreen extends GetView<ApplicationController> {
         return 'مرفوض';
       case 'withdrawn':
         return 'منسحب';
+      case 'external_redirect':
+        return 'تقديم خارجي';
       case 'interview':
       case 'interview_scheduled':
-        return 'مقابلة';
+        return 'موعد مقابلة';
       default:
         return status ?? 'غير معروف';
     }
