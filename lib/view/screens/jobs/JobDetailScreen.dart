@@ -168,7 +168,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (isEmployer || isDeadlinePassed) ? null : () {
+                          onPressed: ( isDeadlinePassed) ? null : () {
                             _handleApplication(job);
                           },
                           style: ElevatedButton.styleFrom(

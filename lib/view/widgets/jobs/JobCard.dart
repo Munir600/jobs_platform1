@@ -216,15 +216,14 @@ class JobCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: (isEmployer || isDeadlinePassed)
+                      onPressed: ( isDeadlinePassed)
                           ? null
                           : (onApply ?? () {
                         if (job.id != null) {
                           if (job.applicationMethod != null && job.applicationMethod != 'platform') {
                              Get.toNamed(AppRoutes.jobDetails, arguments: job.slug);
                           } else {
-                              Get.toNamed(AppRoutes.applyJob, arguments: {'jobId': job.id, 'jobTitle': job.title});
-                          }
+                            Get.toNamed(AppRoutes.jobDetails, arguments: job.slug);                          }
                         }
                       }),
                       style: ElevatedButton.styleFrom(

@@ -116,7 +116,6 @@ class ApiClient {
         if (newRefreshToken != null) {
           _apiService.setRefreshToken(newRefreshToken);
         }
-        
         print("ApiClient: Token refreshed successfully");
         return true;
       } else {

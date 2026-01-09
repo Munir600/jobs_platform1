@@ -61,7 +61,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final user = controller.currentUser.value;
     // Check if mounted to avoid setting state or accessing controllers after dispose
     if (!mounted || user == null) return;
-    
+
     if (_firstNameCtrl.text != user.firstName) _firstNameCtrl.text = user.firstName;
     if (_lastNameCtrl.text != user.lastName) _lastNameCtrl.text = user.lastName;
     if (_emailCtrl.text != user.email) _emailCtrl.text = user.email;
@@ -111,7 +111,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Future<void> _submit() async {
     // final hasInternet = await NetworkUtils.checkInternet(context);
     // if (!hasInternet) return;
-    
+
     if (_formKey.currentState!.validate()) {
       final data = {
         'first_name': _firstNameCtrl.text,
@@ -185,22 +185,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         child: Obx(() => _avatarFile.value != null
                             ? Image.file(_avatarFile.value!, fit: BoxFit.cover)
                             : (user.profilePicture != null
-                                ? Image.network(
-                                    user.profilePicture!.startsWith('http')
-                                        ? user.profilePicture!
-                                        : AppConstants.baseUrl + user.profilePicture!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Image.asset(
-                                        'assets/images/Logo4.png',
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
-                                  )
-                                : Image.asset(
-                                    'assets/images/Logo4.png',
-                                    fit: BoxFit.cover,
-                                  ))),
+                            ? Image.network(
+                          user.profilePicture!.startsWith('http')
+                              ? user.profilePicture!
+                              : AppConstants.baseUrl + user.profilePicture!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/images/Logo4.png',
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        )
+                            : Image.asset(
+                          'assets/images/Logo4.png',
+                          fit: BoxFit.cover,
+                        ))),
                       ),
                     ),
                     Positioned(
@@ -244,19 +244,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     child: _buildActionButton(
                       'منشئ السيرة الذاتية',
                       Icons.description,
-                      () => Get.to(() => const JobSeekerProfileScreen()),
+                          () => Get.to(() => const JobSeekerProfileScreen()),
                       color: AppColors.primaryColor,
                       textColor: Colors.white,
                     ),
                   ),
-                
+
                 if (user.isEmployer)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: _buildActionButton(
                       'بيانات الشركة الاساسية',
                       Icons.business,
-                      () => Get.to(() => const EmployerProfileScreen()),
+                          () => Get.to(() => const EmployerProfileScreen()),
                       color: AppColors.primaryColor,
                       textColor: Colors.white,
                     ),
@@ -336,26 +336,38 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         isRequired: false,
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // Submit Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: Obx(() => ElevatedButton(
-                          onPressed: controller.isLoading.value ? null : _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryColor,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Obx(() => ElevatedButton(
+                            onPressed: controller.isLoading.value ? null : _submit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          ),
-                          child: controller.isLoading.value
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text(
-                                  'حفظ التغييرات',
-                                  style: TextStyle(color: Colors.white, fontSize: 18),
-                                ),
-                        )),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : const Text(
+                              'حفظ التغييرات',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )),
+                        ],
                       ),
                     ],
                   ),
@@ -395,14 +407,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String label, {
-    int maxLines = 1,
-    bool isRequired = true,
-    bool readOnly = false,
-    List<TextInputFormatter>? inputFormatters,
-    String? Function(String?)? validator,
-  }) {
+      TextEditingController controller,
+      String label, {
+        int maxLines = 1,
+        bool isRequired = true,
+        bool readOnly = false,
+        List<TextInputFormatter>? inputFormatters,
+        String? Function(String?)? validator,
+      }) {
     return CustomTextField(
       controller: controller,
       labelText: label,
@@ -410,7 +422,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       readOnly: readOnly,
       inputFormatters: inputFormatters,
       validator: validator ??
-          (v) => (isRequired && (v == null || v.isEmpty))
+              (v) => (isRequired && (v == null || v.isEmpty))
               ? 'هذا الحقل مطلوب'
               : null,
     );
