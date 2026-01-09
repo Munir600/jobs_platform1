@@ -8,39 +8,26 @@ import '../../widgets/common/CompactStatisticsBar.dart';
 import '../../widgets/common/DetailedStatisticsSheet.dart';
 import 'InterviewDetailScreen.dart';
 
-class InterviewListScreen extends StatefulWidget {
+class InterviewListScreen extends GetView<InterviewController> {
   const InterviewListScreen({super.key});
-
-  @override
-  State<InterviewListScreen> createState() => _InterviewListScreenState();
-}
-
-class _InterviewListScreenState extends State<InterviewListScreen> {
-  final controller = Get.find<InterviewController>();
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      controller.loadMoreInterviews();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        title: const Text('إدارة المقابلات', style: TextStyle(color: AppColors.textColor)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: AppColors.textColor),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: AppColors.primaryColor),
+            onPressed: () => controller.loadInterviews(),
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           Obx(() {
@@ -61,13 +48,13 @@ class _InterviewListScreenState extends State<InterviewListScreen> {
               onRefresh: controller.loadInterviews,
               color: AppColors.primaryColor,
               child: ListView.builder(
-                controller: _scrollController,
+                controller: controller.scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: controller.interviews.length + 2, // +2 for header and footer
                 itemBuilder: (context, index) {
                   // Statistics header
                   if (index == 0) {
-                    return _buildStatisticsHeader();
+                    return _buildStatisticsHeader(context);
                   }
                   
                   // Loading footer
@@ -87,7 +74,7 @@ class _InterviewListScreenState extends State<InterviewListScreen> {
     );
   }
 
-  Widget _buildStatisticsHeader() {
+  Widget _buildStatisticsHeader(BuildContext context) {
     return Obx(() {
       final stats = controller.statistics;
       

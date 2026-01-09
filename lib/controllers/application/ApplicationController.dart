@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../core/utils/error_handler.dart';
@@ -17,6 +18,9 @@ class ApplicationController extends GetxController {
   final ApplicationService _applicationService = ApplicationService();
   final _accountController = Get.find<AccountController>();
   final GetStorage _storage = GetStorage();
+  
+  // Scroll Controller for Employer Job Applications
+  final ScrollController jobApplicationsScrollController = ScrollController();
   
   Rx<User?> get currentUser => _accountController.currentUser;
   final RxList<JobApplication> myApplications = <JobApplication>[].obs;
@@ -44,6 +48,18 @@ class ApplicationController extends GetxController {
     super.onInit();
     //loadCachedData();
     loadMyApplications();
+    
+    // Setup scroll listener for employer applications
+    jobApplicationsScrollController.addListener(_onJobApplicationsScroll);
+  }
+
+  void _onJobApplicationsScroll() {
+    if (jobApplicationsScrollController.position.pixels >= 
+        jobApplicationsScrollController.position.maxScrollExtent - 200) {
+      if (hasMoreJobApplications.value && !isLoadingMoreJobApplications.value) {
+        loadMoreJobApplications();
+      }
+    }
   }
 
   void loadCachedData() {
@@ -74,6 +90,7 @@ class ApplicationController extends GetxController {
 
   @override
   void onClose() {
+    jobApplicationsScrollController.dispose();
     super.onClose();
   }
 

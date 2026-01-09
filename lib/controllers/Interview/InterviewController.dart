@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../core/utils/error_handler.dart';
@@ -14,6 +15,9 @@ class InterviewController extends GetxController {
   final RxBool isListLoading = false.obs;
   final RxBool isLoadingMore = false.obs;
   
+  // Scroll Controller
+  final ScrollController scrollController = ScrollController();
+  
   // Pagination
   final RxInt currentPage = 1.obs;
   final RxInt totalCount = 0.obs;
@@ -27,6 +31,17 @@ class InterviewController extends GetxController {
   void onInit() {
     super.onInit();
     loadCachedData();
+    
+    // Setup scroll listener
+    scrollController.addListener(_onScroll);
+  }
+  
+  void _onScroll() {
+    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+      if (hasNextPage.value && !isLoadingMore.value) {
+        loadMoreInterviews();
+      }
+    }
   }
   
   void loadCachedData() {
@@ -51,6 +66,7 @@ class InterviewController extends GetxController {
 
   @override
   void onClose() {
+    scrollController.dispose();
     super.onClose();
   }
 

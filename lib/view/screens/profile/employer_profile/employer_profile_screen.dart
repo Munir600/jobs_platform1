@@ -4,9 +4,10 @@ import 'package:jobs_platform1/config/app_colors.dart';
 import '../../../../controllers/profile_navigation_controller.dart';
 import '../../companies/MyCompaniesScreen.dart';
 import '../../companies/job_forms/job_forms_screen.dart';
-import '../employer_profile/dashboard.dart';
+import '../../interview/InterviewListScreen.dart';
 import '../employer_profile/setting.dart';
 import '../user_profile_screen.dart';
+import 'EmployerApplicationsScreen.dart';
 import 'EmployerJobManagementScreen.dart';
 import 'employer_dashboard_stats.dart';
 
@@ -20,7 +21,8 @@ class CompanyProfile extends StatelessWidget {
     EmployerDashboardStatsScreen(),
     MyCompaniesScreen(),
     EmployerJobManagementScreen(),
-    EmployerDashboard(),
+    const EmployerApplicationsScreen(),
+    const InterviewListScreen(),
     JobFormsScreen(),
     SettingScreen(),
   ];
@@ -30,7 +32,8 @@ class CompanyProfile extends StatelessWidget {
     " لوحة التحكم",
     " ادارة شركاتي",
     " ادارة الوظائف",
-    " ادارة الطلبات والمقابلات ",
+    " ادارة الطلبات ",
+    " إدارة المقابلات ",
     "ادارة نماذج التقديم",
     " الإعدادات",
   ];
@@ -59,8 +62,10 @@ class CompanyProfile extends StatelessWidget {
                       ? Icons.person
                       : i == 4
                       ? Icons.folder_shared
-                      : i == 5 
-                      ? Icons.description 
+                      : i == 5
+                      ? Icons.event_note
+                      : i == 6
+                      ? Icons.description
                       : Icons.settings,
                   color: AppColors.primaryColor,
                 ),

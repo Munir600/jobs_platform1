@@ -1,7 +1,7 @@
 class ApplicationMessage {
   final int? id;
   final int? application;
-  final dynamic sender; // Can be ID or User object
+  final dynamic sender;
   final String? senderName;
   final String? message;
   final String? attachment;

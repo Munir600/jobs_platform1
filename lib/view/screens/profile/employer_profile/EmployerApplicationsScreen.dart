@@ -7,140 +7,125 @@ import '../../../widgets/common/CompactStatisticsBar.dart';
 import '../../../widgets/common/DetailedStatisticsSheet.dart';
 import '../../application/ApplicationDetailScreen.dart';
 
-class EmployerApplicationsScreen extends StatefulWidget {
+class EmployerApplicationsScreen extends GetView<ApplicationController> {
   const EmployerApplicationsScreen({super.key});
 
   @override
-  State<EmployerApplicationsScreen> createState() => _EmployerApplicationsScreenState();
-}
-
-class _EmployerApplicationsScreenState extends State<EmployerApplicationsScreen> {
-  final controller = Get.find<ApplicationController>();
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-    // Explicitly load statistics when screen initializes if not already loaded or stale
-    // Ideally we might want to refresh lists here too, but GetX controller usually manages state.
-    // Given the user wants scrolling, we assume data is loaded or will be loaded.
-    if (controller.jobApplications.isEmpty && !controller.isListLoading.value) {
-        Future.microtask(() => controller.loadJobApplications());
-    }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (controller.hasMoreJobApplications.value) {
-        controller.loadMoreJobApplications();
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (controller.jobApplications.isEmpty && !controller.isListLoading.value) {
+      Future.microtask(() => controller.loadJobApplications());
+    }
 
-    return Obx(() {
-      if (controller.isListLoading.value && controller.jobApplications.isEmpty) {
-        return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
-      }
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      appBar: AppBar(
+        title: const Text('إدارة الطلبات', style: TextStyle(color: AppColors.textColor)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: AppColors.textColor),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: AppColors.primaryColor),
+            onPressed: () => controller.loadJobApplications(),
+          ),
+        ],
+      ),
+      body: Obx(() {
+        if (controller.isListLoading.value && controller.jobApplications.isEmpty) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+        }
 
-      if (controller.jobApplications.isEmpty && controller.statistics.value == null) {
-        return const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.assignment_ind, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
-              Text('لا توجد طلبات توظيف حتى الآن', style: TextStyle(fontSize: 18, color: Colors.grey)),
-            ],
+        if (controller.jobApplications.isEmpty && controller.statistics.value == null) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.assignment_ind, size: 64, color: Colors.grey),
+                SizedBox(height: 16),
+                Text('لا توجد طلبات توظيف حتى الآن', style: TextStyle(fontSize: 18, color: Colors.grey)),
+              ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: controller.loadJobApplications,
+          color: AppColors.primaryColor,
+          child: ListView.builder(
+            controller: controller.jobApplicationsScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: controller.jobApplications.length + 2, // Header + Footer
+            itemBuilder: (context, index) {
+              // Statistics Header
+              if (index == 0) {
+                return _buildStatisticsHeader(context);
+              }
+
+              // Loading Footer
+              if (index == controller.jobApplications.length + 1) {
+                return _buildLoadingFooter();
+              }
+
+              final application = controller.jobApplications[index - 1];
+              return Card(
+                color: AppColors.accentColor,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: CircleAvatar(
+                    backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                    child: Text(
+                      application.applicantName?.substring(0, 1).toUpperCase() ?? '?',
+                      style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  title: Text(
+                    application.applicantName ?? 'متقدم غير معروف',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text('الوظيفة: ${application.jobTitle ?? '-'}'),
+                      const SizedBox(height: 4),
+                      Text(
+                        'تاريخ التقديم: ${application.appliedAt?.split('T')[0] ?? '-'}',
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(application.status).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      application.statusDisplay ?? application.status ?? '-',
+                      style: TextStyle(
+                        color: _getStatusColor(application.status),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    Get.to(() => ApplicationDetailScreen(application: application));
+                  },
+                ),
+              );
+            },
           ),
         );
-      }
-
-      return RefreshIndicator(
-        onRefresh: controller.loadJobApplications,
-        color: AppColors.primaryColor,
-        child: ListView.builder(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: controller.jobApplications.length + 2, // Header + Footer
-          itemBuilder: (context, index) {
-            // Statistics Header
-            if (index == 0) {
-              return _buildStatisticsHeader();
-            }
-
-            // Loading Footer
-            if (index == controller.jobApplications.length + 1) {
-              return _buildLoadingFooter();
-            }
-
-            final application = controller.jobApplications[index - 1];
-            return Card(
-              color: AppColors.accentColor,
-              margin: const EdgeInsets.only(bottom: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.primaryColor.withOpacity(0.1),
-                  child: Text(
-                    application.applicantName?.substring(0, 1).toUpperCase() ?? '?',
-                    style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                title: Text(
-                  application.applicantName ?? 'متقدم غير معروف',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 4),
-                    Text('الوظيفة: ${application.jobTitle ?? '-'}'),
-                    const SizedBox(height: 4),
-                    Text(
-                      'تاريخ التقديم: ${application.appliedAt?.split('T')[0] ?? '-'}',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(application.status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    application.statusDisplay ?? application.status ?? '-',
-                    style: TextStyle(
-                      color: _getStatusColor(application.status),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                onTap: () {
-                  Get.to(() => ApplicationDetailScreen(application: application));
-                },
-              ),
-            );
-          },
-        ),
-      );
-    });
+      }),
+    );
   }
 
-  Widget _buildStatisticsHeader() {
+  Widget _buildStatisticsHeader(BuildContext context) {
     return Obx(() {
       final stats = controller.statistics.value;
       if (stats == null) return const SizedBox.shrink();
