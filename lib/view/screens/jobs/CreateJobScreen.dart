@@ -298,8 +298,42 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                     // Template File
                     if (selectedApplicationMethod == 'template_file') ...[
                       const SizedBox(height: 16),
-                      // For now, simple text field for URL or file name as placeholder for file upload
-                      _buildTextField(templateController, 'رابط ملف القالب', validator: (v) => v!.isEmpty ? 'مطلوب' : null),
+                      Obx(() => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('ملف القالب', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          InkWell(
+                            onTap: () => jobController.pickTemplateFile(),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey[300]!),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.upload_file, color: AppColors.primaryColor),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      jobController.selectedTemplateFile.value != null
+                                          ? jobController.selectedTemplateFile.value!.path.split('/').last
+                                          : 'اضغط لاختيار ملف القالب (PDF, Word, Excel)',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (jobController.selectedTemplateFile.value == null)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4, right: 12),
+                              child: Text('مطلوب اختيار ملف القالب', style: TextStyle(color: Colors.red, fontSize: 12)),
+                            ),
+                        ],
+                      )),
                     ],
 
                     // External Link

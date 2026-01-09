@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import '../../../controllers/account/AccountController.dart';
 import '../../../controllers/auth_controller.dart';
@@ -19,7 +21,7 @@ import '../../models/job/jobs_statistics.dart';
 class JobService {
   final ApiClient _apiClient = ApiClient();
   final ApiService _apiService = Get.find();
- final GetStorage _storage = GetStorage();
+  final GetStorage _storage = GetStorage();
   final isUserLoggedIn = Get.find<AuthController>();
   Future<Map<String, String>> _getHeaders() async {
     final token = _storage.read(AppConstants.authTokenKey);
@@ -48,7 +50,7 @@ class JobService {
       path = '/api/jobs/?';
       print('path in else if  : $path');
     }
-     print('is user token2 in from jobs service : $token2');
+    print('is user token2 in from jobs service : $token2');
     print('path after if  : $path');
     if (page != null) path += 'page=$page&';
     if (search != null) path += 'search=$search&';
@@ -61,7 +63,7 @@ class JobService {
     if (isUrgent != null) path += 'is_urgent=$isUrgent&';
 
     final response = await _apiClient.get(path, headers: headers);
-     print('response body jobs in services: ${response.body}');
+    print('response body jobs in services: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return PaginatedJobListList.fromJson(jsonDecode(response.body));
     } else {
@@ -80,31 +82,95 @@ class JobService {
     }
   }
 
-  Future<bool> createJob(JobCreate job) async {
+  Future<bool> createJob(JobCreate job, {File? applicationTemplate}) async {
     final headers = await _getHeaders();
-    final response = await _apiClient.post(
-      ApiEndpoints.createJob,
-      job.toJson(),
-      headers: headers,
-    );
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
+
+    if (applicationTemplate != null) {
+      var request = http.MultipartRequest('POST', Uri.parse(AppConstants.baseUrl + ApiEndpoints.createJob));
+      request.headers.addAll(headers);
+
+      final jobData = job.toJson();
+      jobData.forEach((key, value) {
+        if (value != null) {
+          if (value is List) {
+            request.fields[key] = jsonEncode(value);
+          } else {
+            request.fields[key] = value.toString();
+          }
+        }
+      });
+
+      var stream = http.ByteStream(applicationTemplate.openRead());
+      var length = await applicationTemplate.length();
+      var multipartFile = http.MultipartFile('application_template', stream, length,
+          filename: applicationTemplate.path.split('/').last);
+      request.files.add(multipartFile);
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception(response.body);
+      }
     } else {
-      throw Exception(response.body);
+      final response = await _apiClient.post(
+        ApiEndpoints.createJob,
+        job.toJson(),
+        headers: headers,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception(response.body);
+      }
     }
   }
 
-  Future<bool> updateJob(String slug, JobCreate job) async {
+  Future<bool> updateJob(String slug, JobCreate job, {File? applicationTemplate}) async {
     final headers = await _getHeaders();
-    final response = await _apiClient.put(
-      '/api/jobs/$slug/update/',
-      job.toJson(),
-      headers: headers,
-    );
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
+
+    if (applicationTemplate != null) {
+      var request = http.MultipartRequest('PUT', Uri.parse(AppConstants.baseUrl + '/api/jobs/$slug/update/'));
+      request.headers.addAll(headers);
+
+      final jobData = job.toJson();
+      jobData.forEach((key, value) {
+        if (value != null) {
+          if (value is List) {
+            request.fields[key] = jsonEncode(value);
+          } else {
+            request.fields[key] = value.toString();
+          }
+        }
+      });
+
+      var stream = http.ByteStream(applicationTemplate.openRead());
+      var length = await applicationTemplate.length();
+      var multipartFile = http.MultipartFile('application_template', stream, length,
+          filename: applicationTemplate.path.split('/').last);
+      request.files.add(multipartFile);
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception(response.body);
+      }
     } else {
-      throw Exception(response.body);
+      final response = await _apiClient.put(
+        '/api/jobs/$slug/update/',
+        job.toJson(),
+        headers: headers,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception(response.body);
+      }
     }
   }
 

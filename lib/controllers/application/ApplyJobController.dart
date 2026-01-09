@@ -5,6 +5,8 @@ import '../../data/models/application/JobApplicationCreate.dart';
 import '../../data/services/application/ApplicationService.dart';
 import '../../data/models/job/JobDetail.dart';
 import '../job/JobController.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 
 class ApplyJobController extends GetxController {
   final ApplicationService _applicationService = ApplicationService();
@@ -15,12 +17,15 @@ class ApplyJobController extends GetxController {
   final TextEditingController availabilityController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
 
-  final RxMap<int, TextEditingController> surveyControllers = <int, TextEditingController>{}.obs;
+  final RxMap<int, TextEditingController> surveyControllers = <
+      int,
+      TextEditingController>{}.obs;
 
   final RxBool isLoading = false.obs;
   int jobId = 0;
   String? jobTitle;
   final Rx<JobDetail?> jobDetail = Rx<JobDetail?>(null);
+  final Rx<File?> filledTemplateFile = Rx<File?>(null);
 
   @override
   void onInit() {
@@ -30,25 +35,38 @@ class ApplyJobController extends GetxController {
       jobId = args['jobId'] ?? 0;
       jobTitle = args['jobTitle'];
       _initJobDetail(args['jobSlug']);
-    } else {
-      jobId = 0;
-      jobTitle = null;
-      _initJobDetail(null);
+    } else if (args is String) {
+      _initJobDetail(args);
+    } else if (args is JobDetail) {
+      setupJob(args);
     }
   }
 
+  void setupJob(JobDetail job) {
+    jobId = job.id ?? 0;
+    jobTitle = job.title;
+    jobDetail.value = job;
+    _initSurveyControllers(job);
+  }
+
   void _initJobDetail(String? slug) {
+    if (slug == null && jobId == 0) return;
+
     final jobController = Get.find<JobController>();
-    if (jobController.currentJob.value?.id == jobId) {
-      final job = jobController.currentJob.value;
-      _initSurveyControllers(job);
-      jobDetail.value = job;
+    final currentJob = jobController.currentJob.value;
+
+    if (currentJob != null &&
+        (currentJob.slug == slug || (jobId != 0 && currentJob.id == jobId))) {
+      setupJob(currentJob);
     } else {
       final slugToLoad = slug ?? jobId.toString();
+      if (slugToLoad == "0") return;
+
       jobController.loadJobDetail(slugToLoad).then((_) {
         final job = jobController.currentJob.value;
-        _initSurveyControllers(job);
-        jobDetail.value = job;
+        if (job != null) {
+          setupJob(job);
+        }
       });
     }
   }
@@ -89,7 +107,7 @@ class ApplyJobController extends GetxController {
           final answer = controller?.text.trim() ?? "";
 
           if (question.required == true && answer.isEmpty) {
-           // AppErrorHandler.showErrorSnack('يرجى الإجابة على السؤال: ${question.label}');
+            // AppErrorHandler.showErrorSnack('يرجى الإجابة على السؤال: ${question.label}');
             Get.snackbar(
               'تنبيه',
               'يرجى الإجابة على السؤال: \n ${question.label} ',
@@ -116,23 +134,60 @@ class ApplyJobController extends GetxController {
 
       final application = JobApplicationCreate(
         job: jobId,
-        coverLetter: coverLetterController.text.isNotEmpty ? coverLetterController.text : null,
-        portfolioUrl: portfolioController.text.isNotEmpty ? portfolioController.text : null,
+        coverLetter: coverLetterController.text.isNotEmpty
+            ? coverLetterController.text
+            : null,
+        portfolioUrl: portfolioController.text.isNotEmpty ? portfolioController
+            .text : null,
         expectedSalary: int.tryParse(salaryController.text),
-        availabilityDate: availabilityController.text.isNotEmpty ? availabilityController.text : null,
+        availabilityDate: availabilityController.text.isNotEmpty
+            ? availabilityController.text
+            : null,
         notes: notesController.text.isNotEmpty ? notesController.text : null,
         responses: responses.isNotEmpty ? responses : null,
       );
 
-      await _applicationService.createApplication(application);
+      if (filledTemplateFile.value != null) {
+        await _applicationService.createApplicationWithFile(
+            application, filledTemplateFile.value!);
+      } else {
+        await _applicationService.createApplication(application);
+      }
+
       if (shouldPop) Get.back();
       AppErrorHandler.showSuccessSnack('تم تقديم الطلب بنجاح');
+      filledTemplateFile.value = null; // Clear after success
 
     } catch (e) {
       print("Submit Application Response: $e");
       AppErrorHandler.showErrorSnack(e);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> pickTemplateFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        filledTemplateFile.value = File(result.files.single.path!);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'تنبيه',
+        'فشل اختيار الملف: ',
+        backgroundColor: Colors.black87,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        duration: const Duration(seconds: 4),
+        isDismissible: true,
+      );
     }
   }
 }

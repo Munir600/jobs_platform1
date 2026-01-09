@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import '../api_client.dart';
 import '../../models/application/JobApplication.dart';
 import '../../models/application/JobApplicationCreate.dart';
@@ -58,13 +60,13 @@ class ApplicationService {
     final headers = await _getHeaders();
     final response = await _apiClient.get('/api/applications/$id/', headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return JobApplication.fromJson(jsonDecode(response.body)); 
+      return JobApplication.fromJson(jsonDecode(response.body));
     } else {
       print('Error fetching application: ${response.body}');
       throw Exception(response.body);
     }
   }
-  
+
   Future<JobApplicationCreate> createApplication(JobApplicationCreate application) async {
     final headers = await _getHeaders();
     final response = await _apiClient.post(
@@ -79,7 +81,40 @@ class ApplicationService {
       throw Exception(response.body);
     }
   }
-  
+
+  Future<JobApplicationCreate> createApplicationWithFile(JobApplicationCreate application, File file) async {
+    final headers = await _getHeaders();
+    var request = http.MultipartRequest('POST', Uri.parse(AppConstants.baseUrl + ApiEndpoints.applyJob));
+    request.headers.addAll(headers);
+
+    final applicationData = application.toJson();
+    applicationData.forEach((key, value) {
+      if (value != null) {
+        if (value is List) {
+          request.fields[key] = jsonEncode(value);
+        } else {
+          request.fields[key] = value.toString();
+        }
+      }
+    });
+
+    var stream = http.ByteStream(file.openRead());
+    var length = await file.length();
+    var multipartFile = http.MultipartFile('filled_template', stream, length,
+        filename: file.path.split('/').last);
+    request.files.add(multipartFile);
+
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+    print('Create Application with File Response status code is : ${response.statusCode} and the body is: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return JobApplicationCreate.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception(response.body);
+    }
+  }
+
   Future<void> withdrawApplication(int applicationId) async {
     final headers = await _getHeaders();
     final response = await _apiClient.post(
@@ -136,7 +171,7 @@ class ApplicationService {
       throw Exception(response.body);
     }
   }
-  
+
   Future<void> updateApplication(int? id, JobApplicationUpdate data) async {
     final headers = await _getHeaders();
     final response = await _apiClient.put(
@@ -149,8 +184,8 @@ class ApplicationService {
     print('Update Application Response for status : ${data1['status']}');
     print('Update Application Response: $data1');
     if (response.statusCode == 200 || response.statusCode == 201) {
-     // AppErrorHandler.showSuccessSnack(' تم تحديث حالة الطلب بنجاح الى ${data1['status']}');
-    //  Get.back();
+      // AppErrorHandler.showSuccessSnack(' تم تحديث حالة الطلب بنجاح الى ${data1['status']}');
+      //  Get.back();
       // return JobApplication.fromJson(jsonDecode(response.body));
     } else {
       throw Exception(response.body);
