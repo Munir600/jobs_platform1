@@ -28,7 +28,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   final accountController = Get.find<AccountController>();
   final applyController = Get.put(ApplyJobController());
   late String slug;
-  final RxBool isTemplateDownloaded = false.obs;
 
   @override
   void initState() {
@@ -40,8 +39,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         await controller.loadJobDetail(slug);
         if (controller.currentJob.value != null) {
           applyController.setupJob(controller.currentJob.value!);
-          applyController.filledTemplateFile.value = null;
-          isTemplateDownloaded.value = false;
         }
       });
     }
@@ -168,36 +165,6 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
                   return Column(
                     children: [
-                      if (job.applicationMethod == 'template_file' && isTemplateDownloaded.value) ...[
-                        _buildSectionTitle('رفع الملف المعبأ'),
-                        const SizedBox(height: 8),
-                        Obx(() => InkWell(
-                          onTap: () => applyController.pickTemplateFile(),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey[300]!),
-                              borderRadius: BorderRadius.circular(12),
-                              color: AppColors.accentColor,
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.cloud_upload, color: AppColors.primaryColor),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    applyController.filledTemplateFile.value != null
-                                        ? applyController.filledTemplateFile.value!.path.split('/').last
-                                        : 'اختر الملف المعبأ للرفع',
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )),
-                        const SizedBox(height: 16),
-                      ],
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -393,69 +360,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   String _getButtonText(JobDetail job, bool isDeadlinePassed) {
     if (isDeadlinePassed) return 'انتهى التقديم';
-
-    switch (job.applicationMethod) {
-      case 'external_link':
-        return 'التقديم عبر رابط خارجي';
-      case 'email':
-        return 'التقديم عبر البريد';
-      case 'template_file':
-        return isTemplateDownloaded.value ? 'تقديم الطلب الآن' : 'تحميل ملف القالب';
-      case 'custom_form':
-        return 'بدء الاستبيان';
-      default:
-        return 'التقديم الآن';
-    }
+    return 'التقديم الآن';
   }
 
   void _handleApplication(JobDetail job) async {
     applyController.setupJob(job);
-
-    switch (job.applicationMethod) {
-      case 'external_link':
-        if (job.externalApplicationUrl != null) {
-          print('Opening external link: ${job.externalApplicationUrl}');
-          ContactUtils.handleContactAction(job.externalApplicationUrl!);
-          applyController.submitApplication(shouldPop: false);
-        }
-        break;
-      case 'email':
-        if (job.applicationEmail != null) {
-          print('Sending email to: ${job.applicationEmail!}');
-          ContactUtils.handleContactAction(job.applicationEmail!);
-          applyController.submitApplication(shouldPop: false);
-        }
-        break;
-      case 'template_file':
-        if (isTemplateDownloaded.value) {
-          if (applyController.filledTemplateFile.value == null) {
-            Get.snackbar(
-              'تنبيه',
-              'يرجى اختيار الملف المعبأ أولاً',
-              backgroundColor: Colors.black87,
-              colorText: Colors.white,
-              snackPosition: SnackPosition.TOP,
-              margin: const EdgeInsets.all(16),
-              borderRadius: 12,
-              duration: const Duration(seconds: 4),
-              isDismissible: true,
-            );
-            return;
-          }
-          applyController.submitApplication();
-        } else {
-          if (job.applicationTemplate != null) {
-            ContactUtils.handleContactAction(job.applicationTemplate!);
-            isTemplateDownloaded.value = true;
-          }
-        }
-        break;
-      case 'custom_form':
-        Get.toNamed(AppRoutes.applyJob, arguments: job);
-        break;
-      default:
-        Get.toNamed(AppRoutes.applyJob, arguments: job);
-        break;
-    }
+    Get.toNamed(AppRoutes.applyJob, arguments: job);
   }
 }

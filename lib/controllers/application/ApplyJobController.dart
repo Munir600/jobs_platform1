@@ -26,6 +26,7 @@ class ApplyJobController extends GetxController {
   String? jobTitle;
   final Rx<JobDetail?> jobDetail = Rx<JobDetail?>(null);
   final Rx<File?> filledTemplateFile = Rx<File?>(null);
+  final RxBool isTemplateDownloaded = false.obs;
 
   @override
   void onInit() {
@@ -46,6 +47,8 @@ class ApplyJobController extends GetxController {
     jobId = job.id ?? 0;
     jobTitle = job.title;
     jobDetail.value = job;
+    isTemplateDownloaded.value = false;
+    filledTemplateFile.value = null;
     _initSurveyControllers(job);
   }
 
@@ -98,8 +101,25 @@ class ApplyJobController extends GetxController {
     try {
       isLoading.value = true;
 
+      final job = jobDetail.value;
+      
+      // Template file validation
+      if (job?.applicationMethod == 'template_file' && filledTemplateFile.value == null) {
+        Get.snackbar(
+          'تنبيه',
+          'يرجى اختيار الملف المعبأ أولاً للتقديم',
+          backgroundColor: Colors.black87,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+        );
+        isLoading.value = false;
+        return;
+      }
+
       final List<JobApplicationResponse> responses = [];
-      final questions = jobDetail.value?.customForm?.questions;
+      final questions = job?.customForm?.questions;
 
       if (questions != null) {
         for (var question in questions) {
