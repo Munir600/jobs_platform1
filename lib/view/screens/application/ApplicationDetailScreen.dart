@@ -144,45 +144,45 @@ class ApplicationDetailScreen extends GetView<ApplicationController> {
               ),
               const SizedBox(height: 16),
 
-              Builder(builder: (context) {
-                final isEmployer = controller.currentUser.value?.isEmployer ?? false;
-                if (!isEmployer) return const SizedBox.shrink();
-
-                return Column(
-                  children: [
-                    if (latestApp.status == 'pending')
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => _showActionDialog(context, 'accepted', notesController),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                              child: const Text('قبول'),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => _showActionDialog(context, 'rejected', notesController),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-                              child: const Text('رفض'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    if (latestApp.status == 'accepted')
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () => _showScheduleInterviewDialog(context, interviewController, latestApp),
-                          icon: const Icon(Icons.calendar_today),
-                          label: const Text('جدولة مقابلة'),
-                          style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor, foregroundColor: Colors.white),
-                        ),
-                      ),
-                  ],
-                );
-              }),
+              // Builder(builder: (context) {
+              //   final isEmployer = controller.currentUser.value?.isEmployer ?? false;
+              //   if (!isEmployer) return const SizedBox.shrink();
+              //
+              //   return Column(
+              //     children: [
+              //       if (latestApp.status == 'pending')
+              //         Row(
+              //           children: [
+              //             Expanded(
+              //               child: ElevatedButton(
+              //                 onPressed: () => _showActionDialog(context, 'accepted', notesController),
+              //                 style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+              //                 child: const Text('قبول'),
+              //               ),
+              //             ),
+              //             const SizedBox(width: 16),
+              //             Expanded(
+              //               child: ElevatedButton(
+              //                 onPressed: () => _showActionDialog(context, 'rejected', notesController),
+              //                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+              //                 child: const Text('رفض'),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       if (latestApp.status == 'accepted')
+              //         SizedBox(
+              //           width: double.infinity,
+              //           child: ElevatedButton.icon(
+              //             onPressed: () => _showScheduleInterviewDialog(context, interviewController, latestApp),
+              //             icon: const Icon(Icons.calendar_today),
+              //             label: const Text('جدولة مقابلة'),
+              //             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor, foregroundColor: Colors.white),
+              //           ),
+              //         ),
+              //     ],
+              //   );
+              // }),
 
               const SizedBox(height: 24),
               const Text('الرسائل', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),

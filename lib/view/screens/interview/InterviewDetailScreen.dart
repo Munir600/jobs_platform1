@@ -5,7 +5,6 @@ import '../../../controllers/Interview/InterviewController.dart';
 import '../../../config/app_colors.dart';
 import '../../../data/models/Interview/Interview.dart';
 import 'package:intl/intl.dart';
-// import 'package:url_launcher/url_launcher.dart'; // Add this dependency if not exists
 
 class InterviewDetailScreen extends GetView<InterviewController> {
   final Interview interview;
@@ -64,6 +63,16 @@ class InterviewDetailScreen extends GetView<InterviewController> {
             Text(
               'مقابلة لوظيفة: ${interview.application?.jobTitle ?? "غير معروف"}',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Icon(Icons.person, size: 16, color: Colors.grey),
+                const SizedBox(width: 8),
+                Text(
+                  '  المتقدم : ${interview.application?.applicant?.fullName ?? "غير معروف"}',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+                ),              ],
             ),
             const SizedBox(height: 12),
             Row(

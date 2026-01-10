@@ -17,7 +17,7 @@ import '../../data/services/job_forms_service.dart';
 
 class JobController extends GetxController {
   final JobService _jobService = JobService();
-  final JobFormsService _formService = JobFormsService(); // Assuming this service exists and is exported
+  final JobFormsService _formService = JobFormsService();
   final GetStorage _storage = GetStorage();
 
   final RxList<JobList> jobs = <JobList>[].obs;

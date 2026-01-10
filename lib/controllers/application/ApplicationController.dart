@@ -19,7 +19,6 @@ class ApplicationController extends GetxController {
   final _accountController = Get.find<AccountController>();
   final GetStorage _storage = GetStorage();
 
-  // Scroll Controller for Employer Job Applications
   final ScrollController jobApplicationsScrollController = ScrollController();
 
   Rx<User?> get currentUser => _accountController.currentUser;
@@ -33,12 +32,10 @@ class ApplicationController extends GetxController {
   final RxBool isListLoading = false.obs;
   final RxBool isMessageLoading = false.obs;
 
-  // Pagination for My Applications (Job Seeker)
   final RxInt myApplicationsPage = 1.obs;
   final RxBool hasMoreMyApplications = false.obs;
   final RxBool isLoadingMoreMyApplications = false.obs;
 
-  // Pagination for Job Applications (Employer)
   final RxInt jobApplicationsPage = 1.obs;
   final RxBool hasMoreJobApplications = false.obs;
   final RxBool isLoadingMoreJobApplications = false.obs;
@@ -49,7 +46,6 @@ class ApplicationController extends GetxController {
     //loadCachedData();
     loadMyApplications();
 
-    // Setup scroll listener for employer applications
     jobApplicationsScrollController.addListener(_onJobApplicationsScroll);
   }
 
@@ -197,7 +193,6 @@ class ApplicationController extends GetxController {
         jobApplications.add(fullApp);
       }
       
-      // Also update or add in myApplications list if present (for jobseeker view)
       final myIndex = myApplications.indexWhere((app) => app.id == id);
       if (myIndex != -1) {
         myApplications[myIndex] = fullApp;
@@ -258,7 +253,6 @@ class ApplicationController extends GetxController {
     try {
       isMessageLoading.value = true;
 
-      // Load cached messages
       final cachedMsgs = _storage.read('application_messages_$applicationId');
       if (cachedMsgs != null && cachedMsgs is List) {
         messages.assignAll(cachedMsgs.map((e) => ApplicationMessage.fromJson(e)).toList());

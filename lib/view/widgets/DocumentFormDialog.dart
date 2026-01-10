@@ -69,7 +69,7 @@ class DocumentFormDialog extends GetView<DocumentController> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildLabel('عنوان الوثيقة*'),
-                  _buildTextField(titleController, 'مثال: شهادة PMP'),
+                  _buildTextField(titleController, 'مثال: شهادة Cisco'),
                   const SizedBox(height: 16),
 
                   Row(

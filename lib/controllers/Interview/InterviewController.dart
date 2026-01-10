@@ -186,18 +186,12 @@ class InterviewController extends GetxController {
 
   void _calculateStatistics() {
     final stats = <String, int>{
-      'total': totalCount.value, // Use total from API if available, else local
+      'total': totalCount.value,
       'scheduled': 0,
       'completed': 0,
       'cancelled': 0,
       'rescheduled': 0,
     };
-    
-    // Reset separate counts to recalculate based on *all* loaded interviews
-    // Note: This is an approximation if we don't have all interviews loaded.
-    // Ideally the backend should provide stats.
-    // For now, we calculate based on loaded items + total count from API for 'total'.
-    
     var detailedStatsMap = <String, int>{};
 
     for (var interview in interviews) {
@@ -208,10 +202,6 @@ class InterviewController extends GetxController {
       
       detailedStatsMap[status] = (detailedStatsMap[status] ?? 0) + 1;
     }
-    
-    // If we have total count from API greater than loaded, we might be missing stats.
-    // But we work with what we have.
-    
     statistics.value = stats;
     
     detailedStatistics.assignAll(detailedStatsMap.entries.map((e) => {

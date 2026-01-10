@@ -60,7 +60,6 @@ class AppErrorHandler {
             return messages.toSet().join('\n');
           }
         } catch (e) {
-          // JSON decode failed, ignore
         }
       }
     } catch (_) {
@@ -116,7 +115,7 @@ class AppErrorHandler {
       snackPosition: SnackPosition.TOP,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 2),
       isDismissible: true,
     );
   }
@@ -130,7 +129,7 @@ class AppErrorHandler {
       snackPosition: SnackPosition.TOP,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 2),
       isDismissible: true,
     );
   }

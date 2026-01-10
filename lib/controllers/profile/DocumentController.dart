@@ -141,7 +141,7 @@ class DocumentController extends GetxController {
         visibility: visibility?.value,
       );
 
-      final result = await _documentService.updateDocument(id, request, file: file);
+      final result = await _documentService.partialUpdateDocument(id, request, file: file);
 
       final updatedDoc = result['document'] as DocumentDetail;
       final serverMessage = result['message'] as String;
