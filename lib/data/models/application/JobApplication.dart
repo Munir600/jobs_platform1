@@ -1,9 +1,10 @@
 import '../accounts/User.dart';
-import '../job/JobList.dart';
+import '../job/JobDetail.dart';
+import 'JobApplicationCreate.dart';
 
 class JobApplication {
   final int id;
-  final JobList? job;
+  final JobDetail? job;
   final User? applicant;
   final String? coverLetter;
   final String? resume;
@@ -21,6 +22,7 @@ class JobApplication {
   final DateTime? updatedAt;
   final int? documentsCount;
   final String? filledTemplate;
+  final List<JobApplicationResponse>? responses;
 
   JobApplication({
     required this.id,
@@ -42,6 +44,7 @@ class JobApplication {
     this.updatedAt,
     this.documentsCount,
     this.filledTemplate,
+    this.responses,
   });
 
   String? get applicantName => applicant?.firstName != null && applicant?.lastName != null
@@ -51,9 +54,28 @@ class JobApplication {
   String? get jobTitle => job?.title;
 
   factory JobApplication.fromJson(Map<String, dynamic> json) {
+    // Handle job being either an object (Map) or an ID (int)
+    dynamic jobData = json['job'];
+    JobDetail? jobDetail;
+    if (jobData is Map<String, dynamic>) {
+      jobDetail = JobDetail.fromJson(jobData);
+    } else if (jobData is int) {
+      jobDetail = JobDetail(
+        id: jobData,
+        title: '',
+        slug: '',
+        description: '',
+        requirements: '',
+        jobType: 'full_time',
+        experienceLevel: 'entry',
+        educationLevel: 'none',
+        city: '',
+      );
+    }
+
     return JobApplication(
       id: json['id'],
-      job: json['job'] != null ? JobList.fromJson(json['job']) : null,
+      job: jobDetail,
       applicant: json['applicant'] != null ? User.fromJson(json['applicant']) : null,
       coverLetter: json['cover_letter'],
       resume: json['resume'],
@@ -71,6 +93,11 @@ class JobApplication {
       updatedAt: json['updated_at'] == null ? null : DateTime.parse(json['updated_at']),
       documentsCount: json['documents_count'],
       filledTemplate: json['filled_template'],
+      responses: (json['responses'] ?? json['question_responses'] ?? json['answers']) != null
+          ? (json['responses'] ?? json['question_responses'] ?? json['answers'] as List)
+          .map((i) => JobApplicationResponse.fromJson(i))
+          .toList()
+          : null,
     );
   }
 
@@ -95,6 +122,7 @@ class JobApplication {
       'updated_at': updatedAt?.toIso8601String(),
       'documents_count': documentsCount,
       'filled_template': filledTemplate,
+      'responses': responses?.map((e) => e.toJson()).toList(),
     };
   }
 }

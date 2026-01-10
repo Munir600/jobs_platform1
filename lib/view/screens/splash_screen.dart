@@ -1,9 +1,11 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 import '../../../routes/app_routes.dart';
 import '../../core/api_service.dart';
+import '../../core/constants.dart';
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
   @override
@@ -35,7 +37,8 @@ class _NextScreenDeciderState extends State<_NextScreenDecider> {
     });
   }
   void _navigate() {
-    final token = _apiService.authToken;
+    final GetStorage _storage = GetStorage();
+    final token = _storage.read(AppConstants.authTokenKey);
     final route = token != null ? AppRoutes.mainScreen : AppRoutes.login;
     Get.offAllNamed(route);
   }

@@ -184,6 +184,34 @@ class ApplicationController extends GetxController {
     }
   }
 
+  Future<JobApplication?> loadApplicationDetails(int id) async {
+    try {
+      isLoading.value = true;
+      final fullApp = await _applicationService.getApplication(id);
+      
+      // Update or add in jobApplications list
+      final index = jobApplications.indexWhere((app) => app.id == id);
+      if (index != -1) {
+        jobApplications[index] = fullApp;
+      } else {
+        jobApplications.add(fullApp);
+      }
+      
+      // Also update or add in myApplications list if present (for jobseeker view)
+      final myIndex = myApplications.indexWhere((app) => app.id == id);
+      if (myIndex != -1) {
+        myApplications[myIndex] = fullApp;
+      }
+      
+      return fullApp;
+    } catch (e) {
+      print('Error loading application details: $e');
+      return null;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> loadInterviews() async {
     try {
       isListLoading.value = true;

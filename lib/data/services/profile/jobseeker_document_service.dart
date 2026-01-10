@@ -47,7 +47,7 @@ class JobseekerDocumentService {
 
     var multipartRequest = http.MultipartRequest('POST', url);
     multipartRequest.headers.addAll({
-      'Authorization': 'Token $token',
+      'Authorization': 'Bearer $token',
       'Accept': 'application/json',
     });
 

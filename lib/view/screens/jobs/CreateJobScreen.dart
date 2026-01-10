@@ -186,7 +186,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                       }
 
                       return DropdownButtonFormField<int>(
-                        value: selectedCompanyId,
+                        value: companyController.myCompanies.any((c) => c.id == selectedCompanyId) ? selectedCompanyId : null,
                         items: companyController.myCompanies.map((company) {
                           return DropdownMenuItem(
                             value: company.id,
@@ -223,7 +223,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                       }
 
                       return DropdownButtonFormField<int>(
-                        value: selectedCategory,
+                        value: jobController.categories.any((c) => c.id == selectedCategory) ? selectedCategory : null,
                         items: jobController.categories.map((category) {
                           return DropdownMenuItem(
                             value: category.id,
@@ -275,7 +275,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                           return const Text('لا توجد نماذج مخصصة لهذه الشركة', style: TextStyle(color: Colors.red));
                         }
                         return DropdownButtonFormField<int>(
-                          value: selectedCustomFormId,
+                          value: jobController.customForms.any((f) => f.id == selectedCustomFormId) ? selectedCustomFormId : null,
                           items: jobController.customForms.map((form) {
                             return DropdownMenuItem(
                               value: form.id,
@@ -533,7 +533,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
 
   Widget _buildDropdown(String label, Map<String, String> items, Function(String?) onChanged, {String? value, String? Function(String?)? validator}) {
     return DropdownButtonFormField<String>(
-      value: value,
+      value: items.containsKey(value) ? value : null,
       items: items.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
       onChanged: onChanged,
       validator: validator,

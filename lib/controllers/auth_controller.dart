@@ -145,7 +145,8 @@ class AuthController extends GetxController {
       _currentUser.value = null;
       isLoggedIn.value = false;
       _storage.remove('user_data');
-      _apiService.removeAuthToken();
+      _storage.remove(AppConstants.authTokenKey);
+      _storage.remove(AppConstants.RefreshToken);
       if (Get.isRegistered<AccountController>()) {
         Get.find<AccountController>().clearUserData();
       }

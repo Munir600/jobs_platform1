@@ -76,8 +76,9 @@ class ApiClient {
     _storage.remove('user_data');
     _storage.remove('employer_profile');
     _storage.remove('job_seeker_profile');
-    _apiService.removeAuthToken();
-    _apiService.removeRefreshToken();
+    _storage.remove(AppConstants.authTokenKey);
+    _storage.remove(AppConstants.RefreshToken);
+
     if (Get.isRegistered<AccountController>()) {
       Get.find<AccountController>().clearUserData();
     }

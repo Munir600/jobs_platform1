@@ -113,11 +113,12 @@ class JobFormsController extends GetxController {
   }
 
   // Reset form data when entering Create/Edit screen
-  void initForm({JobForm? form}) async {
+  Future<void> initForm({JobForm? form}) async {
     _editingFormId = form;
     nameController.text = form?.name ?? '';
     descriptionController.text = form?.description ?? '';
     isFormActive.value = form?.isActive ?? true;
+
     if (companyController.myCompanies.isEmpty) {
       await companyController.getMyCompanies(showLoading: false);
     }

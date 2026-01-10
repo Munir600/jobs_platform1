@@ -248,7 +248,7 @@ class CompanyListScreen extends GetView<CompanyController> {
         Text(label, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textColor)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: currentValue.isNotEmpty ? currentValue : null,
+          value: (currentValue.isNotEmpty && items.containsKey(currentValue)) ? currentValue : null,
           items: items.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
           onChanged: onChanged,
           decoration: InputDecoration(

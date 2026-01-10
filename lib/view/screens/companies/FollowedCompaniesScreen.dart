@@ -22,14 +22,14 @@ class FollowedCompaniesScreen extends GetView<FollowedCompaniesController> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textColor),
         actions: [
-          // IconButton(
-          //   icon: const Icon(Icons.search),
-          //   onPressed: () => _showSearchDialog(context),
-          // ),
-          // IconButton(
-          //   icon: const Icon(Icons.filter_list),
-          //   onPressed: () => _showFilterBottomSheet(context),
-          // ),
+          IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () async {
+                // final hasInternet = await NetworkUtils.checkInternet(context);
+                // if (!hasInternet) return;
+               await controller.loadFollowedCompanies();
+              }
+          ),
         ],
       ),
       body: Column(

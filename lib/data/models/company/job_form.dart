@@ -58,6 +58,8 @@ class FormQuestion {
   final bool? required;
   final String? options;
   final int? order;
+  final String? answerText;
+  final String? answerFile;
 
   FormQuestion({
     this.id,
@@ -67,6 +69,8 @@ class FormQuestion {
     this.required,
     this.options,
     this.order,
+    this.answerText,
+    this.answerFile,
   });
 
   factory FormQuestion.fromJson(Map<String, dynamic> json) {
@@ -78,6 +82,8 @@ class FormQuestion {
       required: json['required'],
       options: json['options'],
       order: json['order'],
+      answerText: json['answer_text'] ?? json['answer'] ?? json['response_text'],
+      answerFile: json['answer_file'] ?? json['response_file'],
     );
   }
 
@@ -90,6 +96,8 @@ class FormQuestion {
       'required': required,
       'options': options,
       'order': order,
+      'answer_text': answerText,
+      'answer_file': answerFile,
     };
   }
 }

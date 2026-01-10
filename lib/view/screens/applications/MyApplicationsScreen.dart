@@ -147,10 +147,10 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
 
   void _showDetailedStats(BuildContext context, ApplicationStatistics stats) {
     final colors = [
-      Colors.orange,
-      Colors.green,
-      Colors.red,
-      Colors.purple,
+      Colors.blue,
+      Colors.orangeAccent,
+      Colors.grey,
+      Colors.blue,
       Colors.blue,
       Colors.grey,
       Colors.teal,
@@ -236,7 +236,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
             const SizedBox(height: 8),
             Text(
               'تاريخ التقديم: $formattedDate',
-              style: TextStyle(color: AppColors.textColor.withAlpha(30), fontSize: 14),
+              style: TextStyle(color: AppColors.textColor.withAlpha(170), fontSize: 14),
             ),
             const SizedBox(height: 16),
             Row(
@@ -285,8 +285,6 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
         return Colors.orange;
       case 'reviewed':
         return Colors.blue;
-      case 'shortlisted':
-        return Colors.purple;
       case 'accepted':
         return Colors.green;
       case 'rejected':
@@ -295,7 +293,7 @@ class _MyApplicationsScreenState extends State<MyApplicationsScreen> {
         return Colors.grey;
       case 'interview_scheduled':
       case 'interview':
-        return Colors.indigo;
+        return Colors.blue;
       default:
         return AppColors.primaryColor;
     }

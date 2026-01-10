@@ -71,9 +71,18 @@ class JobApplicationResponse {
   });
 
   factory JobApplicationResponse.fromJson(Map<String, dynamic> json) {
+    // Handle both int ID and nested object for question
+    dynamic questionData = json['question'];
+    int? questionId;
+    if (questionData is int) {
+      questionId = questionData;
+    } else if (questionData is Map && questionData.containsKey('id')) {
+      questionId = questionData['id'];
+    }
+
     return JobApplicationResponse(
-      question: json['question'],
-      answerText: json['answer_text'],
+      question: questionId,
+      answerText: json['answer_text'] ?? json['answer'],
       answerFile: json['answer_file'],
     );
   }

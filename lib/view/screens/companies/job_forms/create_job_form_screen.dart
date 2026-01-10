@@ -42,10 +42,15 @@ class CreateJobFormScreen extends GetView<JobFormsController> {
                     if (controller.companyController.myCompanies.isEmpty) {
                        return const SizedBox.shrink();
                     }
+                    
+                    // Safely check if the selected company ID exists in the list
+                    final selectedId = controller.selectedCompanyId.value;
+                    final companyExists = controller.companyController.myCompanies.any((c) => c.id == selectedId);
+                    
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: DropdownButtonFormField<int>(
-                        value: controller.selectedCompanyId.value,
+                        value: companyExists ? selectedId : null,
                         decoration: _inputDecoration('اختر الشركة'),
                         items: controller.companyController.myCompanies.map((company) {
                           return DropdownMenuItem(

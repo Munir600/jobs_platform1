@@ -39,8 +39,8 @@ class JobFormsScreen extends GetView<JobFormsController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              onPressed: () {
-                controller.initForm();
+              onPressed: () async {
+                await controller.initForm();
                 Get.to(() => const CreateJobFormScreen());
               },
               style: ElevatedButton.styleFrom(
@@ -238,8 +238,8 @@ class JobFormsScreen extends GetView<JobFormsController> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.edit, color: AppColors.primaryColor),
-                    onPressed: () {
-                      controller.initForm(form: form);
+                    onPressed: () async {
+                      await controller.initForm(form: form);
                       Get.to(() => const CreateJobFormScreen());
                     },
                   ),

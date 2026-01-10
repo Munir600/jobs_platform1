@@ -32,7 +32,7 @@ class JobDetail {
   final int? viewsCount;
   final String? createdAt;
   final String? updatedAt;
-  final int postedBy;
+  final int? postedBy;
   final String? applicationMethod;
   final JobForm? customForm;
   final String? applicationTemplate;
@@ -71,7 +71,7 @@ class JobDetail {
     this.viewsCount,
     this.createdAt,
     this.updatedAt,
-    required this.postedBy,
+    this.postedBy,
     this.applicationMethod,
     this.customForm,
     this.applicationTemplate,
@@ -89,17 +89,17 @@ class JobDetail {
       isBookmarked: json['is_bookmarked'],
       applicationsCount: json['applications_count'],
       isApplied: json['is_applied'],
-      title: json['title'],
-      slug: json['slug'],
-      description: json['description'],
-      requirements: json['requirements'],
+      title: json['title'] ?? '',
+      slug: json['slug'] ?? '',
+      description: json['description'] ?? '',
+      requirements: json['requirements'] ?? '',
       responsibilities: json['responsibilities'],
       benefits: json['benefits'],
       skills: json['skills'],
-      jobType: json['job_type'],
-      experienceLevel: json['experience_level'],
-      educationLevel: json['education_level'],
-      city: json['city'],
+      jobType: json['job_type'] ?? 'full_time',
+      experienceLevel: json['experience_level'] ?? 'entry',
+      educationLevel: json['education_level'] ?? 'none',
+      city: json['city'] ?? '',
       salaryMin: json['salary_min'],
       salaryMax: json['salary_max'],
       isSalaryNegotiable: json['is_salary_negotiable'],
